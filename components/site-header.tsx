@@ -81,7 +81,7 @@ export function SiteHeader() {
             href="#home"
             className="font-heading text-lg font-bold tracking-tight"
           >
-            Samuel<span className="text-accent">.</span>Appleton
+            S<span className="text-accent">.</span>A
           </a>
 
           <ul className="hidden items-center gap-1 lg:flex">

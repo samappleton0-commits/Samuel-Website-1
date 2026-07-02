@@ -15,7 +15,7 @@ export function About() {
     <section id="about" className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
       <SectionHeading
         eyebrow="About Me"
-        title="Building beautiful, functional & scalable experiences"
+        title="Providing Financial and ICT solutions that improve Business Efficiency and Growth."
       />
 
       <div className="mt-14 grid items-center gap-10 lg:grid-cols-5">

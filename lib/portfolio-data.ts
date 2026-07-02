@@ -11,20 +11,21 @@ import {
 } from 'lucide-react'
 
 export const profile = {
-  name: 'Alex Rivera',
+  name: 'Samule R. Appleton',
   roles: [
-    'Full-Stack Developer',
-    'UI/UX Designer',
-    'AI Solutions Builder',
-    'Digital Problem Solver',
+    'Accountant (Finance Officer)',
+    'ICT Specialist',
+    'Web Developer & Graphic Designer',
+    'Computer Trainer',
+    'Digital Solutions Provider',
   ],
   intro:
-    'I create modern, scalable, and user-friendly digital solutions that help businesses and individuals grow. I specialize in web development, UI/UX design, AI-powered applications, automation, and custom software solutions that deliver real-world impact.',
-  email: 'hello@alexrivera.dev',
-  phone: '+1 (555) 123-4567',
-  location: 'San Francisco, CA',
-  linkedin: 'https://linkedin.com/in/alexrivera',
-  github: 'https://github.com/alexrivera',
+    'I deliver practical financial and ICT solutions that help organizations and individuals operate more efficiently and grow. I specialize in Accounting and Finance (including financial reporting and QuickBooks), alongside ICT services such as Website Development, Graphic Design, Computer Training, and Practical Digital solutions that improve Productivity and Decision-making.',
+  email: 'samappleton0@gmail.com',
+  phone: '+231770449708 / +231888323165',
+  location: 'Monrovia, Liberia',
+  linkedin: 'https://linkedin.com/in/samuelappleton',
+  github: 'https://github.com/samuelappleton',
   resumePath: '/resume.pdf',
 }
 
