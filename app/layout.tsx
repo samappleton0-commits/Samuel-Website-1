@@ -20,9 +20,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Alex Rivera — Full-Stack Developer & AI Solutions Builder',
+  title: 'Samuel R. Appleton — Portfolio',
   description:
-    'Portfolio of Alex Rivera, a full-stack developer, UI/UX designer, and AI solutions builder crafting modern, scalable, and user-friendly digital experiences.',
+    'Portfolio of Samuel R. Appleton, a Web developer, Accountant, and ICT solutions builder crafting modern, scalable, and user-friendly digital experiences.',
   generator: 'v0.app',
   keywords: [
     'Full-Stack Developer',
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
     'Portfolio',
   ],
   openGraph: {
-    title: 'Alex Rivera — Full-Stack Developer & AI Solutions Builder',
+    title: 'Samuel R. Appleton — Portfolio',
     description:
-      'Modern, scalable, and user-friendly digital solutions in web development, UI/UX design, and AI.',
+      'Portfolio of Samuel R. Appleton, a Web developer, Accountant, and ICT solutions builder crafting modern, scalable, and user-friendly digital experiences.',
     type: 'website',
   },
 }

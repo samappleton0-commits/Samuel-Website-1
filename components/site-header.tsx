@@ -81,7 +81,7 @@ export function SiteHeader() {
             href="#home"
             className="font-heading text-lg font-bold tracking-tight"
           >
-            Alex<span className="text-accent">.</span>Rivera
+            Samuel<span className="text-accent">.</span>Appleton
           </a>
 
           <ul className="hidden items-center gap-1 lg:flex">
