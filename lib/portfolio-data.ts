@@ -13,11 +13,10 @@ import {
 export const profile = {
   name: 'Samuel R. Appleton',
   roles: [
-    'Accountant (Finance Officer)',
+    'Accountant',
     'ICT Specialist',
     'Web Developer & Graphic Designer',
     'Computer Trainer',
-    'Digital Solutions Provider',
   ],
   intro:
     'I deliver practical financial and ICT solutions that help organizations and individuals operate more efficiently and grow. I specialize in Accounting and Finance (including financial reporting and QuickBooks), alongside ICT services such as Website Development, Graphic Design, Computer Training, and Practical Digital solutions that improve Productivity and Decision-making.',

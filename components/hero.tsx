@@ -30,7 +30,7 @@ export function Hero() {
         >
           <span className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-muted-foreground">
             <Sparkles className="size-4 text-accent" />
-            Available for freelance & full-time work
+            Available for Part-Time & Full-time work
           </span>
 
           <h1 className="mt-6 font-heading text-4xl font-extrabold leading-tight tracking-tight text-balance sm:text-5xl lg:text-6xl">

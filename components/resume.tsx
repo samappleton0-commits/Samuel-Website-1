@@ -27,8 +27,8 @@ export function Resume() {
               {profile.roles[0]} • {profile.location}
             </p>
             <p className="mt-4 leading-relaxed text-muted-foreground">
-              6+ years of experience delivering full-stack web platforms,
-              AI-powered products, and thoughtful user experiences for startups
+              3+ years of experience delivering full-stack web platforms,
+              and thoughtful user experiences for startups
               and enterprises alike.
             </p>
           </div>

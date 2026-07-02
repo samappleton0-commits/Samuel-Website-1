@@ -22,7 +22,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
           <a href="#home" className="font-heading text-xl font-bold">
-            Alex<span className="text-accent">.</span>Rivera
+            Samuel R.<span className="text-accent">.</span>Appleton
           </a>
 
           <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">

@@ -21,8 +21,8 @@ const contactItems = [
   { icon: Mail, label: 'Email', value: profile.email, href: `mailto:${profile.email}` },
   { icon: Phone, label: 'Phone', value: profile.phone, href: `tel:${profile.phone}` },
   { icon: MapPin, label: 'Location', value: profile.location },
-  { icon: LinkedinIcon, label: 'LinkedIn', value: 'in/alexrivera', href: profile.linkedin },
-  { icon: GithubIcon, label: 'GitHub', value: '@alexrivera', href: profile.github },
+  { icon: LinkedinIcon, label: 'LinkedIn', value: 'in/samappleton', href: profile.linkedin },
+  { icon: GithubIcon, label: 'GitHub', value: '@samappleton', href: profile.github },
 ]
 
 export function Contact() {
@@ -58,7 +58,7 @@ export function Contact() {
       <SectionHeading
         eyebrow="Contact"
         title="Let's build something great"
-        description="Have a project in mind or just want to say hello? Send a message and I'll get back to you."
+        description="Do you have a project in mind or just want to say hello? Send a message and I'll get back to you."
       />
 
       <div className="mt-14 grid gap-8 lg:grid-cols-5">
