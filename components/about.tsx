@@ -4,9 +4,9 @@ import { Reveal } from '@/components/reveal'
 import { SectionHeading } from '@/components/section-heading'
 
 const highlights = [
-  'User-centered & accessible',
-  'Efficient & secure by design',
-  'Scalable architecture',
+  'User-Focused',
+  'Efficiency-Driven',
+  'Scalable Systems',
   'Continuous learner',
 ]
 

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 
 export const profile = {
-  name: 'Samule R. Appleton',
+  name: 'Samuel R. Appleton',
   roles: [
     'Accountant (Finance Officer)',
     'ICT Specialist',
