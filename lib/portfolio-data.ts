@@ -16,10 +16,10 @@ export const profile = {
     'Accountant',
     'ICT Specialist',
     'Web Developer & Graphic Designer',
-    'Computer Trainer',
+    'ICT Trainer',
   ],
   intro:
-    'I deliver practical financial and ICT solutions that help organizations and individuals operate more efficiently and grow. I specialize in Accounting and Finance (including financial reporting and QuickBooks), alongside ICT services such as Website Development, Graphic Design, Computer Training, and Practical Digital solutions that improve Productivity and Decision-making.',
+    'I provide Financial and ICT solutions that help organizations and individuals operate more efficiently and grow. I specialize in Accounting and Finance, alongside ICT services such as Website Development, Graphic Design, ICT Training, and Practical Digital solutions that improve efficiency, productivity, and business growth.',
   email: 'samappleton0@gmail.com',
   phone: '+231770449708 / +231888323165',
   location: 'Monrovia, Liberia',
@@ -39,7 +39,7 @@ export type Service = {
 export const services: Service[] = [
   {
     icon: Code2,
-    title: 'Web Development',
+    title: 'Website Development',
     image: '/images/service-web.png',
     description:
       'Responsive websites, business websites, landing pages, portfolio websites, blogs, and e-commerce platforms.',
@@ -47,7 +47,7 @@ export const services: Service[] = [
   },
   {
     icon: Palette,
-    title: 'UI/UX Design',
+    title: 'Accounting & Finance',
     image: '/images/service-uiux.png',
     description:
       'Wireframes, prototypes, user interfaces, user experience design, mobile-first layouts, and design systems.',
@@ -55,7 +55,7 @@ export const services: Service[] = [
   },
   {
     icon: Bot,
-    title: 'AI Solutions',
+    title: 'ICT Training & Solutions',
     image: '/images/service-ai.png',
     description:
       'AI integrations, chatbots, prompt engineering, automation, intelligent assistants, and AI-powered applications.',
@@ -63,43 +63,11 @@ export const services: Service[] = [
   },
   {
     icon: Layout,
-    title: 'Frontend Development',
+    title: 'Graphic Design',
     image: '/images/service-frontend.png',
     description:
       'Interactive interfaces using React, Next.js, JavaScript, TypeScript, Tailwind CSS, and responsive design.',
     tech: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
-  },
-  {
-    icon: Server,
-    title: 'Backend Development',
-    image: '/images/service-backend.png',
-    description:
-      'REST APIs, authentication, databases, Node.js, Express.js, cloud integrations, and scalable backend systems.',
-    tech: ['Node.js', 'Express.js', 'REST APIs', 'Cloud'],
-  },
-  {
-    icon: Database,
-    title: 'Database Management',
-    image: '/images/service-database.png',
-    description:
-      'MongoDB, PostgreSQL, MySQL, Firebase, data modeling, optimization, and secure data management.',
-    tech: ['PostgreSQL', 'MongoDB', 'Firebase', 'MySQL'],
-  },
-  {
-    icon: Gauge,
-    title: 'Website Optimization',
-    image: '/images/service-optimization.png',
-    description:
-      'SEO optimization, performance improvements, accessibility, Core Web Vitals, and speed optimization.',
-    tech: ['SEO', 'Core Web Vitals', 'Accessibility'],
-  },
-  {
-    icon: Lightbulb,
-    title: 'Technical Consulting',
-    image: '/images/service-consulting.png',
-    description:
-      'Software planning, architecture, technology recommendations, digital transformation, and project guidance.',
-    tech: ['Architecture', 'Strategy', 'Digital Transformation'],
   },
 ]
 

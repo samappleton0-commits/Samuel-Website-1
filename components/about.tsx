@@ -4,10 +4,10 @@ import { Reveal } from '@/components/reveal'
 import { SectionHeading } from '@/components/section-heading'
 
 const highlights = [
-  'User-Focused',
-  'Efficiency-Driven',
-  'Scalable Systems',
-  'Continuous learner',
+  'Reliable',
+  'Efficient',
+  'Innovative',
+  'Adaptable',
 ]
 
 export function About() {
@@ -33,14 +33,11 @@ export function About() {
 
         <Reveal delay={1} className="lg:col-span-3">
           <p className="text-lg leading-relaxed text-foreground/90">
-            I am a passionate technology professional dedicated to building
-            beautiful, functional, and scalable digital experiences.
+            I am a dedicated Accounting and ICT professional committed to delivering reliable financial and digital solutions.
           </p>
           <p className="mt-4 leading-relaxed text-muted-foreground">
-            My focus is on creating software that is not only visually appealing
-            but also efficient, secure, and user-centered. I enjoy solving
-            complex problems through innovative technology and continuously
-            learning new tools to stay ahead in the industry.
+            My expertise combines accounting and financial management with technology services, including Web development, Graphic Design, QuickBooks, and ICT training.
+        I strive to create practical solutions that improve efficiency while staying current with emerging technologies and industry best practices.
           </p>
 
           <ul className="mt-8 grid gap-3 sm:grid-cols-2">
