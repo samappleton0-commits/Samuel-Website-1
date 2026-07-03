@@ -57,8 +57,8 @@ export function Contact() {
     <section id="contact" className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
       <SectionHeading
         eyebrow="Contact"
-        title="Let's build something great"
-        description="Do you have a project in mind or just want to say hello? Send a message and I'll get back to you."
+        title="Let's Work Together"
+        description="Looking for Accounting or ICT services? Get in touch to discuss your needs, and I'll be happy to assist you."
       />
 
       <div className="mt-14 grid gap-8 lg:grid-cols-5">

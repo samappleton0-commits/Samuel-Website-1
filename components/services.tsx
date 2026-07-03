@@ -10,7 +10,7 @@ export function Services() {
       <SectionHeading
         eyebrow="Services"
         title="What I can do for you"
-        description="End-to-end product work, from design and frontend to backend, AI, and everything in between."
+        description="Providing Financial Management, Website Development, Graphic Design, and ICT solutions tailored to your needs."
       />
 
       <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

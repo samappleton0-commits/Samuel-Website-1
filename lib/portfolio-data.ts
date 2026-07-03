@@ -42,32 +42,32 @@ export const services: Service[] = [
     title: 'Website Development',
     image: '/images/service-web.png',
     description:
-      'Responsive websites, business websites, landing pages, portfolio websites, blogs, and e-commerce platforms.',
-    tech: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
+      'Designing Responsive, Modern, and User-Friendly Websites that strengthen your online presence and support business growth.',
+    tech: ['Next.js', 'TypeScript', 'HTML,CSS'],
   },
   {
     icon: Palette,
     title: 'Accounting & Finance',
     image: '/images/service-uiux.png',
     description:
-      'Wireframes, prototypes, user interfaces, user experience design, mobile-first layouts, and design systems.',
-    tech: ['Figma', 'Prototyping', 'Design Systems'],
+      'Providing Financial Management, Financial Reporting, and QuickBooks solutions to improve Business performance.',
+    tech: ['Budgeting', 'QuickBooks', 'Bookkeeping'],
   },
   {
     icon: Bot,
     title: 'ICT Training & Solutions',
     image: '/images/service-ai.png',
     description:
-      'AI integrations, chatbots, prompt engineering, automation, intelligent assistants, and AI-powered applications.',
-    tech: ['AI SDK', 'Prompt Engineering', 'LLMs', 'Automation'],
+      'Delivering practical ICT Training, Technical Support, and Digital solutions.',
+    tech: ['Windows OS', 'Microsoft Office', 'Digital Literacy'],
   },
   {
     icon: Layout,
     title: 'Graphic Design',
     image: '/images/service-frontend.png',
     description:
-      'Interactive interfaces using React, Next.js, JavaScript, TypeScript, Tailwind CSS, and responsive design.',
-    tech: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
+      'Creating professional visual designs that communicate your brand effectively through logos, Marketing materials, and Digital Graphics.',
+    tech: ['Adobe Photoshop', 'Canva', 'Corel-Draw', 'Branding'],
   },
 ]
 
@@ -106,27 +106,27 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    title: 'Nova Commerce',
+    title: 'E-Commerce Website',
     image: '/images/project-1.png',
     description:
-      'A full-featured e-commerce platform with cart, payments, and an admin dashboard for inventory management.',
+      'A secure and user-friendly online store that enables businesses to showcase products, manage inventory, process orders, and provide customers with a seamless shopping experience.',
     tech: ['Next.js', 'Stripe', 'PostgreSQL'],
     demo: '#',
     github: '#',
     caseStudy: '#',
   },
   {
-    title: 'Insight Analytics',
+    title: 'School Website',
     image: '/images/project-2.png',
     description:
-      'A SaaS analytics dashboard delivering real-time KPIs, charts, and automated reporting for growing teams.',
+      'A modern and responsive school website designed to provide easy access to academic information, admissions, news, events, and communication between the institution, students, and parents.',
     tech: ['React', 'Node.js', 'Recharts'],
     demo: '#',
     github: '#',
     caseStudy: '#',
   },
   {
-    title: 'Aria Assistant',
+    title: 'Portfolio Website',
     image: '/images/project-3.png',
     description:
       'An AI-powered chatbot with contextual memory, tool calling, and streaming responses for customer support.',
@@ -136,17 +136,17 @@ export const projects: Project[] = [
     caseStudy: '#',
   },
   {
-    title: 'Vault Banking',
+    title: 'Marketing',
     image: '/images/project-4.png',
     description:
-      'A secure mobile banking experience with transactions, budgeting insights, and biometric authentication.',
+      'Creating eye-catching flyers, brochures, posters, banners, business cards, and social media graphics to effectively promote your brand.',
     tech: ['React Native', 'Node.js', 'Plaid'],
     demo: '#',
     github: '#',
     caseStudy: '#',
   },
   {
-    title: 'Estate Finder',
+    title: 'Logo and Brand',
     image: '/images/project-5.png',
     description:
       'A real-estate listing platform with interactive maps, saved searches, and rich property galleries.',
@@ -156,10 +156,10 @@ export const projects: Project[] = [
     caseStudy: '#',
   },
   {
-    title: 'PulseFit',
+    title: 'Digital & Print Design',
     image: '/images/project-6.png',
     description:
-      'A fitness tracking web app with activity rings, progress charts, and personalized workout plans.',
+      'Developing high-quality designs for both digital platforms and print media, ensuring clear communication and a consistent visual identity.',
     tech: ['React', 'Firebase', 'Chart.js'],
     demo: '#',
     github: '#',
