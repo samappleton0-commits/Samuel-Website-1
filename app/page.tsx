@@ -19,11 +19,7 @@ export default function Page() {
         <Hero />
         <About />
         <Services />
-        <Skills />
         <Portfolio />
-        <WhyChooseMe />
-        <Experience />
-        <Resume />
         <Contact />
       </main>
       <SiteFooter />

@@ -10,10 +10,7 @@ const NAV_LINKS = [
   { label: 'Home', href: '#home' },
   { label: 'About', href: '#about' },
   { label: 'Services', href: '#services' },
-  { label: 'Skills', href: '#skills' },
   { label: 'Work', href: '#work' },
-  { label: 'Experience', href: '#experience' },
-  { label: 'Resume', href: '#resume' },
   { label: 'Contact', href: '#contact' },
 ]
 
@@ -103,7 +100,7 @@ export function SiteHeader() {
               render={<a href="#contact" />}
               className="hidden rounded-full bg-primary text-primary-foreground hover:bg-primary/90 sm:inline-flex"
             >
-              Hire Me
+              Contact Me
             </Button>
             <button
               type="button"
