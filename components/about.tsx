@@ -22,7 +22,7 @@ export function About() {
         <Reveal className="lg:col-span-2">
           <div className="glass mx-auto max-w-sm rounded-3xl p-3">
             <Image
-              src="/images/profile.png"
+              src="/images/profileme.png"
               alt="Portrait of Alex Rivera"
               width={520}
               height={620}

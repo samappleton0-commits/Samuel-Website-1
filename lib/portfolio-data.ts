@@ -19,7 +19,7 @@ export const profile = {
     'ICT Trainer',
   ],
   intro:
-    'I provide Financial and ICT solutions that help organizations and individuals operate more efficiently and grow. I specialize in Accounting and Finance, alongside ICT services such as Website Development, Graphic Design, ICT Training, and Practical Digital solutions that improve efficiency, productivity, and business growth.',
+    'I specialize in Accounting and Finance, alongside ICT services such as Website Development, Graphic Design, ICT Training, and Practical Digital solutions that improve efficiency, productivity, and business growth.',
   email: 'samappleton0@gmail.com',
   phone: '+231770449708 / +231888323165',
   location: 'Monrovia, Liberia',
@@ -281,9 +281,9 @@ export const testimonials: Testimonial[] = [
 ]
 
 export const resumeSummary = [
-  { label: 'Years of Experience', value: '6+ Years' },
+  { label: 'Years of Experience', value: '5+ Years' },
   { label: 'Core Skills', value: 'Full-Stack, AI, UI/UX' },
   { label: 'Certifications', value: 'AWS Solutions Architect' },
   { label: 'Education', value: 'B.Sc. Computer Science' },
-  { label: 'Projects Delivered', value: '80+ Projects' },
+  { label: 'Projects Delivered', value: '30+ Projects' },
 ]
