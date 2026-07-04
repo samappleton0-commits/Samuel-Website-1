@@ -27,7 +27,7 @@ export const profile = {
   //github: 'https://github.com/samuelappleton',
   facebook: 'https://facebook.com/sam.appleton.7923',
   whatsapp: 'https://wa.me/231770449708',
-  resumePath: '/resume.pdf',
+  resumePath: '/SAMUEL R. Appleton CV.pdf',
 }
 
 export type Service = {
