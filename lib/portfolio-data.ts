@@ -97,11 +97,11 @@ export const skills: string[] = [
 export type Project = {
   title: string
   image: string
-  description?: string
-  tech?: string[]
+  //description?: string
+  //tech?: string[]
   demo: string
-  github?: string
-  caseStudy?: string
+  //github?: string
+ // caseStudy?: string
 }
 
 export const projects: Project[] = [

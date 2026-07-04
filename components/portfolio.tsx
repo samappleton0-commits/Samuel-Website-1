@@ -37,11 +37,11 @@ export function Portfolio() {
               <h3 className="font-heading text-lg font-semibold">
                 {project.title}
               </h3>
-             <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+            {/* <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                 {project.description}
-              </p> 
+              </p> */}
 
-              <div className="mt-4 flex flex-wrap gap-1.5">
+              {/* <div className="mt-4 flex flex-wrap gap-1.5">
                 {project.tech.map((tech) => (
                   <span
                     key={tech}
@@ -50,7 +50,7 @@ export function Portfolio() {
                     {tech}
                   </span>
                 ))}
-              </div>
+              </div> */}
 
               <div className="mt-5 flex flex-wrap gap-2">
                 <Button
@@ -62,7 +62,7 @@ export function Portfolio() {
                 >
                   <ExternalLink className="size-4" /> Live Demo
                 </Button>
-                <Button
+              {/*  <Button
                   render={
                     <a href={project.github} target="_blank" rel="noreferrer" />
                   }
@@ -71,15 +71,15 @@ export function Portfolio() {
                   className="glass rounded-full border-surface-border"
                 >
                   <GithubIcon className="size-4" /> GitHub
-                </Button>
-                <Button
+                </Button> */}
+               {/* <Button
                   render={<a href={project.caseStudy} />}
                   size="sm"
                   variant="ghost"
                   className="rounded-full text-muted-foreground hover:text-foreground"
                 >
                   <FileText className="size-4" /> Case Study
-                </Button>
+                </Button> */}
               </div>
             </div>
           </Reveal>
