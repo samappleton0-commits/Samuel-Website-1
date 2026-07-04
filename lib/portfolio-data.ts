@@ -129,7 +129,7 @@ export const projects: Project[] = [
   },
   {
     title: 'Portfolio Website',
-    image: '/images/project-3.png',
+    image: '/images/pp.png',
     description:
       'A professional website highlighting skills, services, experience, and completed projects.',
     tech: ['AI SDK', 'Next.js', 'Vector DB'],
