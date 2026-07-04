@@ -109,7 +109,7 @@ export const projects: Project[] = [
     title: 'E-Commerce Website',
     image: '/images/project-1.png',
     description:
-      'A secure and user-friendly online store that enables businesses to showcase products, manage inventory, process orders, and provide customers with a seamless shopping experience.',
+      'A secure online store for showcasing products and enabling seamless online shopping.',
     tech: ['Next.js', 'Stripe', 'PostgreSQL'],
     demo: '#',
     github: '#',
@@ -118,9 +118,9 @@ export const projects: Project[] = [
   {
     title: 'School Website',
     image: '/images/project-2.png',
-    /*description:
-      'A modern and responsive school website designed to provide easy access to academic information, admissions, news, events, and communication between the institution, students, and parents.',
-    tech: ['React', 'Node.js', 'Recharts'],*/
+    description:
+      'A responsive website for managing school information, admissions, news, and communication.',
+    tech: ['React', 'Node.js', 'Recharts'],
     demo: '#',
     github: '#',
     caseStudy: '#',
@@ -128,8 +128,8 @@ export const projects: Project[] = [
   {
     title: 'Portfolio Website',
     image: '/images/project-3.png',
-   /* description:
-      'An AI-powered chatbot with contextual memory, tool calling, and streaming responses for customer support.',*/
+    description:
+      'A professional website highlighting skills, services, experience, and completed projects.',
     tech: ['AI SDK', 'Next.js', 'Vector DB'],
     demo: '#',
     github: '#',
@@ -139,7 +139,7 @@ export const projects: Project[] = [
     title: 'Marketing',
     image: '/images/project-4.png',
     description:
-      'Creating eye-catching flyers, brochures, posters, banners, business cards, and social media graphics to effectively promote your brand.',
+      'Eye-catching promotional designs that strengthen your brand and attract customers.',
     //tech: ['React Native', 'Node.js', 'Plaid'],
     demo: '#',
     //github: '#',
@@ -149,7 +149,7 @@ export const projects: Project[] = [
     title: 'Logo and Brand',
     image: '/images/project-5.png',
     description:
-      'A real-estate listing platform with interactive maps, saved searches, and rich property galleries.',
+      'Unique logos and brand identities that create a memorable and professional image.',
     //tech: ['Next.js', 'Mapbox', 'Supabase'],
     demo: '#',
    // github: '#',
@@ -159,7 +159,7 @@ export const projects: Project[] = [
     title: 'Digital & Print Design',
     image: '/images/project-6.png',
     description:
-      'Developing high-quality designs for both digital platforms and print media, ensuring clear communication and a consistent visual identity.',
+      'Creative designs for digital platforms and high-quality print materials.',
     //tech: ['React', 'Firebase', 'Chart.js'],
     demo: '#',
     //github: '#',
