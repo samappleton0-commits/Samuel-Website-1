@@ -23,8 +23,10 @@ export const profile = {
   email: 'samappleton0@gmail.com',
   phone: '+231770449708 / +231888323165',
   location: 'Monrovia, Liberia',
-  linkedin: 'https://linkedin.com/in/samuelappleton',
-  github: 'https://github.com/samuelappleton',
+  //linkedin: 'https://linkedin.com/in/samuelappleton',
+  //github: 'https://github.com/samuelappleton',
+  facebook: 'https://facebook.com/sam.appleton.7923',
+  whatsapp: 'https://wa.me/231770449708',
   resumePath: '/resume.pdf',
 }
 

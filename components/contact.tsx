@@ -12,8 +12,9 @@ import {
 import { Reveal } from '@/components/reveal'
 import { SectionHeading } from '@/components/section-heading'
 import { Button } from '@/components/ui/button'
-import { GithubIcon, LinkedinIcon } from '@/components/brand-icons'
+//import { GithubIcon, LinkedinIcon } from '@/components/brand-icons'
 import { profile } from '@/lib/portfolio-data'
+import { FacebookIcon, WhatsappIcon } from '@/components/brand-icons'
 
 type Errors = { name?: string; email?: string; message?: string }
 
@@ -21,8 +22,21 @@ const contactItems = [
   { icon: Mail, label: 'Email', value: profile.email, href: `mailto:${profile.email}` },
   { icon: Phone, label: 'Phone', value: profile.phone, href: `tel:${profile.phone}` },
   { icon: MapPin, label: 'Location', value: profile.location },
-  { icon: LinkedinIcon, label: 'LinkedIn', value: 'in/samappleton', href: profile.linkedin },
-  { icon: GithubIcon, label: 'GitHub', value: '@samappleton', href: profile.github },
+  {/*{ icon: LinkedinIcon, label: 'LinkedIn', value: 'in/samappleton', href: profile.linkedin },
+  { icon: GithubIcon, label: 'GitHub', value: '@samappleton', href: profile.github },*/}
+   {
+  icon: FacebookIcon,
+  label: 'Facebook',
+  value: 'facebook.com/Ma Grace Son',
+  href: profile.facebook,
+},
+{
+  icon: WhatsappIcon,
+  label: 'WhatsApp',
+  value: '+231 770 449 708',
+  href: profile.whatsapp,
+},
+
 ]
 
 export function Contact() {
