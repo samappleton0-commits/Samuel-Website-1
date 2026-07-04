@@ -131,7 +131,7 @@ export function Contact() {
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="Jane Doe"
+                  placeholder="Your Name"
                   className={fieldClass}
                   aria-invalid={!!errors.name}
                 />
@@ -147,7 +147,7 @@ export function Contact() {
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="jane@company.com"
+                  placeholder="your.email@example.com"
                   className={fieldClass}
                   aria-invalid={!!errors.email}
                 />
@@ -165,7 +165,7 @@ export function Contact() {
                 id="subject"
                 name="subject"
                 type="text"
-                placeholder="Project inquiry"
+                placeholder="Enter subject"
                 className={fieldClass}
               />
             </div>
@@ -178,7 +178,7 @@ export function Contact() {
                 id="message"
                 name="message"
                 rows={5}
-                placeholder="Tell me about your project..."
+                placeholder="Enter details of your request"
                 className={`${fieldClass} resize-none`}
                 aria-invalid={!!errors.message}
               />

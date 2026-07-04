@@ -56,13 +56,13 @@ export function Hero() {
             >
               View My Work <ArrowRight className="size-4" />
             </Button>
-            <Button
+          {/* <Button
               render={<a href="#contact" />}
               size="lg"
               className="rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90"
             >
               Hire Me
-            </Button>
+            </Button> */}
             <Button
               render={<a href="#contact" />}
               size="lg"
@@ -115,7 +115,7 @@ export function Hero() {
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
             className="glass absolute -bottom-5 -left-5 rounded-2xl px-4 py-3"
           >
-            <p className="font-heading text-2xl font-bold text-accent">5+</p>
+            <p className="font-heading text-2xl font-bold text-accent">3+</p>
             <p className="text-xs text-muted-foreground">Years Experience</p>
           </motion.div>
 
@@ -124,7 +124,7 @@ export function Hero() {
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
             className="glass absolute -top-5 -right-5 rounded-2xl px-4 py-3"
           >
-            <p className="font-heading text-2xl font-bold text-primary">20+</p>
+            <p className="font-heading text-2xl font-bold text-primary">15+</p>
             <p className="text-xs text-muted-foreground">Projects</p>
           </motion.div>
         </motion.div>
