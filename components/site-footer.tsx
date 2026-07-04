@@ -1,5 +1,6 @@
 import { Mail } from 'lucide-react'
-import { GithubIcon, LinkedinIcon } from '@/components/brand-icons'
+//import { GithubIcon, LinkedinIcon } from '@/components/brand-icons'
+import { FacebookIcon, WhatsappIcon } from '@/components/brand-icons'
 import { profile } from '@/lib/portfolio-data'
 
 const navLinks = [
@@ -11,8 +12,10 @@ const navLinks = [
 ]
 
 const socials = [
-  { icon: GithubIcon, href: profile.github, label: 'GitHub' },
-  { icon: LinkedinIcon, href: profile.linkedin, label: 'LinkedIn' },
+  //{ icon: GithubIcon, href: profile.github, label: 'GitHub' },
+  //{ icon: LinkedinIcon, href: profile.linkedin, label: 'LinkedIn' },
+  { icon: FacebookIcon, href: profile.facebook, label: 'Facebook' },
+  { icon: WhatsappIcon, href: profile.whatsapp, label: 'WhatsApp' },
   { icon: Mail, href: `mailto:${profile.email}`, label: 'Email' },
 ]
 

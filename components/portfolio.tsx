@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { ExternalLink, FileText } from 'lucide-react'
-import { GithubIcon } from '@/components/brand-icons'
+//import { GithubIcon } from '@/components/brand-icons'
 import { Reveal } from '@/components/reveal'
 import { SectionHeading } from '@/components/section-heading'
 import { Button } from '@/components/ui/button'
