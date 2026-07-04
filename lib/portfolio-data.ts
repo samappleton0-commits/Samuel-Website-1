@@ -97,7 +97,7 @@ export const skills: string[] = [
 export type Project = {
   title: string
   image: string
-  //description?: string
+  description: string
   //tech?: string[]
   demo: string
   //github?: string
@@ -118,9 +118,9 @@ export const projects: Project[] = [
   {
     title: 'School Website',
     image: '/images/project-2.png',
-    description:
+    /*description:
       'A modern and responsive school website designed to provide easy access to academic information, admissions, news, events, and communication between the institution, students, and parents.',
-    tech: ['React', 'Node.js', 'Recharts'],
+    tech: ['React', 'Node.js', 'Recharts'],*/
     demo: '#',
     github: '#',
     caseStudy: '#',
@@ -128,8 +128,8 @@ export const projects: Project[] = [
   {
     title: 'Portfolio Website',
     image: '/images/project-3.png',
-    description:
-      'An AI-powered chatbot with contextual memory, tool calling, and streaming responses for customer support.',
+   /* description:
+      'An AI-powered chatbot with contextual memory, tool calling, and streaming responses for customer support.',*/
     tech: ['AI SDK', 'Next.js', 'Vector DB'],
     demo: '#',
     github: '#',

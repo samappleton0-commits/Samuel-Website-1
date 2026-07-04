@@ -37,9 +37,9 @@ export function Portfolio() {
               <h3 className="font-heading text-lg font-semibold">
                 {project.title}
               </h3>
-            {/* <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                 {project.description}
-              </p> */}
+              </p> 
 
               {/* <div className="mt-4 flex flex-wrap gap-1.5">
                 {project.tech.map((tech) => (
