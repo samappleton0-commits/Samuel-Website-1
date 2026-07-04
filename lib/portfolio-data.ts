@@ -50,7 +50,7 @@ export const services: Service[] = [
   {
     icon: Palette,
     title: 'Accounting & Finance',
-    image: '/images/service-uiux.png',
+    image: '/images/account.png',
     description:
       'Providing Financial Management, Financial Reporting, and QuickBooks solutions to improve Business performance.',
     tech: ['Budgeting', 'QuickBooks', 'Bookkeeping'],
@@ -58,7 +58,7 @@ export const services: Service[] = [
   {
     icon: Bot,
     title: 'ICT Training & Solutions',
-    image: '/images/service-ai.png',
+    image: '/images/Ict.png',
     description:
       'Delivering practical ICT Training, Technical Support, and Digital solutions.',
     tech: ['Windows OS', 'Microsoft Office', 'Digital Literacy'],
@@ -66,7 +66,7 @@ export const services: Service[] = [
   {
     icon: Layout,
     title: 'Graphic Design',
-    image: '/images/service-frontend.png',
+    image: '/images/graphic.png',
     description:
       'Creating professional visual designs that communicate your brand effectively through logos, Marketing materials, and Digital Graphics.',
     tech: ['Adobe Photoshop', 'Canva', 'Corel-Draw', 'Branding'],
@@ -119,7 +119,7 @@ export const projects: Project[] = [
   },
   {
     title: 'School Website',
-    image: '/images/project-2.png',
+    image: '/images/school.png',
     description:
       'A responsive website for managing school information, admissions, news, and communication.',
     tech: ['React', 'Node.js', 'Recharts'],
@@ -129,7 +129,7 @@ export const projects: Project[] = [
   },
   {
     title: 'Portfolio Website',
-    image: '/images/pp.png',
+    image: '/images/port.png',
     description:
       'A professional website highlighting skills, services, experience, and completed projects.',
     tech: ['AI SDK', 'Next.js', 'Vector DB'],
@@ -149,7 +149,7 @@ export const projects: Project[] = [
   },
   {
     title: 'Logo and Brand',
-    image: '/images/project-5.png',
+    image: '/images/logo.png',
     description:
       'Unique logos and brand identities that create a memorable and professional image.',
     //tech: ['Next.js', 'Mapbox', 'Supabase'],
@@ -159,7 +159,7 @@ export const projects: Project[] = [
   },
   {
     title: 'Digital & Print Design',
-    image: '/images/project-6.png',
+    image: '/images/Digital.png',
     description:
       'Creative designs for digital platforms and high-quality print materials.',
     //tech: ['React', 'Firebase', 'Chart.js'],
