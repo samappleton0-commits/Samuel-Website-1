@@ -97,11 +97,11 @@ export const skills: string[] = [
 export type Project = {
   title: string
   image: string
-  description: string
-  tech: string[]
+  description?: string
+  tech?: string[]
   demo: string
-  github: string
-  caseStudy: string
+  github?: string
+  caseStudy?: string
 }
 
 export const projects: Project[] = [
@@ -140,30 +140,30 @@ export const projects: Project[] = [
     image: '/images/project-4.png',
     description:
       'Creating eye-catching flyers, brochures, posters, banners, business cards, and social media graphics to effectively promote your brand.',
-    tech: ['React Native', 'Node.js', 'Plaid'],
+    //tech: ['React Native', 'Node.js', 'Plaid'],
     demo: '#',
-    github: '#',
-    caseStudy: '#',
+    //github: '#',
+    //caseStudy: '#',
   },
   {
     title: 'Logo and Brand',
     image: '/images/project-5.png',
     description:
       'A real-estate listing platform with interactive maps, saved searches, and rich property galleries.',
-    tech: ['Next.js', 'Mapbox', 'Supabase'],
+    //tech: ['Next.js', 'Mapbox', 'Supabase'],
     demo: '#',
-    github: '#',
-    caseStudy: '#',
+   // github: '#',
+    //caseStudy: '#',
   },
   {
     title: 'Digital & Print Design',
     image: '/images/project-6.png',
     description:
       'Developing high-quality designs for both digital platforms and print media, ensuring clear communication and a consistent visual identity.',
-    tech: ['React', 'Firebase', 'Chart.js'],
+    //tech: ['React', 'Firebase', 'Chart.js'],
     demo: '#',
-    github: '#',
-    caseStudy: '#',
+    //github: '#',
+    //caseStudy: '#',
   },
 ]
 
