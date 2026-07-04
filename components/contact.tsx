@@ -22,8 +22,8 @@ const contactItems = [
   { icon: Mail, label: 'Email', value: profile.email, href: `mailto:${profile.email}` },
   { icon: Phone, label: 'Phone', value: profile.phone, href: `tel:${profile.phone}` },
   { icon: MapPin, label: 'Location', value: profile.location },
-  {/*{ icon: LinkedinIcon, label: 'LinkedIn', value: 'in/samappleton', href: profile.linkedin },
-  { icon: GithubIcon, label: 'GitHub', value: '@samappleton', href: profile.github },*/}
+  //{ icon: LinkedinIcon, label: 'LinkedIn', value: 'in/samappleton', href: profile.linkedin },
+ // { icon: GithubIcon, label: 'GitHub', value: '@samappleton', href: profile.github },
    {
   icon: FacebookIcon,
   label: 'Facebook',
