@@ -9,9 +9,18 @@ import { profile } from '@/lib/portfolio-data'
 export function Hero() {
   return (
     <section
-      id="home"
+     {/* id="home"
       className="relative flex min-h-screen items-center overflow-hidden pt-24 pb-16"
-    >
+    >*/}
+
+            id="home"
+        className="relative flex min-h-screen items-center overflow-hidden pt-24 pb-16 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('/images/hero-bg.jpg')",
+        }}
+      >
+            <div className="absolute inset-0 bg-black/60 -z-20"></div>
+
       {/* Ambient background accents */}
       <div
         aria-hidden="true"
