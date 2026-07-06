@@ -4,12 +4,14 @@ import { About } from '@/components/about'
 import { Services } from '@/components/services'
 import { Skills } from '@/components/skills'
 import { Portfolio } from '@/components/portfolio'
+import { Gallery } from '@/components/gallery'
 import { WhyChooseMe } from '@/components/why-choose-me'
 import { Experience } from '@/components/experience'
 import { Resume } from '@/components/resume'
 import { Contact } from '@/components/contact'
 import { SiteFooter } from '@/components/site-footer'
 import { BackToTop } from '@/components/back-to-top'
+
 
 
 export default function Page() {
@@ -21,6 +23,7 @@ export default function Page() {
         <About />
         <Services />
         <Portfolio />
+         <Gallery />
         <Contact />
       </main>
       <SiteFooter />
