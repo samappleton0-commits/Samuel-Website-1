@@ -37,6 +37,41 @@ const albums = [
       },
     ],
   },
+
+  {
+    name: "Family",
+    description: "Urban life and night city views",
+    images: [
+      {
+        src: "/gallery/image3.png",
+        title: "City Lights",
+        desc: "Night skyline view",
+      },
+      {
+        src: "/gallery/image4.png",
+        title: "Ocean Breeze City",
+        desc: "City by the sea",
+      },
+    ],
+  },
+
+    {
+    name: "Travel",
+    description: "Urban life and night city views",
+    images: [
+      {
+        src: "/gallery/image3.png",
+        title: "City Lights",
+        desc: "Night skyline view",
+      },
+      {
+        src: "/gallery/image4.png",
+        title: "Ocean Breeze City",
+        desc: "City by the sea",
+      },
+    ],
+  },
+
 ];
 
 export default function Gallery() {
