@@ -9,10 +9,12 @@ import {
   CalendarClock,
   CheckCircle2,
 } from 'lucide-react'
+
+import { supabase } from '@/lib/supabase' // ✅ ADDED
+
 import { Reveal } from '@/components/reveal'
 import { SectionHeading } from '@/components/section-heading'
 import { Button } from '@/components/ui/button'
-//import { GithubIcon, LinkedinIcon } from '@/components/brand-icons'
 import { profile } from '@/lib/portfolio-data'
 import { FacebookIcon, WhatsappIcon } from '@/components/brand-icons'
 
@@ -22,32 +24,32 @@ const contactItems = [
   { icon: Mail, label: 'Email', value: profile.email, href: `mailto:${profile.email}` },
   { icon: Phone, label: 'Phone', value: profile.phone, href: `tel:${profile.phone}` },
   { icon: MapPin, label: 'Location', value: profile.location },
-  //{ icon: LinkedinIcon, label: 'LinkedIn', value: 'in/samappleton', href: profile.linkedin },
- // { icon: GithubIcon, label: 'GitHub', value: '@samappleton', href: profile.github },
-   {
-  icon: FacebookIcon,
-  label: 'Facebook',
-  value: 'facebook.com/Ma Grace Son',
-  href: profile.facebook,
-},
-{
-  icon: WhatsappIcon,
-  label: 'WhatsApp',
-  value: '+231 770 449 708',
-  href: profile.whatsapp,
-},
-
+  {
+    icon: FacebookIcon,
+    label: 'Facebook',
+    value: 'facebook.com/Ma Grace Son',
+    href: profile.facebook,
+  },
+  {
+    icon: WhatsappIcon,
+    label: 'WhatsApp',
+    value: '+231 770 449 708',
+    href: profile.whatsapp,
+  },
 ]
 
 export function Contact() {
   const [errors, setErrors] = useState<Errors>({})
   const [sent, setSent] = useState(false)
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     const data = new FormData(e.currentTarget)
+
     const name = String(data.get('name') ?? '').trim()
     const email = String(data.get('email') ?? '').trim()
+    const subject = String(data.get('subject') ?? '').trim() // ✅ ADDED
     const message = String(data.get('message') ?? '').trim()
 
     const next: Errors = {}
@@ -58,7 +60,22 @@ export function Contact() {
     if (!message) next.message = 'Please enter a message.'
 
     setErrors(next)
+
     if (Object.keys(next).length === 0) {
+      const { error } = await supabase.from('contacts').insert([
+        {
+          name,
+          email,
+          subject,
+          message,
+        },
+      ])
+
+      if (error) {
+        console.error('Supabase error:', error.message)
+        return
+      }
+
       setSent(true)
       e.currentTarget.reset()
     }
@@ -81,6 +98,7 @@ export function Contact() {
             <h3 className="font-heading text-xl font-semibold">
               Contact details
             </h3>
+
             <ul className="mt-6 space-y-4">
               {contactItems.map((item) => {
                 const Icon = item.icon
@@ -89,6 +107,7 @@ export function Contact() {
                     <span className="glass flex size-11 items-center justify-center rounded-xl text-accent">
                       <Icon className="size-5" />
                     </span>
+
                     <span>
                       <span className="block text-xs text-muted-foreground">
                         {item.label}
@@ -99,6 +118,7 @@ export function Contact() {
                     </span>
                   </span>
                 )
+
                 return (
                   <li key={item.label}>
                     {item.href ? (
@@ -139,6 +159,7 @@ export function Contact() {
                   <p className="mt-1 text-xs text-destructive">{errors.name}</p>
                 )}
               </div>
+
               <div>
                 <label htmlFor="email" className="mb-2 block text-sm font-medium">
                   Email
@@ -202,11 +223,10 @@ export function Contact() {
               >
                 <Send className="size-4" /> Send Message
               </Button>
+
               <Button
                 render={
-                  <a
-                    href={`mailto:${profile.email}?subject=Schedule a meeting`}
-                  />
+                  <a href={`mailto:${profile.email}?subject=Schedule a meeting`} />
                 }
                 size="lg"
                 variant="outline"
