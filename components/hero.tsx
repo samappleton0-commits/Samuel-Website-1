@@ -6,12 +6,16 @@ import { ArrowRight, Download, Eye, Mail, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { profile } from '@/lib/portfolio-data'
 
-export function Hero() {
-  return (
-    <section
-     {/* id="home"
+
+  {/* id="home"
       className="relative flex min-h-screen items-center overflow-hidden pt-24 pb-16"
     >*/}
+export function Hero() {
+  return (
+   
+   
+    <section
+   
 
             id="home"
         className="relative flex min-h-screen items-center overflow-hidden pt-24 pb-16 bg-cover bg-center bg-no-repeat"
