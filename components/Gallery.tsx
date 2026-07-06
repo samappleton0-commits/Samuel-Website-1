@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const images = [
   {
@@ -33,18 +33,57 @@ export default function Gallery() {
     align: "center",
   });
 
-  // Lightbox state
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [autoplayActive, setAutoplayActive] = useState(true);
 
+  // Autoplay
   useEffect(() => {
-    if (!emblaApi) return;
+    if (!emblaApi || !autoplayActive) return;
 
     const timer = setInterval(() => {
       emblaApi.scrollNext();
     }, 4000);
 
     return () => clearInterval(timer);
+  }, [emblaApi, autoplayActive]);
+
+  // Track selected index (for dots + lightbox navigation)
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
   }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on("select", onSelect);
+    onSelect();
+  }, [emblaApi, onSelect]);
+
+  // Lightbox navigation
+  const openImage = (index) => {
+    setSelectedIndex(index);
+    setSelectedImage(images[index]);
+    setAutoplayActive(false); // pause autoplay
+  };
+
+  const closeLightbox = () => {
+    setSelectedImage(null);
+    setAutoplayActive(true); // resume autoplay
+  };
+
+  const prevImage = () => {
+    const newIndex =
+      (selectedIndex - 1 + images.length) % images.length;
+    setSelectedIndex(newIndex);
+    setSelectedImage(images[newIndex]);
+  };
+
+  const nextImage = () => {
+    const newIndex = (selectedIndex + 1) % images.length;
+    setSelectedIndex(newIndex);
+    setSelectedImage(images[newIndex]);
+  };
 
   return (
     <section className="py-20">
@@ -52,19 +91,17 @@ export default function Gallery() {
         Gallery
       </h2>
 
-      {/* Carousel */}
+      {/* CAROUSEL */}
       <div className="overflow-hidden max-w-5xl mx-auto px-4" ref={emblaRef}>
         <div className="flex">
           {images.map((image, index) => (
             <div key={index} className="min-w-full px-2">
 
-              {/* IMAGE CARD */}
               <div
                 className="relative rounded-xl overflow-hidden group cursor-pointer"
-                onClick={() => setSelectedImage(image)}
+                onClick={() => openImage(index)}
               >
 
-                {/* Image with zoom effect */}
                 <div className="overflow-hidden">
                   <Image
                     src={image.src}
@@ -76,42 +113,53 @@ export default function Gallery() {
                   />
                 </div>
 
-                {/* Glass Caption Overlay */}
+                {/* Caption */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent 
-                  opacity-100 sm:opacity-0 sm:group-hover:opacity-100 
-                  transition duration-500 flex items-end">
+                  flex items-end opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition duration-500">
 
-                  <div className="p-4 text-white 
-                    backdrop-blur-md bg-white/10 rounded-xl m-4 
-                    transform sm:translate-y-4 sm:group-hover:translate-y-0 
-                    transition duration-500">
-
-                    <h3 className="text-lg font-semibold">
-                      {image.title}
-                    </h3>
-
-                    <p className="text-sm opacity-80">
-                      {image.desc}
-                    </p>
-
+                  <div className="p-4 text-white">
+                    <h3 className="text-lg font-semibold">{image.title}</h3>
+                    <p className="text-sm opacity-80">{image.desc}</p>
                   </div>
+
                 </div>
 
               </div>
-
             </div>
           ))}
         </div>
       </div>
 
-      {/* LIGHTBOX (fullscreen viewer) */}
+      {/* DOT INDICATORS (LIGHTBOX) */}
+      {selectedImage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-50">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setSelectedIndex(i);
+                setSelectedImage(images[i]);
+              }}
+              className={`w-2.5 h-2.5 rounded-full transition ${
+                i === selectedIndex ? "bg-white" : "bg-white/40"
+              }`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* LIGHTBOX */}
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
-          onClick={() => setSelectedImage(null)}
+          className="fixed inset-0 bg-black/95 flex items-center justify-center z-40"
+          onClick={closeLightbox}
         >
-          <div className="relative max-w-5xl w-full px-4">
-            
+          <div
+            className="relative max-w-5xl w-full px-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            {/* IMAGE */}
             <Image
               src={selectedImage.src}
               alt={selectedImage.title}
@@ -120,6 +168,7 @@ export default function Gallery() {
               className="w-full h-auto rounded-xl object-contain"
             />
 
+            {/* CAPTION */}
             <div className="text-white text-center mt-4">
               <h3 className="text-xl font-semibold">
                 {selectedImage.title}
@@ -128,6 +177,21 @@ export default function Gallery() {
                 {selectedImage.desc}
               </p>
             </div>
+
+            {/* NAV BUTTONS */}
+            <button
+              onClick={prevImage}
+              className="absolute left-2 top-1/2 -translate-y-1/2 text-white text-3xl px-3"
+            >
+              ‹
+            </button>
+
+            <button
+              onClick={nextImage}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-white text-3xl px-3"
+            >
+              ›
+            </button>
 
           </div>
         </div>
