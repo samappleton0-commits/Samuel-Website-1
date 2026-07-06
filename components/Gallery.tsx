@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 
 const albums = [
   {
-    name: "Nature",
+    name: "Liberia",
     description: "Beautiful natural landscapes and scenery",
     images: [
       {
@@ -22,7 +22,7 @@ const albums = [
     ],
   },
   {
-    name: "City",
+    name: "Zambia",
     description: "Urban life and night city views",
     images: [
       {
@@ -78,7 +78,8 @@ export default function Gallery() {
       </h2>
 
       <p className="text-center text-gray-500 mb-8 max-w-xl mx-auto">
-        A curated collection of moments captured across nature and city life.
+        My gallery captures memories from Liberia and Zambia, highlighting culture, landscapes, and everyday life.
+        Each image reflects moments of exploration, connection, and growth across both countries.
       </p>
 
       {/* TABS */}
