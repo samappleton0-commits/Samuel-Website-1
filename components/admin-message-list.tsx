@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import AdminMessageActions from '@/components/admin-message-actions'
+import MessageStatus from '@/components/message-status'
 
 type Message = {
   id: string
@@ -10,6 +11,7 @@ type Message = {
   subject: string
   created_at: string
   read: boolean
+  status: string
 }
 
 type Props = {
@@ -21,6 +23,7 @@ export default function AdminMessageList({
 }: Props) {
 
   const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('All')
 
 
   const filteredMessages = messages.filter((message) => {
@@ -32,9 +35,19 @@ export default function AdminMessageList({
     `.toLowerCase()
 
 
-    return text.includes(search.toLowerCase())
+    const matchesSearch =
+      text.includes(search.toLowerCase())
+
+
+    const matchesStatus =
+      statusFilter === 'All' ||
+      message.status === statusFilter
+
+
+    return matchesSearch && matchesStatus
 
   })
+
 
 
   return (
@@ -46,12 +59,46 @@ export default function AdminMessageList({
         type="text"
         placeholder="Search messages..."
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) =>
+          setSearch(e.target.value)
+        }
         className="mb-6 w-full rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm outline-none focus:border-accent"
       />
 
 
 
+      {/* Status Filters */}
+      <div className="mb-6 flex flex-wrap gap-3">
+
+        {[
+          'All',
+          'New',
+          'In Progress',
+          'Completed',
+        ].map((status) => (
+
+          <button
+            key={status}
+            onClick={() =>
+              setStatusFilter(status)
+            }
+            className={`rounded-full border px-5 py-2 text-sm transition ${
+              statusFilter === status
+                ? 'bg-accent text-white'
+                : 'border-surface-border'
+            }`}
+          >
+            {status}
+          </button>
+
+        ))}
+
+      </div>
+
+
+
+
+      {/* Messages */}
       <div className="space-y-5">
 
 
@@ -65,6 +112,8 @@ export default function AdminMessageList({
             >
 
 
+
+              {/* Header */}
               <div className="flex flex-wrap justify-between gap-4">
 
 
@@ -78,31 +127,41 @@ export default function AdminMessageList({
 
 
                     {!message.read && (
+
                       <span className="rounded-full bg-accent/10 px-3 py-1 text-xs text-accent">
                         New
                       </span>
+
                     )}
 
                   </div>
+
 
 
                   <p className="text-sm text-muted-foreground">
                     {message.email}
                   </p>
 
+
                 </div>
 
 
 
-                    <p className="text-sm text-muted-foreground">
-        {new Date(message.created_at).toISOString().split('T')[0]}
-        </p>
+
+                <p className="text-sm text-muted-foreground">
+                  {new Date(message.created_at)
+                    .toISOString()
+                    .split('T')[0]}
+                </p>
 
 
               </div>
 
 
 
+
+
+              {/* Subject */}
               <div className="mt-5">
 
                 <p className="text-sm text-muted-foreground">
@@ -114,11 +173,23 @@ export default function AdminMessageList({
                   {message.subject}
                 </p>
 
+
               </div>
 
 
 
+
+
+
+              {/* Status + Actions */}
               <div className="mt-5 flex flex-wrap items-center gap-3">
+
+
+                <MessageStatus
+                  id={message.id}
+                  status={message.status}
+                />
+
 
 
                 <a
@@ -139,20 +210,27 @@ export default function AdminMessageList({
               </div>
 
 
+
+
             </div>
+
 
           ))
 
+
         ) : (
+
 
           <p className="text-muted-foreground">
             No matching messages found.
           </p>
 
+
         )}
 
 
       </div>
+
 
     </div>
   )

@@ -1,10 +1,11 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import LogoutButton from '@/components/logout-button'
+import AdminSidebar from '@/components/admin-sidebar'
 import AdminMessageList from '@/components/admin-message-list'
 
 export default async function AdminPage() {
   const supabase = await createClient()
+
 
   const {
     data: { user },
@@ -16,10 +17,12 @@ export default async function AdminPage() {
   }
 
 
+
   const { data: messages, error } = await supabase
     .from('contacts')
     .select('*')
     .order('created_at', { ascending: false })
+
 
 
   if (error) {
@@ -27,24 +30,39 @@ export default async function AdminPage() {
   }
 
 
+
   const totalMessages = messages?.length ?? 0
 
 
   const unreadMessages =
-    messages?.filter((message) => !message.read).length ?? 0
+    messages?.filter(
+      (message) => !message.read
+    ).length ?? 0
+
 
 
 
   return (
-    <main className="min-h-screen px-4 py-16 sm:px-6">
-
-      <div className="mx-auto max-w-6xl">
+    <main className="min-h-screen px-4 py-8 sm:px-6">
 
 
-        {/* Header */}
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
+      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[260px_1fr]">
 
-          <div>
+
+
+        {/* Sidebar */}
+        <AdminSidebar />
+
+
+
+
+
+        {/* Main Content */}
+        <section>
+
+
+          <div className="mb-10">
+
 
             <h1 className="text-3xl font-bold">
               Admin Dashboard
@@ -55,75 +73,92 @@ export default async function AdminPage() {
               Welcome back, {user.email}
             </p>
 
+
           </div>
 
 
-          <LogoutButton />
-
-        </div>
 
 
 
 
-        {/* Statistics */}
-        <div className="mb-8 grid gap-5 sm:grid-cols-2">
+          {/* Statistics */}
+          <div className="mb-8 grid gap-5 sm:grid-cols-2">
 
 
+
+            <div className="glass rounded-3xl p-6">
+
+
+              <p className="text-sm text-muted-foreground">
+                Total Messages
+              </p>
+
+
+              <p className="mt-2 text-3xl font-bold">
+                {totalMessages}
+              </p>
+
+
+            </div>
+
+
+
+
+
+
+            <div className="glass rounded-3xl p-6">
+
+
+              <p className="text-sm text-muted-foreground">
+                Unread Messages
+              </p>
+
+
+              <p className="mt-2 text-3xl font-bold">
+                {unreadMessages}
+              </p>
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+
+
+
+
+          {/* Messages */}
           <div className="glass rounded-3xl p-6">
 
-            <p className="text-sm text-muted-foreground">
-              Total Messages
-            </p>
 
 
-            <p className="mt-2 text-3xl font-bold">
-              {totalMessages}
-            </p>
+            <h2 className="mb-6 text-xl font-semibold">
+              Contact Messages
+            </h2>
+
+
+
+            <AdminMessageList
+              messages={messages ?? []}
+            />
+
+
 
           </div>
 
 
 
 
-          <div className="glass rounded-3xl p-6">
-
-            <p className="text-sm text-muted-foreground">
-              Unread Messages
-            </p>
-
-
-            <p className="mt-2 text-3xl font-bold">
-              {unreadMessages}
-            </p>
-
-          </div>
-
-
-        </div>
-
-
-
-
-
-        {/* Messages */}
-        <div className="glass rounded-3xl p-6">
-
-
-          <h2 className="mb-6 text-xl font-semibold">
-            Contact Messages
-          </h2>
-
-
-          <AdminMessageList
-            messages={messages ?? []}
-          />
-
-
-        </div>
+        </section>
 
 
 
       </div>
+
 
 
     </main>
