@@ -62,22 +62,28 @@ export function Contact() {
     setErrors(next)
 
     if (Object.keys(next).length === 0) {
-      const { error } = await supabase.from('contacts').insert([
-        {
-          name,
-          email,
-          subject,
-          message,
-        },
-      ])
+     const response = await fetch('/api/contact', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    name,
+    email,
+    subject,
+    message,
+  }),
+})
 
-      if (error) {
-        console.error('Supabase error:', error.message)
-        return
-      }
+const result = await response.json()
 
-      setSent(true)
-      e.currentTarget.reset()
+if (!result.success) {
+  console.error(result.error)
+  return
+}
+
+setSent(true)
+e.currentTarget.reset()
     }
   }
 
