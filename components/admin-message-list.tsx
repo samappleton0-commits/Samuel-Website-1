@@ -192,12 +192,12 @@ export default function AdminMessageList({
 
 
 
-                <a
-                  href={`/admin/messages/${message.id}`}
-                  className="rounded-full border border-surface-border px-5 py-2 text-sm transition hover:bg-surface"
-                >
-                  View Message
-                </a>
+               <a
+  href={`/admin/messages/${message.id}`}
+  className="rounded-full border border-surface-border px-5 py-2 text-sm transition hover:bg-surface"
+>
+  View Message
+</a>
 
 
 
