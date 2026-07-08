@@ -51,7 +51,7 @@ export function Portfolio() {
 
 
 
-            <div className="flex flex-1 flex-col p-5">
+            <div className="flex flex-1 flex-col items-center p-5 text-center">
 
 
               <h3 className="font-heading text-lg font-semibold">
