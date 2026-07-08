@@ -16,19 +16,26 @@ export default function AdminLayout({
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[280px_1fr]">
 
 
-        {/* Sidebar */}
+        {/* ===== START: Admin Sidebar ===== */}
 
         <AdminSidebar />
 
+        {/* ===== END: Admin Sidebar ===== */}
 
 
-        {/* Page Content */}
+
+
+
+        {/* ===== START: Admin Page Content ===== */}
 
         <section>
 
           {children}
 
         </section>
+
+        {/* ===== END: Admin Page Content ===== */}
+
 
 
       </div>
