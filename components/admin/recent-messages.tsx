@@ -95,8 +95,8 @@ export default function RecentMessages({
           <div className="pt-2">
 
             <Link
-              href="/admin"
-              className="inline-flex rounded-full border border-surface-border px-5 py-2 text-sm transition hover:bg-surface"
+              href="/admin/messages"
+              className="inline-flex items-center rounded-full border border-surface-border px-5 py-2 text-sm transition hover:bg-surface"
             >
               View All Messages
             </Link>
