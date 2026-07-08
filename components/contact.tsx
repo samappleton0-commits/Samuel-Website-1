@@ -119,13 +119,11 @@ export function Contact() {
           result.error ??
             'Unable to send your message. Please try again later.'
         )
-
         return
       }
 
       setSent(true)
 
-      // Reset form safely
       form.reset()
 
     } catch (error) {
@@ -154,9 +152,7 @@ export function Contact() {
         description="Looking for Accounting or ICT services? Get in touch to discuss your needs, and I'll be happy to assist you."
       />
 
-
       <div className="mt-14 grid gap-8 lg:grid-cols-5">
-
 
         <Reveal className="lg:col-span-2">
 
@@ -165,7 +161,6 @@ export function Contact() {
             <h3 className="font-heading text-xl font-semibold">
               Contact details
             </h3>
-
 
             <ul className="mt-6 space-y-4">
 
@@ -178,11 +173,8 @@ export function Contact() {
                   <span className="flex items-center gap-4">
 
                     <span className="glass flex size-11 items-center justify-center rounded-xl text-accent">
-
                       <Icon className="size-5" />
-
                     </span>
-
 
                     <span>
 
@@ -190,11 +182,9 @@ export function Contact() {
                         {item.label}
                       </span>
 
-
                       <span className="text-sm text-foreground/90">
                         {item.value}
                       </span>
-
 
                     </span>
 
@@ -241,9 +231,7 @@ export function Contact() {
         </Reveal>
 
 
-
         <Reveal delay={1} className="lg:col-span-3">
-
 
           <form
             onSubmit={handleSubmit}
@@ -251,9 +239,7 @@ export function Contact() {
             className="glass rounded-3xl p-8"
           >
 
-
             <div className="grid gap-5 sm:grid-cols-2">
-
 
               <div>
 
@@ -264,7 +250,6 @@ export function Contact() {
                   Full Name
                 </label>
 
-
                 <input
                   id="name"
                   name="name"
@@ -273,7 +258,6 @@ export function Contact() {
                   className={fieldClass}
                 />
 
-
                 {errors.name && (
                   <p className="mt-1 text-xs text-destructive">
                     {errors.name}
@@ -281,7 +265,6 @@ export function Contact() {
                 )}
 
               </div>
-
 
 
               <div>
@@ -293,7 +276,6 @@ export function Contact() {
                   Email
                 </label>
 
-
                 <input
                   id="email"
                   name="email"
@@ -301,7 +283,6 @@ export function Contact() {
                   placeholder="your.email@example.com"
                   className={fieldClass}
                 />
-
 
                 {errors.email && (
                   <p className="mt-1 text-xs text-destructive">
@@ -311,9 +292,7 @@ export function Contact() {
 
               </div>
 
-
             </div>
-
 
 
             <div className="mt-5">
@@ -324,7 +303,6 @@ export function Contact() {
               >
                 Subject
               </label>
-
 
               <input
                 id="subject"
@@ -337,8 +315,6 @@ export function Contact() {
             </div>
 
 
-
-
             <div className="mt-5">
 
               <label
@@ -348,7 +324,6 @@ export function Contact() {
                 Message
               </label>
 
-
               <textarea
                 id="message"
                 name="message"
@@ -357,49 +332,31 @@ export function Contact() {
                 className={`${fieldClass} resize-none`}
               />
 
-
               {errors.message && (
-
                 <p className="mt-1 text-xs text-destructive">
                   {errors.message}
                 </p>
-
               )}
 
             </div>
 
 
-
-
             {submitError && (
-
               <p className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-500">
-
                 {submitError}
-
               </p>
-
             )}
-
 
 
             {sent && (
-
               <p className="mt-4 flex items-center gap-2 text-sm text-accent">
-
                 <CheckCircle2 className="size-4" />
-
                 Thanks! Your message has been sent.
-
               </p>
-
             )}
 
 
-
-
             <div className="mt-6 flex flex-wrap gap-3">
-
 
               <Button
                 type="submit"
@@ -408,13 +365,15 @@ export function Contact() {
                 className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               >
 
-                <Send className="size-4" />
+                <Send
+                  className={`size-4 ${
+                    sending ? 'animate-spin' : ''
+                  }`}
+                />
 
                 {sending ? 'Sending...' : 'Send Message'}
 
               </Button>
-
-
 
 
               <Button
@@ -423,6 +382,7 @@ export function Contact() {
                 }
                 size="lg"
                 variant="outline"
+                disabled={sending}
                 className="glass rounded-full border-surface-border"
               >
 
@@ -432,18 +392,14 @@ export function Contact() {
 
               </Button>
 
-
             </div>
 
 
           </form>
 
-
         </Reveal>
 
-
       </div>
-
 
     </section>
   )
