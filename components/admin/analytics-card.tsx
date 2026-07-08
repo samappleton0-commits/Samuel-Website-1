@@ -1,7 +1,9 @@
+import { ReactNode } from 'react'
+
 type AnalyticsCardProps = {
   title: string
   value: number
-  icon: string
+  icon: ReactNode
   color: string
 }
 
@@ -28,11 +30,13 @@ export default function AnalyticsCard({
 
         </div>
 
+
         <div
-          className={`flex h-14 w-14 items-center justify-center rounded-2xl text-2xl ${color}`}
+          className={`flex h-14 w-14 items-center justify-center rounded-2xl ${color}`}
         >
           {icon}
         </div>
+
 
       </div>
 

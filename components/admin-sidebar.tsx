@@ -3,51 +3,79 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+
+import {
+  LayoutDashboard,
+  Mail,
+} from 'lucide-react'
+
 import LogoutButton from '@/components/logout-button'
 
+
 const links = [
+
   {
     name: 'Dashboard',
     href: '/admin',
-    icon: '📊',
+    icon: LayoutDashboard,
   },
+
   {
-    name: 'Messages',
-    href: '/admin',
-    icon: '📩',
-  },
+  name: 'Messages',
+  href: '/admin/messages',
+  icon: Mail,
+},
+
 ]
+
 
 
 export default function AdminSidebar() {
 
+
   const pathname = usePathname()
 
 
+
   return (
+
     <aside className="glass flex h-fit flex-col rounded-3xl p-6 lg:min-h-screen">
 
 
+
       {/* Profile */}
+
       <div className="mb-8 text-center">
 
 
         <Image
+
           src="/profileme.png"
+
           alt="Samuel Appleton"
+
           width={90}
+
           height={90}
+
           className="mx-auto rounded-full border border-surface-border object-cover"
+
         />
 
 
+
         <h2 className="mt-4 text-xl font-bold">
+
           Samuel Appleton
+
         </h2>
 
 
+
         <p className="mt-1 text-sm text-muted-foreground">
+
           Administrator
+
         </p>
 
 
@@ -58,32 +86,47 @@ export default function AdminSidebar() {
 
 
       {/* Navigation */}
+
       <nav className="space-y-2">
 
 
-        {links.map((link) => (
-
-          <Link
-            key={link.name}
-            href={link.href}
-            className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
-              pathname === link.href
-                ? 'bg-accent text-white'
-                : 'hover:bg-surface'
-            }`}
-          >
-
-            <span>
-              {link.icon}
-            </span>
+        {links.map((link) => {
 
 
-            {link.name}
+          const Icon = link.icon
 
 
-          </Link>
 
-        ))}
+          return (
+
+            <Link
+
+              key={link.name}
+
+              href={link.href}
+
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
+                pathname === link.href
+                  ? 'bg-accent text-white'
+                  : 'hover:bg-surface'
+              }`}
+
+            >
+
+              <Icon
+                size={20}
+              />
+
+
+              {link.name}
+
+
+            </Link>
+
+          )
+
+
+        })}
 
 
       </nav>
@@ -93,6 +136,7 @@ export default function AdminSidebar() {
 
 
       {/* Account */}
+
       <div className="mt-8">
 
 
@@ -104,5 +148,7 @@ export default function AdminSidebar() {
 
 
     </aside>
+
   )
+
 }

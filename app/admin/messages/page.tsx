@@ -8,7 +8,8 @@ import AdminMessageList from '@/components/admin-message-list'
 export default async function MessagesPage() {
 
 
-  const supabase = await createClient()
+  const supabase =
+    await createClient()
 
 
 
@@ -16,7 +17,8 @@ export default async function MessagesPage() {
     data: {
       user,
     },
-  } = await supabase.auth.getUser()
+  } =
+    await supabase.auth.getUser()
 
 
 
@@ -31,15 +33,19 @@ export default async function MessagesPage() {
   const {
     data: messages,
     error,
-  } = await supabase
-    .from('contacts')
-    .select('*')
-    .order(
-      'created_at',
-      {
-        ascending: false,
-      }
-    )
+  } =
+    await supabase
+
+      .from('contacts')
+
+      .select('*')
+
+      .order(
+        'created_at',
+        {
+          ascending: false,
+        }
+      )
 
 
 
@@ -59,6 +65,9 @@ export default async function MessagesPage() {
       <div className="mx-auto max-w-6xl">
 
 
+
+        {/* Header */}
+
         <div className="mb-10">
 
 
@@ -67,6 +76,7 @@ export default async function MessagesPage() {
             Contact Messages
 
           </h1>
+
 
 
           <p className="mt-2 text-muted-foreground">
@@ -80,6 +90,9 @@ export default async function MessagesPage() {
 
 
 
+
+
+        {/* Messages */}
 
         <div className="glass rounded-3xl p-6">
 
@@ -102,11 +115,11 @@ export default async function MessagesPage() {
         </div>
 
 
+
       </div>
 
 
     </main>
 
   )
-
 }

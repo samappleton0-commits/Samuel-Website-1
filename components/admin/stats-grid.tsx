@@ -1,62 +1,124 @@
+import {
+  Mail,
+  MailOpen,
+  Clock3,
+  CircleCheck,
+} from 'lucide-react'
+
 import AnalyticsCard from './analytics-card'
+
 
 type Message = {
   read: boolean
   status: string
 }
 
+
 type Props = {
   messages: Message[]
 }
 
+
 export default function StatsGrid({
   messages,
 }: Props) {
+
   const total = messages.length
 
+
   const unread = messages.filter(
-    (m) => !m.read
+    (message) => !message.read
   ).length
+
 
   const inProgress = messages.filter(
-    (m) => m.status === 'In Progress'
+    (message) => message.status === 'In Progress'
   ).length
+
 
   const completed = messages.filter(
-    (m) => m.status === 'Completed'
+    (message) => message.status === 'Completed'
   ).length
 
+
+
   return (
+
     <div className="mb-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
 
+
       <AnalyticsCard
+
         title="Total Messages"
+
         value={total}
-        icon="📨"
+
+        icon={
+          <Mail
+            size={26}
+          />
+        }
+
         color="bg-blue-500/10"
+
       />
 
+
+
       <AnalyticsCard
+
         title="Unread"
+
         value={unread}
-        icon="🔵"
+
+        icon={
+          <MailOpen
+            size={26}
+          />
+        }
+
         color="bg-cyan-500/10"
+
       />
 
+
+
       <AnalyticsCard
+
         title="In Progress"
+
         value={inProgress}
-        icon="🟡"
+
+        icon={
+          <Clock3
+            size={26}
+          />
+        }
+
         color="bg-yellow-500/10"
+
       />
 
+
+
       <AnalyticsCard
+
         title="Completed"
+
         value={completed}
-        icon="🟢"
+
+        icon={
+          <CircleCheck
+            size={26}
+          />
+        }
+
         color="bg-green-500/10"
+
       />
+
 
     </div>
+
   )
 }
