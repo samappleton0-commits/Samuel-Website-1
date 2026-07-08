@@ -38,6 +38,28 @@ const albums = [
         title: 'Mountain Peak',
         desc: 'A beautiful natural view.',
       },
+      {
+        src: '/gallery/image1.png',
+        title: 'Sunset View',
+        desc: 'A peaceful sunset landscape.',
+      },
+
+      {
+        src: '/gallery/image2.png',
+        title: 'Mountain Peak',
+        desc: 'A beautiful natural view.',
+      },
+      {
+        src: '/gallery/image1.png',
+        title: 'Sunset View',
+        desc: 'A peaceful sunset landscape.',
+      },
+
+      {
+        src: '/gallery/image2.png',
+        title: 'Mountain Peak',
+        desc: 'A beautiful natural view.',
+      },
 
     ],
   },
@@ -63,6 +85,32 @@ const albums = [
         title: 'Ocean Breeze',
         desc: 'A beautiful travel environment.',
       },
+
+      {
+        src: '/gallery/image3.png',
+        title: 'City Lights',
+        desc: 'Night views and city atmosphere.',
+      },
+
+      {
+        src: '/gallery/image4.png',
+        title: 'Ocean Breeze',
+        desc: 'A beautiful travel environment.',
+      },
+
+      {
+        src: '/gallery/image3.png',
+        title: 'City Lights',
+        desc: 'Night views and city atmosphere.',
+      },
+
+      {
+        src: '/gallery/image4.png',
+        title: 'Ocean Breeze',
+        desc: 'A beautiful travel environment.',
+      },
+
+
 
     ],
   },
@@ -913,61 +961,57 @@ export default function Gallery() {
 
 
 
-            <button
+         <button
 
+  onClick={()=>emblaApi?.scrollPrev()}
 
-              onClick={()=>emblaApi?.scrollPrev()}
+  className="
+  rounded-full
+  bg-surface
+  px-5
+  py-2
+  text-sm
+  font-medium
+  text-foreground
+  transition-all
+  duration-300
+  hover:bg-primary
+  hover:text-primary-foreground
+  hover:scale-105
+  hover:shadow-lg
+  "
 
+>
+  ← Previous
 
-
-              className="
-              rounded-full
-              bg-surface
-              px-5
-              py-2
-              text-sm
-              transition
-              hover:scale-105
-              "
-
-
-            >
-
-              ← Previous
-
-
-            </button>
-
-
-
+</button>
 
 
 
-            <button
+<button
 
+  onClick={()=>emblaApi?.scrollNext()}
 
-              onClick={()=>emblaApi?.scrollNext()}
+  className="
+  rounded-full
+  bg-surface
+  px-5
+  py-2
+  text-sm
+  font-medium
+  text-foreground
+  transition-all
+  duration-300
+  hover:bg-primary
+  hover:text-primary-foreground
+  hover:scale-105
+  hover:shadow-lg
+  "
 
+>
+  Next →
 
-
-              className="
-              rounded-full
-              bg-primary
-              px-5
-              py-2
-              text-sm
-              text-primary-foreground
-              transition
-              hover:scale-105
-              "
-
-
-            >
-
-              Next →
-
-
-            </button>
+</button>
 
 
 
