@@ -19,17 +19,27 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get today's date (00:00 UTC)
+    // Get visitor IP address
+    const ipAddress =
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      request.headers.get('x-real-ip') ||
+      '127.0.0.1'
+
+    console.log('Visitor IP:', ipAddress)
+
+
+    // Get today's date (UTC midnight)
     const today = new Date()
     today.setUTCHours(0, 0, 0, 0)
 
-    // Check how many messages this email has sent today
-    const { data: todayMessages, error: countError } =
-      await supabase
-        .from('contacts')
-        .select('id')
-        .eq('email', email)
-        .gte('created_at', today.toISOString())
+
+    // Check daily message limit by IP address
+    const { data: todayMessages, error: countError } = await supabase
+      .from('contacts')
+      .select('id')
+      .eq('ip_address', ipAddress)
+      .gte('created_at', today.toISOString())
+
 
     if (countError) {
       return NextResponse.json(
@@ -43,13 +53,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Allow only 2 messages per day
+
+    // Allow maximum 2 messages per IP per day
     if ((todayMessages?.length ?? 0) >= 2) {
       return NextResponse.json(
         {
           success: false,
           error:
-            'You have reached the daily limit of 2 messages. Please try again tomorrow.',
+            'You have reached the daily message limit. Please try again tomorrow.',
         },
         {
           status: 429,
@@ -57,8 +68,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Save to Supabase
-    const { error } = await supabase
+
+    // Save contact message to Supabase
+    const { error: insertError } = await supabase
       .from('contacts')
       .insert([
         {
@@ -66,14 +78,16 @@ export async function POST(request: NextRequest) {
           email,
           subject,
           message,
+          ip_address: ipAddress,
         },
       ])
 
-    if (error) {
+
+    if (insertError) {
       return NextResponse.json(
         {
           success: false,
-          error: error.message,
+          error: insertError.message,
         },
         {
           status: 500,
@@ -81,8 +95,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
+
     // Send notification email
-    await resend.emails.send({
+    const emailResult = await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: 'samappleton0@gmail.com',
       subject: `New Contact Form: ${subject}`,
@@ -95,17 +110,38 @@ export async function POST(request: NextRequest) {
 
         <p><strong>Subject:</strong> ${subject}</p>
 
+        <p><strong>IP Address:</strong> ${ipAddress}</p>
+
         <p><strong>Message:</strong></p>
 
         <p>${message}</p>
       `,
     })
 
+
+    if (emailResult.error) {
+      console.error('Resend error:', emailResult.error)
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Message saved but email notification failed.',
+        },
+        {
+          status: 500,
+        }
+      )
+    }
+
+
     return NextResponse.json({
       success: true,
+      message: 'Message sent successfully.',
     })
+
+
   } catch (error) {
-    console.error(error)
+    console.error('API Error:', error)
 
     return NextResponse.json(
       {
