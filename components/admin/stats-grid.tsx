@@ -23,7 +23,9 @@ export default function StatsGrid({
   messages,
 }: Props) {
 
+
   const total = messages.length
+
 
 
   const unread = messages.filter(
@@ -31,21 +33,35 @@ export default function StatsGrid({
   ).length
 
 
+
   const inProgress = messages.filter(
-    (message) => message.status === 'In Progress'
+    (message) =>
+      message.status === 'In Progress'
   ).length
+
 
 
   const completed = messages.filter(
-    (message) => message.status === 'Completed'
+    (message) =>
+      message.status === 'Completed'
   ).length
+
 
 
 
   return (
 
-    <div className="mb-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="
+      mb-8
+      grid
+      gap-5
+      sm:grid-cols-2
+      xl:grid-cols-4
+    ">
 
+
+
+      {/* Total Messages */}
 
       <AnalyticsCard
 
@@ -61,9 +77,15 @@ export default function StatsGrid({
 
         color="bg-blue-500/10"
 
+        href="/admin/messages"
+
       />
 
 
+
+
+
+      {/* Unread Messages */}
 
       <AnalyticsCard
 
@@ -79,9 +101,15 @@ export default function StatsGrid({
 
         color="bg-cyan-500/10"
 
+        href="/admin/messages?status=New"
+
       />
 
 
+
+
+
+      {/* In Progress */}
 
       <AnalyticsCard
 
@@ -97,9 +125,15 @@ export default function StatsGrid({
 
         color="bg-yellow-500/10"
 
+        href="/admin/messages?status=In%20Progress"
+
       />
 
 
+
+
+
+      {/* Completed */}
 
       <AnalyticsCard
 
@@ -115,10 +149,13 @@ export default function StatsGrid({
 
         color="bg-green-500/10"
 
+        href="/admin/messages?status=Completed"
+
       />
 
 
     </div>
 
   )
+
 }

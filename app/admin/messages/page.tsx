@@ -4,8 +4,19 @@ import { createClient } from '@/lib/supabase-server'
 
 import AdminMessageList from '@/components/admin-message-list'
 
+import RealtimeRefresh from '@/components/admin/realtime-refresh'
 
-export default async function MessagesPage() {
+
+type Props = {
+  searchParams: Promise<{
+    status?: string
+  }>
+}
+
+
+export default async function MessagesPage({
+  searchParams,
+}: Props) {
 
 
   const supabase =
@@ -57,12 +68,25 @@ export default async function MessagesPage() {
 
 
 
+  const params =
+    await searchParams
+
+
+
+  const selectedStatus =
+    params.status ?? 'All'
+
+
+
   return (
 
     <main className="min-h-screen px-4 py-16 sm:px-6">
 
 
       <div className="mx-auto max-w-6xl">
+
+
+        <RealtimeRefresh />
 
 
 
@@ -105,9 +129,12 @@ export default async function MessagesPage() {
 
 
 
+
           <AdminMessageList
 
             messages={messages ?? []}
+
+            initialStatus={selectedStatus}
 
           />
 
@@ -122,4 +149,5 @@ export default async function MessagesPage() {
     </main>
 
   )
+
 }

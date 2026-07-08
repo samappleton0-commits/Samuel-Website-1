@@ -1,18 +1,12 @@
 import { redirect } from 'next/navigation'
 
+
 import { createClient } from '@/lib/supabase-server'
 
-import StatsGrid from '@/components/admin/stats-grid'
 
-import QuickActions from '@/components/admin/quick-actions'
+import LiveMessages from '@/components/admin/live-messages'
 
-import RecentMessages from '@/components/admin/recent-messages'
-
-import AnalyticsSummary from '@/components/admin/analytics-summary'
-
-import MessageChart from '@/components/admin/charts/message-chart'
-
-import StatusChart from '@/components/admin/charts/status-chart'
+import LiveDashboard from '@/components/admin/live-dashboard'
 
 
 
@@ -24,12 +18,14 @@ export default async function AdminPage() {
 
 
 
+
   const {
-    data: {
+    data:{
       user,
     },
   } =
     await supabase.auth.getUser()
+
 
 
 
@@ -38,6 +34,7 @@ export default async function AdminPage() {
     redirect('/login')
 
   }
+
 
 
 
@@ -54,9 +51,11 @@ export default async function AdminPage() {
       .order(
         'created_at',
         {
-          ascending: false,
+          ascending:false,
         }
       )
+
+
 
 
 
@@ -68,8 +67,13 @@ export default async function AdminPage() {
 
 
 
+
+
   const allMessages =
     messages ?? []
+
+
+
 
 
 
@@ -78,7 +82,9 @@ export default async function AdminPage() {
     <div className="max-w-6xl">
 
 
+
       <div className="mb-10">
+
 
 
         <h1 className="text-3xl font-bold">
@@ -88,6 +94,8 @@ export default async function AdminPage() {
         </h1>
 
 
+
+
         <p className="mt-2 text-muted-foreground">
 
           Welcome back, {user.email}
@@ -95,54 +103,6 @@ export default async function AdminPage() {
         </p>
 
 
-      </div>
-
-
-
-
-
-      <AnalyticsSummary
-
-        messages={allMessages}
-
-      />
-
-
-
-
-
-      <StatsGrid
-
-        messages={allMessages}
-
-      />
-
-
-
-
-
-      <QuickActions />
-
-
-
-
-
-      <div className="mb-8 grid gap-6 xl:grid-cols-2">
-
-
-        <MessageChart
-
-          messages={allMessages}
-
-        />
-
-
-        <StatusChart
-
-          messages={allMessages}
-
-        />
-
 
       </div>
 
@@ -150,11 +110,20 @@ export default async function AdminPage() {
 
 
 
-      <RecentMessages
 
-        messages={allMessages}
+      <LiveMessages
 
-      />
+        initialMessages={allMessages}
+
+      >
+
+
+        <LiveDashboard />
+
+
+      </LiveMessages>
+
+
 
 
     </div>
