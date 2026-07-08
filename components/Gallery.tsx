@@ -1,9 +1,9 @@
+// ===== START: COMPLETE Gallery.tsx PART 1/4 =====
+
 'use client'
 
-// ===== START: Gallery Part 1 =====
-
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import useEmblaCarousel from 'embla-carousel-react'
 
@@ -11,105 +11,134 @@ import { Reveal } from '@/components/reveal'
 import { SectionHeading } from '@/components/section-heading'
 
 
+
 // ==============================
 // Gallery Data
 // ==============================
 
+
 const albums = [
+
   {
     name: 'Liberia',
+
     description:
       'Beautiful landscapes, culture, and memorable moments from Liberia.',
+
     images: [
+
       {
         src: '/gallery/image1.png',
         title: 'Sunset View',
         desc: 'A peaceful sunset landscape.',
       },
+
       {
         src: '/gallery/image2.png',
         title: 'Mountain Peak',
         desc: 'A beautiful natural view.',
       },
+
     ],
   },
 
 
+
   {
     name: 'Zambia',
+
     description:
       'Exploring urban life, scenery, and experiences from Zambia.',
+
     images: [
+
       {
         src: '/gallery/image3.png',
         title: 'City Lights',
         desc: 'Night views and city atmosphere.',
       },
+
       {
         src: '/gallery/image4.png',
         title: 'Ocean Breeze',
-        desc: 'A beautiful environment and travel experience.',
+        desc: 'A beautiful travel environment.',
       },
+
     ],
   },
 
 
+
   {
     name: 'Family',
+
     description:
       'Special memories and moments shared with family.',
+
     images: [
+
       {
         src: '/gallery/image3.png',
         title: 'Family Moment',
         desc: 'A memorable experience.',
       },
+
       {
         src: '/gallery/image4.png',
         title: 'Together',
         desc: 'Moments worth remembering.',
       },
+
     ],
   },
 
 
+
   {
     name: 'Travel',
+
     description:
       'Places explored and experiences collected along the journey.',
+
     images: [
+
       {
         src: '/gallery/image1.png',
         title: 'Travel View',
         desc: 'Discovering new places.',
       },
+
       {
         src: '/gallery/image2.png',
         title: 'Adventure',
         desc: 'Exploring different environments.',
       },
+
     ],
   },
+
+
 ]
-
-
-// ===== END: Gallery Part 1 =====
-
-// ===== START: Gallery Part 2 =====
-
-
-// ==============================
-// Gallery Component Logic
-// ==============================
 
 export default function Gallery() {
 
 
   const [activeAlbum, setActiveAlbum] = useState(0)
 
-  const [selectedImage, setSelectedImage] = useState<number | null>(null)
+
+  const [selectedImage, setSelectedImage] = useState<number>(0)
+
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
+
+
+  const [isImageLoading, setIsImageLoading] = useState(true)
+
+
+
+  const currentAlbum = albums[activeAlbum]
+
+
 
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -121,13 +150,13 @@ export default function Gallery() {
   })
 
 
-  const currentAlbum = albums[activeAlbum]
 
 
 
   // ==============================
-  // Auto Slideshow
+  // Main Carousel Auto Play
   // ==============================
+
 
   useEffect(() => {
 
@@ -156,9 +185,12 @@ export default function Gallery() {
 
 
 
+
+
   // ==============================
-  // Reset carousel when album changes
+  // Reset Carousel On Album Change
   // ==============================
+
 
   useEffect(() => {
 
@@ -173,15 +205,22 @@ export default function Gallery() {
 
 
 
+
+
   // ==============================
-  // Lightbox Navigation
+  // Lightbox Controls
   // ==============================
+
 
 
   const openLightbox = (index:number) => {
 
 
     setSelectedImage(index)
+
+
+    setIsImageLoading(true)
+
 
     setIsLightboxOpen(true)
 
@@ -192,13 +231,12 @@ export default function Gallery() {
 
 
 
+
   const closeLightbox = () => {
 
 
     setIsLightboxOpen(false)
 
-    setSelectedImage(null)
-
 
   }
 
@@ -207,49 +245,52 @@ export default function Gallery() {
 
 
 
-  const nextImage = () => {
+
+  const nextImage = useCallback(() => {
 
 
-    if (selectedImage === null) return
+    setSelectedImage((current)=>
 
 
+      (current + 1) %
 
-    const next =
-      (selectedImage + 1) %
       currentAlbum.images.length
 
 
-
-    setSelectedImage(next)
-
-
-  }
+    )
 
 
+    setIsImageLoading(true)
 
 
+  },[currentAlbum])
 
 
 
-  const previousImage = () => {
-
-
-    if (selectedImage === null) return
 
 
 
-    const previous =
-      (selectedImage -
-        1 +
-        currentAlbum.images.length) %
+
+  const previousImage = useCallback(() => {
+
+
+    setSelectedImage((current)=>
+
+
+      (current - 1 + currentAlbum.images.length) %
+
       currentAlbum.images.length
 
 
+    )
 
-    setSelectedImage(previous)
+
+    setIsImageLoading(true)
 
 
-  }
+  },[currentAlbum])
+
+
 
 
 
@@ -257,21 +298,22 @@ export default function Gallery() {
 
 
   // ==============================
-  // Keyboard Controls
+  // Keyboard Navigation
   // ==============================
 
 
   useEffect(() => {
 
 
-    const handleKeyboard = (event: KeyboardEvent) => {
+    const handleKeyboard = (event:KeyboardEvent)=>{
 
 
-      if (!isLightboxOpen) return
+      if(!isLightboxOpen) return
 
 
 
-      if (event.key === 'ArrowRight') {
+
+      if(event.key === 'ArrowRight'){
 
 
         nextImage()
@@ -281,7 +323,7 @@ export default function Gallery() {
 
 
 
-      if (event.key === 'ArrowLeft') {
+      if(event.key === 'ArrowLeft'){
 
 
         previousImage()
@@ -291,7 +333,8 @@ export default function Gallery() {
 
 
 
-      if (event.key === 'Escape') {
+
+      if(event.key === 'Escape'){
 
 
         closeLightbox()
@@ -305,20 +348,27 @@ export default function Gallery() {
 
 
 
-
     window.addEventListener(
+
       'keydown',
+
       handleKeyboard
+
     )
 
 
 
-    return () => {
+
+
+    return ()=>{
 
 
       window.removeEventListener(
+
         'keydown',
+
         handleKeyboard
+
       )
 
 
@@ -326,13 +376,110 @@ export default function Gallery() {
 
 
 
-  }, [isLightboxOpen, selectedImage])
+  },[
+    isLightboxOpen,
+    nextImage,
+    previousImage
+  ])
 
 
 
-// ===== END: Gallery Part 2 =====
 
-// ===== START: Gallery Part 3 =====
+
+
+
+
+
+  // ==============================
+  // Touch Swipe Support
+  // ==============================
+
+
+  const [touchStart,setTouchStart] = useState<number | null>(null)
+
+
+
+  const [touchEnd,setTouchEnd] = useState<number | null>(null)
+
+
+
+
+
+  const handleTouchStart = (
+    e:React.TouchEvent
+  )=>{
+
+
+    setTouchStart(
+      e.targetTouches[0].clientX
+    )
+
+
+  }
+
+
+
+
+
+
+  const handleTouchMove = (
+    e:React.TouchEvent
+  )=>{
+
+
+    setTouchEnd(
+      e.targetTouches[0].clientX
+    )
+
+
+  }
+
+
+
+
+
+
+  const handleTouchEnd = ()=>{
+
+
+    if(!touchStart || !touchEnd) return
+
+
+
+    const distance =
+      touchStart - touchEnd
+
+
+
+
+
+    if(distance > 50){
+
+
+      nextImage()
+
+
+    }
+
+
+
+    if(distance < -50){
+
+
+      previousImage()
+
+
+    }
+
+
+
+    setTouchStart(null)
+
+    setTouchEnd(null)
+
+
+  }
+
 
 
   return (
@@ -341,6 +488,7 @@ export default function Gallery() {
       id="gallery"
       className="mx-auto max-w-6xl px-4 py-24 sm:px-6"
     >
+
 
 
       <SectionHeading
@@ -359,19 +507,33 @@ export default function Gallery() {
 
 
 
+
       <Reveal delay={1}>
 
 
-        <div className="mt-12 glass rounded-3xl p-6 text-center sm:p-8">
+        <div className="
+        mt-12
+        glass
+        rounded-3xl
+        p-6
+        text-center
+        sm:p-8
+        ">
 
 
 
-          {/* ==============================
-              Album Tabs
-          =============================== */}
+
+          {/* Album Tabs */}
 
 
-          <div className="mb-8 flex flex-wrap justify-center gap-3">
+          <div className="
+          mb-8
+          flex
+          flex-wrap
+          justify-center
+          gap-3
+          ">
+
 
 
             {albums.map((album,index)=>(
@@ -379,14 +541,17 @@ export default function Gallery() {
 
               <motion.button
 
+
                 key={album.name}
+
 
                 onClick={()=>setActiveAlbum(index)}
 
 
                 whileTap={{
-                  scale:0.95
+                  scale:.95
                 }}
+
 
 
                 className={`
@@ -396,18 +561,22 @@ export default function Gallery() {
                 text-sm
                 font-medium
                 transition-all
+
                 ${
-                activeAlbum === index
+                  activeAlbum === index
 
-                ?
+                  ?
 
-                'bg-primary text-primary-foreground shadow-lg'
+                  'bg-primary text-primary-foreground shadow-lg'
 
-                :
+                  :
 
-                'bg-surface text-muted-foreground hover:text-foreground'
+                  'bg-surface text-muted-foreground hover:text-foreground'
+
                 }
+
                 `}
+
 
               >
 
@@ -419,6 +588,7 @@ export default function Gallery() {
             ))}
 
 
+
           </div>
 
 
@@ -427,9 +597,8 @@ export default function Gallery() {
 
 
 
-          {/* ==============================
-              Album Description
-          =============================== */}
+          {/* Description */}
+
 
 
           <AnimatePresence mode="wait">
@@ -437,17 +606,21 @@ export default function Gallery() {
 
             <motion.p
 
+
               key={currentAlbum.name}
+
 
               initial={{
                 opacity:0,
                 y:10
               }}
 
+
               animate={{
                 opacity:1,
                 y:0
               }}
+
 
               exit={{
                 opacity:0,
@@ -455,11 +628,13 @@ export default function Gallery() {
               }}
 
 
+
               className="
               mb-8
               text-sm
               text-muted-foreground
               "
+
 
             >
 
@@ -477,9 +652,8 @@ export default function Gallery() {
 
 
 
-          {/* ==============================
-              Carousel
-          =============================== */}
+
+          {/* Carousel */}
 
 
 
@@ -495,7 +669,9 @@ export default function Gallery() {
           >
 
 
+
             <div className="flex">
+
 
 
               {currentAlbum.images.map((image,index)=>(
@@ -503,14 +679,19 @@ export default function Gallery() {
 
                 <div
 
+
                   key={index}
+
 
                   className="
                   min-w-full
                   px-2
                   "
 
+
                 >
+
+
 
 
 
@@ -522,6 +703,11 @@ export default function Gallery() {
                     }}
 
 
+
+                    onClick={()=>openLightbox(index)}
+
+
+
                     className="
                     group
                     relative
@@ -531,10 +717,9 @@ export default function Gallery() {
                     "
 
 
-                    onClick={()=>openLightbox(index)}
-
-
                   >
+
+
 
 
 
@@ -571,6 +756,7 @@ export default function Gallery() {
 
 
 
+
                     <div
 
                       className="
@@ -599,14 +785,20 @@ export default function Gallery() {
                       ">
 
 
+
                         <h3 className="
                         text-xl
                         font-semibold
                         ">
 
+
                           {image.title}
 
+
                         </h3>
+
+
+
 
 
                         <p className="
@@ -615,19 +807,26 @@ export default function Gallery() {
                         text-white/80
                         ">
 
+
                           {image.desc}
+
 
                         </p>
 
 
+
                       </div>
+
 
 
                     </div>
 
 
 
+
+
                   </motion.div>
+
 
 
 
@@ -647,9 +846,10 @@ export default function Gallery() {
 
 
 
-          {/* ==============================
-              Carousel Indicators
-          =============================== */}
+
+
+
+          {/* Indicators */}
 
 
 
@@ -666,9 +866,13 @@ export default function Gallery() {
 
               <button
 
+
                 key={index}
 
+
                 onClick={()=>emblaApi?.scrollTo(index)}
+
+
 
                 className="
                 h-2
@@ -679,7 +883,9 @@ export default function Gallery() {
                 hover:scale-125
                 "
 
+
               />
+
 
 
             ))}
@@ -689,9 +895,12 @@ export default function Gallery() {
 
 
 
-          {/* ==============================
-              Carousel Previous / Next Buttons
-          =============================== */}
+
+
+
+
+          {/* Navigation Buttons */}
+
 
 
           <div className="
@@ -702,9 +911,14 @@ export default function Gallery() {
           ">
 
 
+
+
             <button
 
+
               onClick={()=>emblaApi?.scrollPrev()}
+
+
 
               className="
               rounded-full
@@ -716,17 +930,25 @@ export default function Gallery() {
               hover:scale-105
               "
 
+
             >
 
               ← Previous
+
 
             </button>
 
 
 
+
+
+
             <button
 
+
               onClick={()=>emblaApi?.scrollNext()}
+
+
 
               className="
               rounded-full
@@ -739,14 +961,20 @@ export default function Gallery() {
               hover:scale-105
               "
 
+
             >
 
               Next →
 
+
             </button>
 
 
+
+
           </div>
+
+
 
 
 
@@ -755,13 +983,8 @@ export default function Gallery() {
 
       </Reveal>
 
-
-
-
-
-
       {/* ==============================
-          Fullscreen Lightbox
+          Premium Fullscreen Lightbox
       =============================== */}
 
 
@@ -769,7 +992,8 @@ export default function Gallery() {
       <AnimatePresence>
 
 
-        {isLightboxOpen && selectedImage !== null && (
+        {isLightboxOpen && (
+
 
 
           <motion.div
@@ -790,6 +1014,7 @@ export default function Gallery() {
             }}
 
 
+
             className="
             fixed
             inset-0
@@ -797,12 +1022,22 @@ export default function Gallery() {
             flex
             items-center
             justify-center
-            bg-black/90
-            px-4
+            bg-black/95
+            p-4
             "
 
 
+
             onClick={closeLightbox}
+
+
+
+            onTouchStart={handleTouchStart}
+
+            onTouchMove={handleTouchMove}
+
+            onTouchEnd={handleTouchEnd}
+
 
 
           >
@@ -811,21 +1046,35 @@ export default function Gallery() {
 
 
 
+
+
+            {/* Close Button */}
+
+
+
             <button
+
 
               onClick={closeLightbox}
 
+
               className="
               absolute
-              right-6
-              top-6
-              text-3xl
+              right-5
+              top-5
+              z-20
+              rounded-full
+              bg-white/20
+              px-4
+              py-2
+              text-2xl
               text-white
               "
 
             >
 
               ✕
+
 
             </button>
 
@@ -835,19 +1084,30 @@ export default function Gallery() {
 
 
 
+
+            {/* Previous Button */}
+
+
+
             <button
 
+
               onClick={(e)=>{
+
 
                 e.stopPropagation()
 
                 previousImage()
 
+
               }}
+
+
 
               className="
               absolute
               left-4
+              z-20
               rounded-full
               bg-white/20
               px-4
@@ -860,6 +1120,7 @@ export default function Gallery() {
 
               ←
 
+
             </button>
 
 
@@ -868,122 +1129,375 @@ export default function Gallery() {
 
 
 
-            <motion.div
 
 
-              key={selectedImage}
+            {/* Image Area */}
 
 
-              initial={{
-                scale:0.9,
-                opacity:0
-              }}
 
-
-              animate={{
-                scale:1,
-                opacity:1
-              }}
-
-
-              transition={{
-                duration:0.3
-              }}
-
-
-              className="
-              relative
-              max-h-[85vh]
-              max-w-5xl
-              "
+            <div
 
 
               onClick={(e)=>e.stopPropagation()}
+
+
+
+              className="
+              flex
+              max-h-[90vh]
+              w-full
+              max-w-6xl
+              flex-col
+              items-center
+              "
 
 
             >
 
 
 
-              <Image
-
-
-                src={
-                  currentAlbum.images[selectedImage].src
-                }
-
-
-                alt={
-                  currentAlbum.images[selectedImage].title
-                }
-
-
-                width={1400}
-
-                height={900}
-
-
-                className="
-                max-h-[85vh]
-                w-auto
-                rounded-2xl
-                object-contain
-                "
-
-              />
-
-
 
 
 
               <div className="
-              absolute
-              bottom-4
-              left-1/2
-              -translate-x-1/2
-              rounded-full
-              bg-black/60
-              px-4
-              py-2
-              text-sm
-              text-white
+              relative
+              flex
+              h-[65vh]
+              w-full
+              items-center
+              justify-center
               ">
 
 
-                {selectedImage + 1}
 
-                /
 
-                {currentAlbum.images.length}
+
+
+                {isImageLoading && (
+
+
+                  <div className="
+                  absolute
+                  text-white
+                  ">
+
+
+                    Loading...
+
+
+                  </div>
+
+
+                )}
+
+
+
+
+
+
+                <motion.div
+
+
+
+                  key={selectedImage}
+
+
+
+                  initial={{
+                    opacity:0,
+                    scale:.95
+                  }}
+
+
+
+                  animate={{
+                    opacity:1,
+                    scale:1
+                  }}
+
+
+
+                  transition={{
+                    duration:.3
+                  }}
+
+
+
+
+                  className="
+                  relative
+                  h-full
+                  w-full
+                  "
+
+
+
+                >
+
+
+
+                  <Image
+
+
+                    src={
+                      currentAlbum.images[selectedImage].src
+                    }
+
+
+
+                    alt={
+                      currentAlbum.images[selectedImage].title
+                    }
+
+
+
+                    fill
+
+
+
+                    onLoad={()=>setIsImageLoading(false)}
+
+
+
+                    className="
+                    rounded-2xl
+                    object-contain
+                    "
+
+
+                  />
+
+
+
+                </motion.div>
+
 
 
               </div>
 
 
 
-            </motion.div>
 
 
 
 
 
+
+              {/* Caption */}
+
+
+
+              <div className="
+              mt-4
+              text-center
+              text-white
+              ">
+
+
+
+                <h3 className="
+                text-xl
+                font-semibold
+                ">
+
+
+                  {
+                    currentAlbum.images[selectedImage].title
+                  }
+
+
+                </h3>
+
+
+
+
+
+                <p className="
+                mt-1
+                text-sm
+                text-white/70
+                ">
+
+
+                  {
+                    currentAlbum.images[selectedImage].desc
+                  }
+
+
+                </p>
+
+
+
+
+
+                <p className="
+                mt-2
+                text-sm
+                text-white/50
+                ">
+
+
+                  {selectedImage + 1}
+
+                  /
+
+                  {currentAlbum.images.length}
+
+
+                </p>
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+              {/* Thumbnail Strip */}
+
+
+
+              <div className="
+              mt-6
+              flex
+              max-w-full
+              gap-3
+              overflow-x-auto
+              pb-2
+              ">
+
+
+
+
+
+                {currentAlbum.images.map((image,index)=>(
+
+
+
+                  <button
+
+
+                    key={index}
+
+
+
+                    onClick={()=>{
+
+
+                      setSelectedImage(index)
+
+                      setIsImageLoading(true)
+
+
+                    }}
+
+
+
+                    className={`
+                    relative
+                    h-16
+                    w-20
+                    shrink-0
+                    overflow-hidden
+                    rounded-lg
+                    border-2
+                    transition
+
+                    ${
+                      selectedImage === index
+
+                      ?
+
+                      'border-primary scale-110'
+
+                      :
+
+                      'border-transparent opacity-70 hover:opacity-100'
+
+                    }
+
+                    `}
+
+
+
+                  >
+
+
+
+
+                    <Image
+
+
+                      src={image.src}
+
+
+                      alt={image.title}
+
+
+                      fill
+
+
+                      className="
+                      object-cover
+                      "
+
+
+                    />
+
+
+
+                  </button>
+
+
+
+                ))}
+
+
+
+              </div>
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+
+            {/* Next Button */}
 
 
 
             <button
 
+
               onClick={(e)=>{
+
 
                 e.stopPropagation()
 
                 nextImage()
 
+
               }}
+
 
 
               className="
               absolute
               right-4
+              z-20
               rounded-full
               bg-white/20
               px-4
@@ -997,7 +1511,10 @@ export default function Gallery() {
 
               →
 
+
             </button>
+
+
 
 
 
@@ -1006,6 +1523,7 @@ export default function Gallery() {
 
 
         )}
+
 
 
       </AnimatePresence>
@@ -1023,5 +1541,3 @@ export default function Gallery() {
 
 }
 
-
-// ===== END: Gallery Part 4 =====
