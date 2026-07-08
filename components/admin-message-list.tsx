@@ -30,7 +30,8 @@ export default function AdminMessageList({
 }: Props) {
 
 
-  const [search, setSearch] = useState('')
+  const [search, setSearch] =
+    useState('')
 
 
   const [statusFilter, setStatusFilter] =
@@ -74,66 +75,49 @@ export default function AdminMessageList({
 
 
 
-  const allCount =
-    messages.length
-
-
-
-  const newCount =
-    messages.filter(
-      (message) => !message.read
-    ).length
-
-
-
-  const progressCount =
-    messages.filter(
-      (message) =>
-        message.status === 'In Progress'
-    ).length
-
-
-
-  const completedCount =
-    messages.filter(
-      (message) =>
-        message.status === 'Completed'
-    ).length
-
-
-
-
   const filters = [
 
     {
       name: 'All',
-      count: allCount,
+      count: messages.length,
     },
+
 
     {
       name: 'New',
-      count: newCount,
+      count:
+        messages.filter(
+          (message) => !message.read
+        ).length,
     },
+
 
     {
       name: 'In Progress',
-      count: progressCount,
+      count:
+        messages.filter(
+          (message) =>
+            message.status === 'In Progress'
+        ).length,
     },
+
 
     {
       name: 'Completed',
-      count: completedCount,
+      count:
+        messages.filter(
+          (message) =>
+            message.status === 'Completed'
+        ).length,
     },
 
   ]
 
 
 
-
   return (
 
     <div>
-
 
 
       {/* Search */}
@@ -225,12 +209,10 @@ export default function AdminMessageList({
 
           </button>
 
-
         ))}
 
 
       </div>
-
 
 
 
@@ -241,8 +223,10 @@ export default function AdminMessageList({
       <div className="space-y-5">
 
 
-        {filteredMessages.length > 0 ? (
+        {
+          filteredMessages.length > 0
 
+          ?
 
           filteredMessages.map((message) => (
 
@@ -275,7 +259,6 @@ export default function AdminMessageList({
 
 
                 <div>
-
 
 
                   <div className="
@@ -312,7 +295,6 @@ export default function AdminMessageList({
                     )}
 
 
-
                   </div>
 
 
@@ -334,20 +316,66 @@ export default function AdminMessageList({
 
 
 
-                <p className="
-                  text-sm
-                  text-muted-foreground
-                ">
 
-                  {new Date(message.created_at)
-                    .toISOString()
-                    .split('T')[0]}
 
-                </p>
+                {/* Date and Time */}
+
+                <div className="text-right">
+
+
+                  <p className="
+                    text-sm
+                    text-muted-foreground
+                  ">
+
+
+                    {new Date(
+                      message.created_at
+                    )
+                      .toLocaleDateString(
+                        'en-US',
+                        {
+                          year:'numeric',
+                          month:'long',
+                          day:'numeric',
+                        }
+                      )}
+
+
+                  </p>
+
+
+
+                  <p className="
+                    mt-1
+                    text-xs
+                    text-muted-foreground
+                  ">
+
+
+                    {new Date(
+                      message.created_at
+                    )
+                      .toLocaleTimeString(
+                        'en-US',
+                        {
+                          hour:'2-digit',
+                          minute:'2-digit',
+                        }
+                      )}
+
+
+                  </p>
+
+
+
+                </div>
+
 
 
 
               </div>
+
 
 
 
@@ -377,7 +405,6 @@ export default function AdminMessageList({
                 </p>
 
 
-
               </div>
 
 
@@ -386,7 +413,7 @@ export default function AdminMessageList({
 
 
 
-              {/* Status + Actions */}
+              {/* Actions */}
 
               <div className="
                 mt-5
@@ -397,7 +424,6 @@ export default function AdminMessageList({
               ">
 
 
-
                 <MessageStatus
 
                   id={message.id}
@@ -405,8 +431,6 @@ export default function AdminMessageList({
                   status={message.status}
 
                 />
-
-
 
 
 
@@ -433,8 +457,6 @@ export default function AdminMessageList({
 
 
 
-
-
                 <AdminMessageActions
 
                   id={message.id}
@@ -444,10 +466,7 @@ export default function AdminMessageList({
                 />
 
 
-
               </div>
-
-
 
 
 
@@ -456,44 +475,44 @@ export default function AdminMessageList({
 
           ))
 
+          :
 
+          (
 
-        ) : (
-
-
-          <div className="
-            rounded-2xl
-            border
-            border-surface-border
-            p-10
-            text-center
-          ">
-
-
-            <p className="text-3xl">
-              📭
-            </p>
-
-
-            <p className="
-              mt-3
-              text-muted-foreground
+            <div className="
+              rounded-2xl
+              border
+              border-surface-border
+              p-10
+              text-center
             ">
 
-              No matching messages found.
 
-            </p>
+              <p className="text-3xl">
+
+                📭
+
+              </p>
 
 
-          </div>
+              <p className="
+                mt-3
+                text-muted-foreground
+              ">
+
+                No matching messages found.
+
+              </p>
 
 
-        )}
+            </div>
 
+          )
+
+        }
 
 
       </div>
-
 
 
     </div>

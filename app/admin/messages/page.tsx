@@ -4,14 +4,13 @@ import { createClient } from '@/lib/supabase-server'
 
 import AdminMessageList from '@/components/admin-message-list'
 
-import RealtimeRefresh from '@/components/admin/realtime-refresh'
-
 
 type Props = {
   searchParams: Promise<{
     status?: string
   }>
 }
+
 
 
 export default async function MessagesPage({
@@ -41,6 +40,7 @@ export default async function MessagesPage({
 
 
 
+
   const {
     data: messages,
     error,
@@ -60,11 +60,14 @@ export default async function MessagesPage({
 
 
 
+
+
   if (error) {
 
     console.error(error)
 
   }
+
 
 
 
@@ -78,15 +81,22 @@ export default async function MessagesPage({
 
 
 
+
+
   return (
 
-    <main className="min-h-screen px-4 py-16 sm:px-6">
+    <main className="
+      min-h-screen
+      px-4
+      py-16
+      sm:px-6
+    ">
 
 
-      <div className="mx-auto max-w-6xl">
-
-
-        <RealtimeRefresh />
+      <div className="
+        mx-auto
+        max-w-6xl
+      ">
 
 
 
@@ -103,11 +113,16 @@ export default async function MessagesPage({
 
 
 
-          <p className="mt-2 text-muted-foreground">
+
+          <p className="
+            mt-2
+            text-muted-foreground
+          ">
 
             Manage messages received from your portfolio website.
 
           </p>
+
 
 
         </div>
@@ -116,16 +131,58 @@ export default async function MessagesPage({
 
 
 
-        {/* Messages */}
 
-        <div className="glass rounded-3xl p-6">
+        {/* Messages Container */}
+
+        <div className="
+          glass
+          rounded-3xl
+          p-6
+        ">
 
 
-          <h2 className="mb-6 text-xl font-semibold">
 
-            All Messages ({messages?.length ?? 0})
+          <div className="
+            mb-6
+            flex
+            items-center
+            justify-between
+          ">
 
-          </h2>
+
+
+            <div>
+
+
+              <h2 className="text-xl font-semibold">
+
+                All Messages
+
+              </h2>
+
+
+
+              <p className="
+                mt-1
+                text-sm
+                text-muted-foreground
+              ">
+
+                Total received:
+                {' '}
+                {messages?.length ?? 0}
+
+              </p>
+
+
+
+            </div>
+
+
+
+          </div>
+
+
 
 
 
@@ -139,11 +196,14 @@ export default async function MessagesPage({
           />
 
 
+
         </div>
 
 
 
+
       </div>
+
 
 
     </main>
