@@ -9,6 +9,7 @@ import useEmblaCarousel from 'embla-carousel-react'
 
 import { Reveal } from '@/components/reveal'
 import { SectionHeading } from '@/components/section-heading'
+import { ZoomIn } from "lucide-react";
 
 
 
@@ -28,31 +29,31 @@ const albums = [
     images: [
 
       {
-        src: '/gallery/image1.webp',
-        title: 'Sunset View',
-        desc: 'A peaceful sunset landscape.',
+        src: '/gallery/lib3.webp',
+        title: 'UL Graduation',
+        desc: 'BBA in Accounting',
       },
 
       {
-        src: '/gallery/image2.webp',
-        title: 'Mountain Peak',
-        desc: 'A beautiful natural view.',
+        src: '/gallery/lib2.webp',
+        title: 'UNIDO Training',
+        desc: 'Two weeks Training in Kakata',
       },
       {
-        src: '/gallery/image1.webp',
-        title: 'Sunset View',
-        desc: 'A peaceful sunset landscape.',
+        src: '/gallery/lib1.webp',
+        title: 'UNIDO Training',
+        desc: 'Two weeks Training in Kakata',
       },
 
       {
-        src: '/gallery/image2.webp',
-        title: 'Mountain Peak',
-        desc: 'A beautiful natural view.',
+        src: '/gallery/lib5.webp',
+        title: 'UL Graduation Celebration',
+        desc: 'Members of FFF',
       },
       {
-        src: '/gallery/image1.webp',
-        title: 'Sunset View',
-        desc: 'A peaceful sunset landscape.',
+        src: '/gallery/lib4.webp',
+        title: 'Orange Digital Center',
+        desc: 'Trainng in Quickbooks',
       },
 
       {
@@ -126,15 +127,15 @@ const albums = [
     images: [
 
       {
-        src: '/gallery/image3.webp',
-        title: 'Family Moment',
+        src: '/gallery/fam2.webp',
+        title: 'Me and My Daughter',
         desc: 'A memorable experience.',
       },
 
       {
-        src: '/gallery/image4.webp',
-        title: 'Together',
-        desc: 'Moments worth remembering.',
+        src: '/gallery/fam1.webp',
+        title: 'My Daughter',
+        desc: 'Grace 2yrs Birthday Shoot',
       },
 
     ],
@@ -151,14 +152,14 @@ const albums = [
     images: [
 
       {
-        src: '/gallery/image1.webp',
-        title: 'Travel View',
+        src: '/gallery/Travel1.webp',
+        title: 'At the Zoo in Zambia',
         desc: 'Discovering new places.',
       },
 
       {
-        src: '/gallery/image2.webp',
-        title: 'Adventure',
+        src: '/gallery/Travel2.webp',
+        title: 'The Victoria Fall',
         desc: 'Exploring different environments.',
       },
 
@@ -787,15 +788,17 @@ export default function Gallery() {
 
 
                       className="
-                      h-[300px]
-                      w-full
-                      object-cover
-                      transition-transform
-                      duration-700
-                      group-hover:scale-110
-                      sm:h-[400px]
-                      md:h-[500px]
-                      "
+                          h-[300px]
+                          w-full
+                          object-cover
+                          object-center
+                          transition-all
+                          duration-700
+                          group-hover:scale-105
+                          group-hover:brightness-75
+                          sm:h-[400px]
+                          md:h-[500px]
+                          "
 
 
                     />
@@ -805,69 +808,55 @@ export default function Gallery() {
 
 
 
-                    <div
+<div
+  className="
+  absolute
+  inset-0
+  bg-black/55
+  flex
+  flex-col
+  items-center
+  justify-center
+  opacity-0
+  group-hover:opacity-100
+  transition-all
+  duration-300
+"
+>
 
-                      className="
-                      absolute
-                      inset-0
-                      flex
-                      items-end
-                      bg-gradient-to-t
-                      from-black/70
-                      via-black/20
-                      to-transparent
-                      opacity-100
-                      transition
-                      sm:opacity-0
-                      sm:group-hover:opacity-100
-                      "
+  <div
+    className="
+    rounded-full
+    bg-white/20
+    p-4
+    backdrop-blur-sm
+    mb-4
+  "
+  >
+    <ZoomIn className="h-10 w-10 text-white" />
+  </div>
 
-                    >
+  <h3
+    className="
+    text-xl
+    font-semibold
+    text-white
+  "
+  >
+    Click to view full image
+  </h3>
 
+  <p
+    className="
+    mt-2
+    text-sm
+    text-white/80
+  "
+  >
+    {image.title}
+  </p>
 
-
-                      <div className="
-                      p-6
-                      text-left
-                      text-white
-                      ">
-
-
-
-                        <h3 className="
-                        text-xl
-                        font-semibold
-                        ">
-
-
-                          {image.title}
-
-
-                        </h3>
-
-
-
-
-
-                        <p className="
-                        mt-1
-                        text-sm
-                        text-white/80
-                        ">
-
-
-                          {image.desc}
-
-
-                        </p>
-
-
-
-                      </div>
-
-
-
-                    </div>
+</div>
 
 
 
