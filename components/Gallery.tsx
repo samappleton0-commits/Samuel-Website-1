@@ -1,4 +1,4 @@
-// ===== START: COMPLETE Gallery.tsx PART 1/4 =====
+
 
 'use client'
 
@@ -28,35 +28,35 @@ const albums = [
     images: [
 
       {
-        src: '/gallery/image1.png',
+        src: '/gallery/image1.webp',
         title: 'Sunset View',
         desc: 'A peaceful sunset landscape.',
       },
 
       {
-        src: '/gallery/image2.png',
+        src: '/gallery/image2.webp',
         title: 'Mountain Peak',
         desc: 'A beautiful natural view.',
       },
       {
-        src: '/gallery/image1.png',
+        src: '/gallery/image1.webp',
         title: 'Sunset View',
         desc: 'A peaceful sunset landscape.',
       },
 
       {
-        src: '/gallery/image2.png',
+        src: '/gallery/image2.webp',
         title: 'Mountain Peak',
         desc: 'A beautiful natural view.',
       },
       {
-        src: '/gallery/image1.png',
+        src: '/gallery/image1.webp',
         title: 'Sunset View',
         desc: 'A peaceful sunset landscape.',
       },
 
       {
-        src: '/gallery/image2.png',
+        src: '/gallery/image2.webp',
         title: 'Mountain Peak',
         desc: 'A beautiful natural view.',
       },
@@ -75,39 +75,39 @@ const albums = [
     images: [
 
       {
-        src: '/gallery/image3.png',
-        title: 'City Lights',
+        src: '/gallery/zm6.webp',
+        title: 'ICT Team',
+        desc: 'ICT Team Members from Liberia.',
+      },
+
+      {
+        src: '/gallery/zm7.webp',
+        title: 'Zambia Job Fair',
+        desc: 'Representing ZUT at the Job Fair',
+      },
+
+      {
+        src: '/gallery/zm3.webp',
+        title: 'City Light',
         desc: 'Night views and city atmosphere.',
       },
 
       {
-        src: '/gallery/image4.png',
+        src: '/gallery/zm2.webp',
         title: 'Ocean Breeze',
         desc: 'A beautiful travel environment.',
       },
 
       {
-        src: '/gallery/image3.png',
-        title: 'City Lights',
-        desc: 'Night views and city atmosphere.',
+        src: '/gallery/zm4.webp',
+        title: 'Trip to Victoria Fall',
+        desc: 'A night spent in Choma enroute to Victoria Fall',
       },
 
       {
-        src: '/gallery/image4.png',
-        title: 'Ocean Breeze',
-        desc: 'A beautiful travel environment.',
-      },
-
-      {
-        src: '/gallery/image3.png',
-        title: 'City Lights',
-        desc: 'Night views and city atmosphere.',
-      },
-
-      {
-        src: '/gallery/image4.png',
-        title: 'Ocean Breeze',
-        desc: 'A beautiful travel environment.',
+        src: '/gallery/zm1.webp',
+        title: 'Zambia Job Fair',
+        desc: 'Representing ZUT at the Job Fair',
       },
 
 
@@ -126,13 +126,13 @@ const albums = [
     images: [
 
       {
-        src: '/gallery/image3.png',
+        src: '/gallery/image3.webp',
         title: 'Family Moment',
         desc: 'A memorable experience.',
       },
 
       {
-        src: '/gallery/image4.png',
+        src: '/gallery/image4.webp',
         title: 'Together',
         desc: 'Moments worth remembering.',
       },
@@ -151,13 +151,13 @@ const albums = [
     images: [
 
       {
-        src: '/gallery/image1.png',
+        src: '/gallery/image1.webp',
         title: 'Travel View',
         desc: 'Discovering new places.',
       },
 
       {
-        src: '/gallery/image2.png',
+        src: '/gallery/image2.webp',
         title: 'Adventure',
         desc: 'Exploring different environments.',
       },

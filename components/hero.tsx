@@ -249,7 +249,7 @@ export function Hero() {
           <div className="glass rounded-3xl p-3">
 
             <Image
-              src="/images/hero-workspace.png"
+              src="/images/hero-workspace.webp"
               alt="Modern developer workspace"
               width={720}
               height={720}

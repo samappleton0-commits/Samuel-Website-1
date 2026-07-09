@@ -42,7 +42,7 @@ export const services: Service[] = [
   {
     icon: Code2,
     title: 'Website Development',
-    image: '/images/service-web.png',
+    image: '/images/service-web.webp',
     description:
       'Designing Responsive, Modern, and User-Friendly Websites that strengthen your online presence and support business growth.',
     tech: ['Next.js', 'TypeScript', 'HTML,CSS'],
@@ -50,7 +50,7 @@ export const services: Service[] = [
   {
     icon: Palette,
     title: 'Accounting & Finance',
-    image: '/images/account.png',
+    image: '/images/account.webp',
     description:
       'Providing Financial Management, Financial Reporting, and QuickBooks solutions to improve Business performance.',
     tech: ['Budgeting', 'QuickBooks', 'Bookkeeping'],
@@ -58,7 +58,7 @@ export const services: Service[] = [
   {
     icon: Bot,
     title: 'ICT Training & Solutions',
-    image: '/images/Ict.png',
+    image: '/images/Ict.webp',
     description:
       'Delivering practical ICT Training, Technical Support, and Digital solutions.',
     tech: ['Windows OS', 'Microsoft Office', 'Digital Literacy'],
@@ -66,7 +66,7 @@ export const services: Service[] = [
   {
     icon: Layout,
     title: 'Graphic Design',
-    image: '/images/graphic.png',
+    image: '/images/graphic.webp',
     description:
       'Creating professional visual designs that communicate your brand effectively through logos, Marketing materials, and Digital Graphics.',
     tech: ['Adobe Photoshop', 'Canva', 'Corel-Draw', 'Branding'],
@@ -109,7 +109,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     title: 'E-Commerce Website',
-    image: '/images/project-1.png',
+    image: '/images/project-1.webp',
     description:
       'A secure online store for showcasing products and enabling seamless online shopping.',
     tech: ['Next.js', 'Stripe', 'PostgreSQL'],
@@ -119,7 +119,7 @@ export const projects: Project[] = [
   },
   {
     title: 'School Website',
-    image: '/images/school.png',
+    image: '/images/school.webp',
     description:
       'A responsive website for managing school information, admissions, news, and communication.',
     tech: ['React', 'Node.js', 'Recharts'],
@@ -129,7 +129,7 @@ export const projects: Project[] = [
   },
   {
     title: 'Portfolio Website',
-    image: '/images/port.png',
+    image: '/images/port.webp',
     description:
       'A professional website highlighting skills, services, experience, and completed projects.',
     tech: ['AI SDK', 'Next.js', 'Vector DB'],
@@ -139,7 +139,7 @@ export const projects: Project[] = [
   },
   {
     title: 'Marketing',
-    image: '/images/project-4.png',
+    image: '/images/project-4.webp',
     description:
       'Eye-catching promotional designs that strengthen your brand and attract customers.',
     //tech: ['React Native', 'Node.js', 'Plaid'],
@@ -149,7 +149,7 @@ export const projects: Project[] = [
   },
   {
     title: 'Logo and Brand',
-    image: '/images/logo.png',
+    image: '/images/logo.webp',
     description:
       'Unique logos and brand identities that create a memorable and professional image.',
     //tech: ['Next.js', 'Mapbox', 'Supabase'],
@@ -159,7 +159,7 @@ export const projects: Project[] = [
   },
   {
     title: 'Digital & Print Design',
-    image: '/images/Digital.png',
+    image: '/images/Digital.webp',
     description:
       'Creative designs for digital platforms and high-quality print materials.',
     //tech: ['React', 'Firebase', 'Chart.js'],
@@ -257,7 +257,7 @@ export const testimonials: Testimonial[] = [
     name: 'Sarah Mitchell',
     position: 'Product Director',
     company: 'Lumen Labs',
-    image: '/images/client-1.png',
+    image: '/images/client-1.webp',
     rating: 5,
     quote:
       'Alex transformed our vision into a polished product ahead of schedule. The attention to detail and technical depth were exceptional.',
@@ -266,7 +266,7 @@ export const testimonials: Testimonial[] = [
     name: 'James Carter',
     position: 'CTO',
     company: 'Brightwave',
-    image: '/images/client-2.png',
+    image: '/images/client-2.webp',
     rating: 5,
     quote:
       'One of the most reliable engineers I have worked with. Clean architecture, clear communication, and real business impact.',
@@ -275,7 +275,7 @@ export const testimonials: Testimonial[] = [
     name: 'Elena Rossi',
     position: 'Founder',
     company: 'Estate Finder',
-    image: '/images/client-3.png',
+    image: '/images/client-3.webp',
     rating: 5,
     quote:
       'From design to deployment, Alex handled everything with professionalism. Our launch exceeded every metric we set.',

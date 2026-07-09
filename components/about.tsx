@@ -49,7 +49,7 @@ export function About() {
 
             <Image
 
-              src="/images/profileme.png"
+              src="/images/profileme.webp"
 
               alt="Professional profile"
 
