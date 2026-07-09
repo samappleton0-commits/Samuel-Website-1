@@ -1,7 +1,12 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Poppins, Inter, Geist_Mono } from 'next/font/google'
+import { Toaster } from 'sonner'
+
 import './globals.css'
+
+import WelcomeToast from '@/components/WelcomeToast'
+
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -9,36 +14,40 @@ const poppins = Poppins({
   weight: ['400', '500', '600', '700', '800'],
 })
 
+
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
 })
+
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
 })
 
+
 export const metadata: Metadata = {
   title: 'Samuel R. Appleton — Portfolio',
   description:
-    'Portfolio of Samuel R. Appleton, a Web developer, Accountant, and ICT solutions builder crafting modern, scalable, and user-friendly digital experiences.',
+    'Portfolio of Samuel R. Appleton, a Web Developer, Accountant, and ICT solutions builder crafting modern, scalable, and user-friendly digital experiences.',
   generator: 'v0.app',
   keywords: [
-    'Full-Stack Developer',
-    'UI/UX Designer',
-    'AI Solutions',
-    'React',
-    'Next.js',
+    'Accountant',
+    'Graphic Designer',
+    'Website Developer',
+    'ICT Trainer',
+    'ICT Specialist',
     'Portfolio',
   ],
   openGraph: {
     title: 'Samuel R. Appleton — Portfolio',
     description:
-      'Portfolio of Samuel R. Appleton, a Web developer, Accountant, and ICT solutions builder crafting modern, scalable, and user-friendly digital experiences.',
+      'Portfolio of Samuel R. Appleton, a Web Developer, Accountant, and ICT solutions builder crafting modern, scalable, and user-friendly digital experiences.',
     type: 'website',
   },
 }
+
 
 export const viewport: Viewport = {
   colorScheme: 'dark',
@@ -46,20 +55,46 @@ export const viewport: Viewport = {
   userScalable: true,
 }
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${poppins.variable} ${inter.variable} ${geistMono.variable} bg-background`}
     >
+
       <body className="bg-background font-sans antialiased">
+
+        {/* Welcome Notification */}
+        <WelcomeToast />
+
+
+        {/* Website Content */}
         {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+
+
+        {/* Toast Container */}
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+          theme="dark"
+        />
+
+
+        {/* Vercel Analytics */}
+        {process.env.NODE_ENV === 'production' && (
+          <Analytics />
+        )}
+
       </body>
+
     </html>
   )
 }
