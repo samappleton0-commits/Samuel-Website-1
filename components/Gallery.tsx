@@ -791,7 +791,7 @@ export default function Gallery() {
                           h-[300px]
                           w-full
                           object-cover
-                          object-center
+                          object-[center_20%]
                           transition-all
                           duration-700
                           group-hover:scale-105
