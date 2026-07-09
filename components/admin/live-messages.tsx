@@ -1,5 +1,6 @@
 'use client'
 
+
 import {
   createContext,
   useContext,
@@ -8,30 +9,55 @@ import {
   ReactNode,
 } from 'react'
 
+
 import { supabase } from '@/lib/supabase'
 
 
+
+
+
 type Message = {
+
   id: string
+
   name: string
+
   email: string
+
   subject: string
+
   created_at: string
+
   read: boolean
+
   status: string
+
 }
+
+
 
 
 
 type Props = {
+
   initialMessages: Message[]
+
   children: ReactNode
+
 }
+
+
+
+
 
 
 
 const MessagesContext =
   createContext<Message[]>([])
+
+
+
+
 
 
 
@@ -44,69 +70,139 @@ export function useLiveMessages() {
 
 
 
+
+
+
+
 export default function LiveMessages({
+
   initialMessages,
+
   children,
+
 }: Props) {
 
 
-  const [messages, setMessages] =
-    useState<Message[]>(initialMessages)
+
+  const [messages,setMessages] =
+    useState<Message[]>(
+      initialMessages
+    )
+
+
+
+
 
 
 
   useEffect(() => {
 
 
+
+    // Prevent duplicate realtime channels
+
+    const existingChannel =
+      supabase.getChannels()
+        .find(
+          channel =>
+          channel.topic ===
+          'realtime:contacts-live'
+        )
+
+
+
+    if(existingChannel){
+
+      supabase.removeChannel(
+        existingChannel
+      )
+
+    }
+
+
+
+
+
+
+
+
     const channel =
+
       supabase
-        .channel('contacts-live')
+
+        .channel(
+          'contacts-live'
+        )
+
+
 
         .on(
+
           'postgres_changes',
+
           {
-            event: '*',
-            schema: 'public',
-            table: 'contacts',
+            event:'*',
+
+            schema:'public',
+
+            table:'contacts',
           },
 
-          (payload) => {
+
+          (payload)=>{
 
 
-            if (
+
+
+
+            if(
               payload.eventType === 'INSERT'
-            ) {
+            ){
 
 
-              setMessages((current) => [
+              setMessages(
+                current => [
 
-                payload.new as Message,
+                  payload.new as Message,
 
-                ...current,
+                  ...current,
 
-              ])
+                ]
+              )
 
             }
 
 
 
-            if (
+
+
+
+
+            if(
               payload.eventType === 'UPDATE'
-            ) {
+            ){
 
 
-              setMessages((current) =>
 
-                current.map((message) =>
+              setMessages(
+                current =>
+
+                current.map(
+                  message =>
+
 
                   message.id === payload.new.id
 
-                    ? payload.new as Message
+                  ?
 
-                    : message
+                  payload.new as Message
+
+                  :
+
+                  message
+
 
                 )
-
               )
 
             }
@@ -114,40 +210,67 @@ export default function LiveMessages({
 
 
 
-            if (
+
+
+
+
+            if(
               payload.eventType === 'DELETE'
-            ) {
+            ){
 
 
-              setMessages((current) =>
+
+              setMessages(
+                current =>
 
                 current.filter(
-                  (message) =>
-                    message.id !== payload.old.id
+                  message =>
+
+                  message.id !== payload.old.id
+
                 )
 
               )
 
             }
+
+
+
 
 
           }
 
         )
 
+
+
         .subscribe()
+
+
+
 
 
 
 
     return () => {
 
-      supabase.removeChannel(channel)
+
+      supabase.removeChannel(
+        channel
+      )
+
 
     }
 
 
-  }, [])
+
+
+
+  },[])
+
+
+
+
 
 
 
@@ -155,10 +278,15 @@ export default function LiveMessages({
   return (
 
     <MessagesContext.Provider
-      value={messages}
+
+      value={
+        messages
+      }
+
     >
 
       {children}
+
 
     </MessagesContext.Provider>
 

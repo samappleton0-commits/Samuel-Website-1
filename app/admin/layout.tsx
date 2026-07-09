@@ -1,3 +1,7 @@
+/* =========================================================
+   ADMIN LAYOUT START
+========================================================= */
+
 import AdminSidebar from '@/components/admin-sidebar'
 
 
@@ -10,35 +14,95 @@ export default function AdminLayout({
 
   return (
 
-    <main className="min-h-screen px-4 py-16 sm:px-6">
+    <main className="min-h-screen">
 
 
-      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[280px_1fr]">
 
 
-        {/* ===== START: Admin Sidebar ===== */}
+
+      {/* =====================================================
+          DESKTOP SIDEBAR
+          Fixed position on large screens
+      ===================================================== */}
+
+
+      <aside
+        className="
+          hidden
+          lg:fixed
+          lg:left-0
+          lg:top-0
+          lg:block
+          lg:h-screen
+          lg:w-[280px]
+          lg:p-6
+        "
+      >
+
 
         <AdminSidebar />
 
-        {/* ===== END: Admin Sidebar ===== */}
+
+      </aside>
 
 
 
 
 
-        {/* ===== START: Admin Page Content ===== */}
 
-        <section>
 
-          {children}
+      {/* =====================================================
+          MOBILE NAVBAR
+          Stays at top on smaller screens
+      ===================================================== */}
 
-        </section>
 
-        {/* ===== END: Admin Page Content ===== */}
+      <div
+        className="
+          sticky
+          top-0
+          z-50
+          bg-background
+          lg:hidden
+        "
+      >
 
+
+        <AdminSidebar />
 
 
       </div>
+
+
+
+
+
+
+
+
+      {/* =====================================================
+          PAGE CONTENT
+      ===================================================== */}
+
+
+      <section
+
+        className="
+          px-4
+          py-16
+          sm:px-6
+          lg:ml-[280px]
+        "
+
+      >
+
+        {children}
+
+
+      </section>
+
+
+
 
 
     </main>
@@ -46,3 +110,8 @@ export default function AdminLayout({
   )
 
 }
+
+
+/* =========================================================
+   ADMIN LAYOUT END
+========================================================= */

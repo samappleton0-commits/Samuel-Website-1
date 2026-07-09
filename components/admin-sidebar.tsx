@@ -1,42 +1,88 @@
+/* =========================================================
+   ADMIN SIDEBAR START
+========================================================= */
+
+
 'use client'
 
+
 import Image from 'next/image'
+
 import Link from 'next/link'
+
 import { usePathname } from 'next/navigation'
+
 import { useState } from 'react'
+
 
 import {
   LayoutDashboard,
   Mail,
-  Megaphone,
   Menu,
   X,
+  Megaphone,
+  FolderKanban,
 } from 'lucide-react'
+
+
 
 import LogoutButton from '@/components/logout-button'
 
 
+
+
+
+
 const links = [
+
 
   {
     name: 'Dashboard',
+
     href: '/admin',
+
     icon: LayoutDashboard,
   },
 
 
+
+
+
   {
     name: 'Messages',
+
     href: '/admin/messages',
+
     icon: Mail,
   },
 
 
+
+
+
+
   {
     name: 'Announcements',
+
     href: '/admin/announcements',
+
     icon: Megaphone,
   },
+
+
+
+
+
+
+  {
+    name: 'Projects',
+
+    href: '/admin/projects',
+
+    icon: FolderKanban,
+  },
+
+
 
 ]
 
@@ -44,13 +90,26 @@ const links = [
 
 
 
-export default function AdminSidebar() {
 
 
-  const pathname = usePathname()
 
 
-  const [open,setOpen] = useState(false)
+export default function AdminSidebar(){
+
+
+
+  const pathname =
+    usePathname()
+
+
+
+  const [open,setOpen] =
+    useState(false)
+
+
+
+
+
 
 
 
@@ -58,27 +117,45 @@ export default function AdminSidebar() {
 
     <>
 
-      {/* MOBILE HEADER */}
 
-      <div className="
-        flex
-        items-center
-        justify-between
-        rounded-3xl
-        glass
-        p-4
-        mb-4
-        lg:hidden
-      ">
+
+
+
+      {/* ===============================
+          MOBILE HEADER
+      =============================== */}
+
+
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          rounded-3xl
+          glass
+          p-4
+          mb-4
+          lg:hidden
+        "
+      >
+
 
         <h2 className="font-bold text-lg">
+
           Admin Panel
+
         </h2>
+
+
+
 
 
         <button
 
-          onClick={()=>setOpen(true)}
+          onClick={() =>
+            setOpen(true)
+          }
+
 
           className="
             rounded-xl
@@ -90,7 +167,10 @@ export default function AdminSidebar() {
 
           <Menu size={25}/>
 
+
         </button>
+
+
 
 
       </div>
@@ -99,14 +179,25 @@ export default function AdminSidebar() {
 
 
 
-      {/* MOBILE OVERLAY */}
+
+
+
+
+      {/* ===============================
+          MOBILE OVERLAY
+      =============================== */}
+
+
 
       {
         open && (
 
           <div
 
-            onClick={()=>setOpen(false)}
+            onClick={() =>
+              setOpen(false)
+            }
+
 
             className="
               fixed
@@ -125,9 +216,20 @@ export default function AdminSidebar() {
 
 
 
-      {/* SIDEBAR */}
+
+
+
+
+      {/* ===============================
+          SIDEBAR
+      =============================== */}
+
+
+
+
 
       <aside
+
 
         className={`
 
@@ -135,6 +237,7 @@ export default function AdminSidebar() {
           flex-col
 
           rounded-3xl
+
           p-6
 
           bg-background
@@ -164,9 +267,12 @@ export default function AdminSidebar() {
 
           ${
             open
-            ? 'translate-x-0'
-            : '-translate-x-full'
+            ?
+            'translate-x-0'
+            :
+            '-translate-x-full'
           }
+
 
 
           lg:static
@@ -182,25 +288,39 @@ export default function AdminSidebar() {
 
         `}
 
+
       >
 
 
 
 
 
-        {/* MOBILE CLOSE */}
 
-        <div className="
-          flex
-          justify-end
-          mb-4
-          lg:hidden
-        ">
+
+        {/* ===============================
+            CLOSE BUTTON
+        =============================== */}
+
+
+
+        <div
+          className="
+            flex
+            justify-end
+            mb-4
+            lg:hidden
+          "
+        >
 
 
           <button
 
-            onClick={()=>setOpen(false)}
+
+            onClick={() =>
+              setOpen(false)
+            }
+
+
 
             className="
               rounded-xl
@@ -208,9 +328,11 @@ export default function AdminSidebar() {
               hover:bg-surface
             "
 
+
           >
 
             <X size={22}/>
+
 
           </button>
 
@@ -223,23 +345,38 @@ export default function AdminSidebar() {
 
 
 
-        {/* PROFILE */}
 
-        <div className="
-          mb-8
-          text-center
-        ">
+
+        {/* ===============================
+            PROFILE
+        =============================== */}
+
+
+
+
+        <div
+          className="
+            mb-8
+            text-center
+          "
+        >
+
 
 
           <Image
 
+
             src="/profileme.png"
+
 
             alt="Samuel Appleton"
 
+
             width={90}
 
+
             height={90}
+
 
             className="
               mx-auto
@@ -249,28 +386,39 @@ export default function AdminSidebar() {
               object-cover
             "
 
+
           />
+
+
 
 
 
           <h2 className="mt-4 text-xl font-bold">
 
+
             Samuel Appleton
+
 
           </h2>
 
 
 
 
-          <p className="
-            mt-1
-            text-sm
-            text-muted-foreground
-          ">
+
+
+          <p
+            className="
+              mt-1
+              text-sm
+              text-muted-foreground
+            "
+          >
 
             Administrator
 
           </p>
+
+
 
 
         </div>
@@ -281,79 +429,121 @@ export default function AdminSidebar() {
 
 
 
-        {/* NAVIGATION */}
+
+
+        {/* ===============================
+            NAVIGATION
+        =============================== */}
+
+
+
 
         <nav className="space-y-2">
 
 
+
           {
-            links.map((link)=>{
+            links.map(
+              (link) => {
 
 
-              const Icon = link.icon
-
-
-              const active =
-                pathname === link.href
+                const Icon =
+                  link.icon
 
 
 
-              return (
-
-                <Link
-
-                  key={link.name}
-
-                  href={link.href}
-
-                  onClick={()=>setOpen(false)}
-
-                  className={`
-
-                    flex
-
-                    items-center
-
-                    gap-3
-
-                    rounded-xl
-
-                    px-4
-
-                    py-3
-
-                    text-sm
-
-                    transition
+                const active =
+                  pathname === link.href
 
 
-                    ${
-                      active
 
-                      ? 'bg-accent text-white'
 
-                      : 'hover:bg-surface'
 
+
+                return (
+
+                  <Link
+
+
+                    key={
+                      link.name
                     }
 
 
-                  `}
 
-                >
-
-                  <Icon size={20}/>
-
-
-                  {link.name}
+                    href={
+                      link.href
+                    }
 
 
-                </Link>
 
-              )
+                    onClick={() =>
+                      setOpen(false)
+                    }
 
-            })
 
+
+
+                    className={`
+
+                      flex
+
+                      items-center
+
+                      gap-3
+
+                      rounded-xl
+
+                      px-4
+
+                      py-3
+
+                      text-sm
+
+                      transition
+
+
+
+                      ${
+                        active
+
+                        ?
+
+                        'bg-accent text-white'
+
+                        :
+
+                        'hover:bg-surface'
+
+                      }
+
+
+                    `}
+
+
+                  >
+
+
+
+                    <Icon size={20}/>
+
+
+
+                    {link.name}
+
+
+
+                  </Link>
+
+
+                )
+
+
+              }
+
+            )
           }
+
 
 
         </nav>
@@ -364,13 +554,23 @@ export default function AdminSidebar() {
 
 
 
-        {/* LOGOUT */}
+
+
+        {/* ===============================
+            LOGOUT
+        =============================== */}
+
+
 
         <div className="mt-8">
 
+
           <LogoutButton />
 
+
         </div>
+
+
 
 
 
@@ -379,8 +579,17 @@ export default function AdminSidebar() {
       </aside>
 
 
+
+
+
     </>
 
   )
 
+
 }
+
+
+/* =========================================================
+   ADMIN SIDEBAR END
+========================================================= */

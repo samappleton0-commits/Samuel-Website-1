@@ -1,9 +1,12 @@
 import dynamic from 'next/dynamic'
 
+import { createClient } from '@/lib/supabase-server'
+
 import { SiteHeader } from '@/components/site-header'
 import { Hero } from '@/components/hero'
 import { SiteFooter } from '@/components/site-footer'
 import { BackToTop } from '@/components/back-to-top'
+
 
 
 // Lazy loaded sections
@@ -21,6 +24,7 @@ const About = dynamic(
 )
 
 
+
 const Services = dynamic(
   () =>
     import('@/components/services').then(
@@ -34,6 +38,7 @@ const Services = dynamic(
 )
 
 
+
 const Portfolio = dynamic(
   () =>
     import('@/components/portfolio').then(
@@ -45,6 +50,7 @@ const Portfolio = dynamic(
     ),
   }
 )
+
 
 
 const Gallery = dynamic(
@@ -71,40 +77,6 @@ const Contact = dynamic(
   }
 )
 
-
-
-
-
-// Hidden sections
-//
-// Enable anytime you need them again
-//
-// const Skills = dynamic(() =>
-//   import('@/components/skills').then(
-//     (mod) => mod.Skills
-//   )
-// )
-//
-//
-// const WhyChooseMe = dynamic(() =>
-//   import('@/components/why-choose-me').then(
-//     (mod) => mod.WhyChooseMe
-//   )
-// )
-//
-//
-// const Experience = dynamic(() =>
-//   import('@/components/experience').then(
-//     (mod) => mod.Experience
-//   )
-// )
-//
-//
-// const Resume = dynamic(() =>
-//   import('@/components/resume').then(
-//     (mod) => mod.Resume
-//   )
-// )
 
 
 
@@ -143,12 +115,40 @@ function SectionLoading() {
 
 
 
-export default function Page() {
+
+export default async function Page() {
+
+
+
+  const supabase =
+    await createClient()
+
+
+
+  const {
+    data: projects,
+  } =
+    await supabase
+
+      .from('projects')
+
+      .select('*')
+
+      .order(
+        'created_at',
+        {
+          ascending:false,
+        }
+      )
+
+
+
 
 
   return (
 
     <>
+
 
       <SiteHeader />
 
@@ -165,7 +165,11 @@ export default function Page() {
         <Services />
 
 
-        <Portfolio />
+        <Portfolio
+          projects={
+            projects ?? []
+          }
+        />
 
 
         <Gallery />
@@ -179,6 +183,7 @@ export default function Page() {
 
 
       <SiteFooter />
+
 
 
       <BackToTop />

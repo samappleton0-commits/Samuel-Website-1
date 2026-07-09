@@ -1,7 +1,24 @@
-import { redirect } from 'next/navigation'
+/* =========================================================
+   ADMIN DASHBOARD PAGE START
+========================================================= */
 
-import AnnouncementCard from '@/components/admin/announcement-card'
-import { createClient } from '@/lib/supabase-server'
+
+import Link from 'next/link'
+
+import {
+  redirect,
+} from 'next/navigation'
+
+
+import {
+  Megaphone,
+  FolderKanban,
+} from 'lucide-react'
+
+
+import {
+  createClient,
+} from '@/lib/supabase-server'
 
 
 import LiveMessages from '@/components/admin/live-messages'
@@ -10,11 +27,17 @@ import LiveDashboard from '@/components/admin/live-dashboard'
 
 
 
-export default async function AdminPage() {
+
+
+
+
+export default async function AdminPage(){
+
 
 
   const supabase =
     await createClient()
+
 
 
 
@@ -24,12 +47,13 @@ export default async function AdminPage() {
       user,
     },
   } =
-    await supabase.auth.getUser()
+  await supabase.auth.getUser()
 
 
 
 
-  if (!user) {
+
+  if(!user){
 
     redirect('/login')
 
@@ -38,32 +62,39 @@ export default async function AdminPage() {
 
 
 
+
+
+
   const {
     data: messages,
     error,
   } =
-    await supabase
+  await supabase
 
-      .from('contacts')
+    .from('contacts')
 
-      .select('*')
+    .select('*')
 
-      .order(
-        'created_at',
-        {
-          ascending:false,
-        }
-      )
-
-
+    .order(
+      'created_at',
+      {
+        ascending:false,
+      }
+    )
 
 
 
-  if (error) {
+
+
+
+
+  if(error){
 
     console.error(error)
 
   }
+
+
 
 
 
@@ -77,9 +108,21 @@ export default async function AdminPage() {
 
 
 
+
+
   return (
 
+
     <div className="max-w-6xl">
+
+
+
+
+
+
+      {/* ===============================
+          HEADER
+      =============================== */}
 
 
 
@@ -96,11 +139,18 @@ export default async function AdminPage() {
 
 
 
-        <p className="mt-2 text-muted-foreground">
+
+        <p
+          className="
+            mt-2
+            text-muted-foreground
+          "
+        >
 
           Welcome back, {user.email}
 
         </p>
+
 
 
 
@@ -110,22 +160,253 @@ export default async function AdminPage() {
 
 
 
-<AnnouncementCard />
 
 
-<LiveMessages
-  initialMessages={allMessages}
->
 
-  <LiveDashboard />
 
-</LiveMessages>
+      {/* ===============================
+          QUICK MANAGEMENT
+      =============================== */}
+
+
+
+      <div
+        className="
+          mb-10
+          grid
+          gap-5
+          sm:grid-cols-2
+        "
+      >
+
+
+
+
+
+        <Link
+
+
+          href="/admin/announcements"
+
+
+          className="
+            group
+            rounded-2xl
+            border
+            border-border
+            bg-card
+            p-6
+            transition
+            hover:-translate-y-1
+            hover:border-accent/50
+          "
+
+
+        >
+
+
+          <div
+            className="
+              flex
+              items-center
+              gap-4
+            "
+          >
+
+
+
+            <div
+              className="
+                rounded-xl
+                bg-accent/10
+                p-3
+              "
+            >
+
+              <Megaphone
+                size={25}
+              />
+
+            </div>
+
+
+
+
+
+            <div>
+
+
+              <h2 className="font-semibold">
+
+                Manage Announcements
+
+              </h2>
+
+
+
+              <p
+                className="
+                  mt-1
+                  text-sm
+                  text-muted-foreground
+                "
+              >
+
+                Create, edit, and remove announcements.
+
+              </p>
+
+
+            </div>
+
+
+
+          </div>
+
+
+        </Link>
+
+
+
+
+
+
+
+
+
+        <Link
+
+
+          href="/admin/projects"
+
+
+          className="
+            group
+            rounded-2xl
+            border
+            border-border
+            bg-card
+            p-6
+            transition
+            hover:-translate-y-1
+            hover:border-accent/50
+          "
+
+
+        >
+
+
+          <div
+            className="
+              flex
+              items-center
+              gap-4
+            "
+          >
+
+
+
+            <div
+              className="
+                rounded-xl
+                bg-accent/10
+                p-3
+              "
+            >
+
+              <FolderKanban
+                size={25}
+              />
+
+            </div>
+
+
+
+
+
+            <div>
+
+
+              <h2 className="font-semibold">
+
+                Manage Projects
+
+              </h2>
+
+
+
+              <p
+                className="
+                  mt-1
+                  text-sm
+                  text-muted-foreground
+                "
+              >
+
+                Add, edit, and manage portfolio projects.
+
+              </p>
+
+
+            </div>
+
+
+
+          </div>
+
+
+        </Link>
+
+
+
+
+
+
+      </div>
+
+
+
+
+
+
+
+
+
+      {/* ===============================
+          DASHBOARD CONTENT
+      =============================== */}
+
+
+
+
+      <LiveMessages
+
+        initialMessages={
+          allMessages
+        }
+
+      >
+
+
+        <LiveDashboard />
+
+
+      </LiveMessages>
+
+
 
 
 
 
     </div>
 
+
   )
 
 }
+
+
+
+/* =========================================================
+   ADMIN DASHBOARD PAGE END
+========================================================= */
