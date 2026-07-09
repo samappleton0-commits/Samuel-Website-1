@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 
-
+import AnnouncementCard from '@/components/admin/announcement-card'
 import { createClient } from '@/lib/supabase-server'
 
 
@@ -110,18 +110,16 @@ export default async function AdminPage() {
 
 
 
-
-      <LiveMessages
-
-        initialMessages={allMessages}
-
-      >
+<AnnouncementCard />
 
 
-        <LiveDashboard />
+<LiveMessages
+  initialMessages={allMessages}
+>
 
+  <LiveDashboard />
 
-      </LiveMessages>
+</LiveMessages>
 
 
 
