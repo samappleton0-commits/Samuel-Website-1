@@ -1,3 +1,7 @@
+/* =========================================================
+   LIVE DASHBOARD START
+========================================================= */
+
 'use client'
 
 
@@ -13,9 +17,14 @@ import MessageChart from './charts/message-chart'
 
 import StatusChart from './charts/status-chart'
 
+
 import {
   useLiveMessages,
 } from './live-messages'
+
+
+
+
 
 
 
@@ -27,28 +36,57 @@ export default function LiveDashboard() {
 
 
 
+
+
   return (
 
     <>
 
 
+
+      {/* ===============================
+          SUMMARY
+      =============================== */}
+
+
       <AnalyticsSummary
 
-        messages={messages}
+        messages={
+          messages
+        }
 
       />
 
 
+
+
+
+
+
+
+      {/* ===============================
+          SMALL STAT CARDS
+      =============================== */}
 
 
       <StatsGrid
 
-        messages={messages}
+        messages={
+          messages
+        }
 
       />
 
 
 
+
+
+
+
+
+      {/* ===============================
+          QUICK ACTIONS
+      =============================== */}
 
 
       <QuickActions />
@@ -58,27 +96,69 @@ export default function LiveDashboard() {
 
 
 
-      <div className="
-        mb-8
-        grid
-        gap-6
-        xl:grid-cols-2
-      ">
+
+
+
+      {/* ===============================
+          RECENT MESSAGES
+          Maximum 3 items
+      =============================== */}
+
+
+      <RecentMessages
+
+        messages={
+          messages.slice(0,3)
+        }
+
+      />
+
+
+
+
+
+
+
+
+      {/* ===============================
+          ACTIVITY + STATUS
+      =============================== */}
+
+
+
+      <div
+
+        className="
+          mt-8
+          grid
+          gap-6
+          xl:grid-cols-2
+        "
+
+      >
+
 
 
         <MessageChart
 
-          messages={messages}
+          messages={
+            messages
+          }
 
         />
+
 
 
 
         <StatusChart
 
-          messages={messages}
+          messages={
+            messages
+          }
 
         />
+
+
 
 
       </div>
@@ -88,15 +168,14 @@ export default function LiveDashboard() {
 
 
 
-      <RecentMessages
-
-        messages={messages}
-
-      />
-
-
     </>
 
   )
 
 }
+
+
+
+/* =========================================================
+   LIVE DASHBOARD END
+========================================================= */
