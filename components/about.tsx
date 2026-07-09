@@ -26,7 +26,7 @@ export function About() {
       <SectionHeading
         eyebrow="About Me"
         title="Providing Financial and ICT Solutions"
-        description="Combining accounting expertise with modern technology to deliver practical solutions."
+        description="Combining Accounting expertise with modern Technology to deliver practical solutions."
       />
 
 
@@ -99,13 +99,9 @@ export function About() {
 
           <p className="mt-4 leading-relaxed text-muted-foreground">
 
-            My expertise combines accounting and financial management with
-            technology services, including Web development, Graphic Design,
+            My expertise combines accounting with
+            Technology services, including Web Development, Graphic Design,
             QuickBooks, and ICT training.
-
-            I strive to create practical solutions that improve efficiency
-            while staying current with emerging technologies and industry
-            best practices.
 
           </p>
 

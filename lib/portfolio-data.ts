@@ -14,12 +14,11 @@ export const profile = {
   name: 'Samuel R. Appleton',
   roles: [
     'Accountant',
-    'ICT Specialist',
     'Web Developer & Graphic Designer',
-    'ICT Trainer',
+    'ICT Specialist',
   ],
   intro:
-    'I specialize in Accounting and Finance, alongside ICT services such as Website Development, Graphic Design, ICT Training, and Practical Digital solutions that improve efficiency, productivity, and business growth.',
+    'I specialize in Accounting and ICT services such as Website Development, Graphic Design, ICT Training, and Practical Digital solutions that improve productivity.',
   email: 'samappleton0@gmail.com',
   phone: '+231770449708 / +231888323165',
   location: 'Monrovia, Liberia',
