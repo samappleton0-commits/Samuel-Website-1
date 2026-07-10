@@ -2,61 +2,119 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { Loader2, ShieldCheck } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase-browser'
 
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
+
 
   const router = useRouter()
+
   const supabase = createClient()
 
 
-  const [email, setEmail] = useState('')
+
   const [password, setPassword] = useState('')
 
-  const [rememberMe, setRememberMe] = useState(false)
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const [error, setError] = useState('')
+
+  const [message, setMessage] = useState('')
+
   const [loading, setLoading] = useState(false)
 
 
 
-  async function handleLogin(
+
+
+  async function handleUpdatePassword(
     e: React.FormEvent<HTMLFormElement>
   ) {
 
     e.preventDefault()
 
-    setLoading(true)
+
     setError('')
+    setMessage('')
 
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+
+    if (password !== confirmPassword) {
+
+      setError(
+        'Passwords do not match.'
+      )
+
+      return
+
+    }
+
+
+
+    if (password.length < 6) {
+
+      setError(
+        'Password must be at least 6 characters.'
+      )
+
+      return
+
+    }
+
+
+
+    setLoading(true)
+
+
+
+
+    const { error } = await supabase.auth.updateUser({
+
+      password
+
     })
+
+
+
 
 
     if (error) {
 
-      setError(
-        'Invalid email or password. Please try again.'
-      )
+      setError(error.message)
 
       setLoading(false)
 
       return
+
     }
 
 
-    router.push('/admin')
-    router.refresh()
+
+
+    setMessage(
+      'Password updated successfully. Redirecting to login...'
+    )
+
+
+
+    setLoading(false)
+
+
+
+    setTimeout(() => {
+
+      router.push('/login')
+
+    }, 2500)
+
+
 
   }
+
 
 
 
@@ -69,9 +127,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
 
 
-        {/* Main Login Container */}
-
         <div className="glass rounded-3xl p-8 shadow-xl">
+
+
+
 
 
           {/* Brand */}
@@ -89,7 +148,7 @@ export default function LoginPage() {
 
             <h1 className="text-3xl font-bold">
 
-              Admin Portal
+              Create New Password
 
             </h1>
 
@@ -97,7 +156,7 @@ export default function LoginPage() {
 
             <p className="mt-2 text-sm text-muted-foreground">
 
-              Welcome back, sign in to continue
+              Choose a new password for your admin account
 
             </p>
 
@@ -108,8 +167,10 @@ export default function LoginPage() {
 
 
 
+
+
           <form
-            onSubmit={handleLogin}
+            onSubmit={handleUpdatePassword}
           >
 
 
@@ -119,55 +180,8 @@ export default function LoginPage() {
 
 
 
-              {/* Email */}
 
-              <div>
-
-
-                <label
-
-                  htmlFor="email"
-
-                  className="mb-2 block text-sm font-medium"
-
-                >
-
-                  Email Address
-
-                </label>
-
-
-
-                <input
-
-                  id="email"
-
-                  type="email"
-
-                  placeholder="admin@example.com"
-
-                  value={email}
-
-                  onChange={(e)=>setEmail(e.target.value)}
-
-                  autoComplete="email"
-
-                  className="w-full rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
-
-                  required
-
-                />
-
-
-              </div>
-
-
-
-
-
-
-
-              {/* Password */}
+              {/* New Password */}
 
               <div>
 
@@ -180,7 +194,7 @@ export default function LoginPage() {
 
                 >
 
-                  Password
+                  New Password
 
                 </label>
 
@@ -192,13 +206,11 @@ export default function LoginPage() {
 
                   type="password"
 
-                  placeholder="Enter your password"
+                  placeholder="Enter new password"
 
                   value={password}
 
                   onChange={(e)=>setPassword(e.target.value)}
-
-                  autoComplete="current-password"
 
                   className="w-full rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
 
@@ -215,50 +227,42 @@ export default function LoginPage() {
 
 
 
-              {/* Remember + Forgot */}
+              {/* Confirm Password */}
 
-              <div className="flex items-center justify-between">
-
-
-                <label className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div>
 
 
-                  <input
+                <label
 
-                    type="checkbox"
+                  htmlFor="confirmPassword"
 
-                    checked={rememberMe}
+                  className="mb-2 block text-sm font-medium"
 
-                    onChange={(e)=>
-                      setRememberMe(e.target.checked)
-                    }
+                >
 
-                    className="h-4 w-4 rounded border-surface-border accent-accent"
-
-                  />
-
-
-                  <span>
-                    Remember me
-                  </span>
-
+                  Confirm Password
 
                 </label>
 
 
 
+                <input
 
-                <Link
+                  id="confirmPassword"
 
-                  href="/forgot-password"
+                  type="password"
 
-                  className="text-sm font-medium text-accent transition hover:underline"
+                  placeholder="Confirm new password"
 
-                >
+                  value={confirmPassword}
 
-                  Forgot Password?
+                  onChange={(e)=>setConfirmPassword(e.target.value)}
 
-                </Link>
+                  className="w-full rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
+
+                  required
+
+                />
 
 
               </div>
@@ -288,6 +292,24 @@ export default function LoginPage() {
 
 
 
+              {/* Success */}
+
+              {message && (
+
+                <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-600">
+
+                  {message}
+
+                </div>
+
+              )}
+
+
+
+
+
+
+
               {/* Button */}
 
               <Button
@@ -307,14 +329,14 @@ export default function LoginPage() {
 
                     <Loader2 className="h-5 w-5 animate-spin"/>
 
-                    Logging in...
+                    Updating...
 
                   </span>
 
 
                 ) : (
 
-                  'Login'
+                  'Update Password'
 
                 )}
 
@@ -356,7 +378,6 @@ export default function LoginPage() {
 
 
         </div>
-
 
 
       </div>
