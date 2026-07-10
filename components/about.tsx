@@ -1,175 +1,31 @@
-import Image from 'next/image'
-import { CheckCircle2 } from 'lucide-react'
-
-import { Reveal } from '@/components/reveal'
-import { SectionHeading } from '@/components/section-heading'
+import {
+  getAboutData,
+} from '@/lib/get-about'
 
 
-const highlights = [
-  'Reliable',
-  'Efficient',
-  'Innovative',
-  'Adaptable',
-]
+import AboutClient from './about-client'
 
 
-export function About() {
+
+
+
+export async function About(){
+
+
+  const about =
+    await getAboutData()
+
+
 
   return (
 
-    <section
-      id="about"
-      className="mx-auto max-w-6xl px-4 py-24 sm:px-6"
-    >
+    <AboutClient
 
+      about={about}
 
-      <SectionHeading
-        eyebrow="About Me"
-        title="Providing Financial and ICT Solutions"
-        description="Combining Accounting expertise with modern Technology to deliver practical solutions."
-      />
-
-
-
-
-
-      <div className="mt-14 grid items-center gap-10 lg:grid-cols-5">
-
-
-
-
-
-        {/* IMAGE */}
-
-        <Reveal className="lg:col-span-2">
-
-
-          <div className="glass mx-auto max-w-sm rounded-3xl p-3">
-
-
-            <Image
-
-              src="/images/profileme.webp"
-
-              alt="Professional profile"
-
-              width={520}
-
-              height={620}
-
-              className="aspect-[4/5] w-full rounded-2xl object-cover"
-
-            />
-
-
-          </div>
-
-
-        </Reveal>
-
-
-
-
-
-
-
-
-        {/* TEXT CONTENT */}
-
-        <Reveal
-          delay={1}
-          className="
-            lg:col-span-3
-            text-center
-            lg:text-left
-          "
-        >
-
-
-          <p className="text-lg leading-relaxed text-foreground/90">
-
-            I am a dedicated Accounting and ICT professional committed to
-            delivering reliable financial and digital solutions.
-
-          </p>
-
-
-
-
-
-          <p className="mt-4 leading-relaxed text-muted-foreground">
-
-            My expertise combines accounting with
-            Technology services, including Web Development, Graphic Design,
-            QuickBooks, and ICT training.
-
-          </p>
-
-
-
-
-
-
-
-          {/* HIGHLIGHTS */}
-
-          <ul className="mt-8 grid gap-3 sm:grid-cols-2">
-
-
-            {highlights.map((item) => (
-
-              <li
-
-                key={item}
-
-                className="
-                  glass
-                  flex
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-xl
-                  px-4
-                  py-3
-                  lg:justify-start
-                "
-
-              >
-
-
-                <CheckCircle2
-                  className="size-5 shrink-0 text-accent"
-                />
-
-
-                <span className="text-sm text-foreground/90">
-
-                  {item}
-
-                </span>
-
-
-              </li>
-
-
-            ))}
-
-
-          </ul>
-
-
-
-        </Reveal>
-
-
-
-
-      </div>
-
-
-
-    </section>
+    />
 
   )
+
 
 }

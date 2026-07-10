@@ -1,19 +1,9 @@
-/* =========================================================
-   ADMIN SIDEBAR START
-========================================================= */
-
-
 'use client'
 
-
 import Image from 'next/image'
-
 import Link from 'next/link'
-
 import { usePathname } from 'next/navigation'
-
 import { useState } from 'react'
-
 
 import {
   LayoutDashboard,
@@ -22,89 +12,155 @@ import {
   X,
   Megaphone,
   FolderKanban,
+  Sparkles,
+  UserRound,
+  FileText,
+  Phone,
+  PanelBottom,
+  Images,
+  ChevronDown,
 } from 'lucide-react'
-
-
 
 import LogoutButton from '@/components/logout-button'
 
 
-
-
-
-
-const links = [
-
-
+const contentLinks = [
   {
-    name: 'Dashboard',
-
-    href: '/admin',
-
-    icon: LayoutDashboard,
+    name: 'Hero',
+    href: '/admin/hero',
+    icon: Sparkles,
   },
 
-
-
-
-
   {
-    name: 'Messages',
-
-    href: '/admin/messages',
-
-    icon: Mail,
+    name: 'About',
+    href: '/admin/about',
+    icon: UserRound,
   },
 
-
-
-
-
-
   {
-    name: 'Announcements',
-
-    href: '/admin/announcements',
-
-    icon: Megaphone,
+    name: 'Resume',
+    href: '/admin/resume',
+    icon: FileText,
   },
 
+  {
+    name: 'Contact',
+    href: '/admin/contact',
+    icon: Phone,
+  },
 
+  {
+    name: 'Footer',
+    href: '/admin/footer',
+    icon: PanelBottom,
+  },
 
-
-
+  {
+    name: 'Gallery',
+    href: '/admin/gallery',
+    icon: Images,
+  },
 
   {
     name: 'Projects',
-
     href: '/admin/projects',
-
     icon: FolderKanban,
   },
+]
 
 
+const communicationLinks = [
+  {
+    name: 'Messages',
+    href: '/admin/messages',
+    icon: Mail,
+  },
 
+  {
+    name: 'Announcements',
+    href: '/admin/announcements',
+    icon: Megaphone,
+  },
 ]
 
 
 
 
 
+export default function AdminSidebar() {
+
+
+  const pathname = usePathname()
+
+
+  const [open, setOpen] = useState(false)
+
+
+  const [contentOpen, setContentOpen] = useState(true)
+
+
+  const [communicationOpen, setCommunicationOpen] = useState(true)
 
 
 
 
-export default function AdminSidebar(){
+
+  function renderLinks(items:any[]) {
+
+    return items.map((link)=>{
+
+
+      const Icon = link.icon
+
+
+      const active =
+        pathname === link.href
 
 
 
-  const pathname =
-    usePathname()
+      return (
+
+        <Link
+
+          key={link.name}
+
+          href={link.href}
+
+          onClick={()=>setOpen(false)}
+
+          className={`
+            flex
+            items-center
+            gap-3
+            rounded-xl
+            px-4
+            py-3
+            text-sm
+            transition
+
+            ${
+              active
+              ?
+              'bg-accent text-white'
+              :
+              'hover:bg-surface'
+            }
+          `}
+
+        >
+
+          <Icon size={20}/>
+
+          {link.name}
 
 
+        </Link>
 
-  const [open,setOpen] =
-    useState(false)
+      )
+
+    })
+
+  }
 
 
 
@@ -118,13 +174,7 @@ export default function AdminSidebar(){
     <>
 
 
-
-
-
-      {/* ===============================
-          MOBILE HEADER
-      =============================== */}
-
+      {/* MOBILE HEADER */}
 
       <div
         className="
@@ -139,23 +189,14 @@ export default function AdminSidebar(){
         "
       >
 
-
         <h2 className="font-bold text-lg">
-
           Admin Panel
-
         </h2>
-
-
-
 
 
         <button
 
-          onClick={() =>
-            setOpen(true)
-          }
-
+          onClick={()=>setOpen(true)}
 
           className="
             rounded-xl
@@ -167,10 +208,7 @@ export default function AdminSidebar(){
 
           <Menu size={25}/>
 
-
         </button>
-
-
 
 
       </div>
@@ -182,22 +220,14 @@ export default function AdminSidebar(){
 
 
 
-
-      {/* ===============================
-          MOBILE OVERLAY
-      =============================== */}
-
-
+      {/* MOBILE OVERLAY */}
 
       {
         open && (
 
           <div
 
-            onClick={() =>
-              setOpen(false)
-            }
-
+            onClick={()=>setOpen(false)}
 
             className="
               fixed
@@ -220,19 +250,12 @@ export default function AdminSidebar(){
 
 
 
-      {/* ===============================
-          SIDEBAR
-      =============================== */}
-
-
-
+      {/* SIDEBAR */}
 
 
       <aside
 
-
         className={`
-
           flex
           flex-col
 
@@ -277,9 +300,7 @@ export default function AdminSidebar(){
 
           lg:static
 
-          lg:h-fit
-
-          lg:min-h-screen
+          lg:h-screen
 
           lg:w-auto
 
@@ -287,7 +308,6 @@ export default function AdminSidebar(){
 
 
         `}
-
 
       >
 
@@ -297,11 +317,7 @@ export default function AdminSidebar(){
 
 
 
-        {/* ===============================
-            CLOSE BUTTON
-        =============================== */}
-
-
+        {/* CLOSE */}
 
         <div
           className="
@@ -312,22 +328,15 @@ export default function AdminSidebar(){
           "
         >
 
-
           <button
 
-
-            onClick={() =>
-              setOpen(false)
-            }
-
-
+            onClick={()=>setOpen(false)}
 
             className="
               rounded-xl
               p-2
               hover:bg-surface
             "
-
 
           >
 
@@ -347,36 +356,26 @@ export default function AdminSidebar(){
 
 
 
-        {/* ===============================
-            PROFILE
-        =============================== */}
-
-
+        {/* PROFILE */}
 
 
         <div
           className="
-            mb-8
+            mb-6
             text-center
+            shrink-0
           "
         >
 
-
-
           <Image
-
 
             src="/profileme.png"
 
-
             alt="Samuel Appleton"
-
 
             width={90}
 
-
             height={90}
-
 
             className="
               mx-auto
@@ -386,39 +385,23 @@ export default function AdminSidebar(){
               object-cover
             "
 
-
           />
 
 
-
-
-
           <h2 className="mt-4 text-xl font-bold">
-
-
             Samuel Appleton
-
-
           </h2>
 
 
-
-
-
-
-          <p
-            className="
-              mt-1
-              text-sm
-              text-muted-foreground
-            "
-          >
+          <p className="
+            mt-1
+            text-sm
+            text-muted-foreground
+          ">
 
             Administrator
 
           </p>
-
-
 
 
         </div>
@@ -431,118 +414,219 @@ export default function AdminSidebar(){
 
 
 
-        {/* ===============================
-            NAVIGATION
-        =============================== */}
+        {/* SCROLLABLE NAV */}
 
 
+        <nav
+          className="
+            flex-1
+            overflow-y-auto
+            hide-scrollbar
+            space-y-6
+            pr-1
+          "
+        >
 
 
-        <nav className="space-y-2">
 
 
 
-          {
-            links.map(
-              (link) => {
+          {/* DASHBOARD */}
 
 
-                const Icon =
-                  link.icon
+          <Link
 
+            href="/admin"
 
+            onClick={()=>setOpen(false)}
 
-                const active =
-                  pathname === link.href
+            className={`
+              flex
+              items-center
+              gap-3
+              rounded-xl
+              px-4
+              py-3
+              text-sm
+              transition
 
+              ${
+                pathname === '/admin'
+                ?
+                'bg-accent text-white'
+                :
+                'hover:bg-surface'
+              }
+            `}
 
+          >
 
+            <LayoutDashboard size={20}/>
 
+            Dashboard
 
 
-                return (
+          </Link>
 
-                  <Link
 
 
-                    key={
-                      link.name
-                    }
 
 
 
-                    href={
-                      link.href
-                    }
 
 
 
-                    onClick={() =>
-                      setOpen(false)
-                    }
+          {/* CONTENT */}
 
 
+          <div>
 
 
-                    className={`
+            <button
 
-                      flex
-
-                      items-center
-
-                      gap-3
-
-                      rounded-xl
-
-                      px-4
-
-                      py-3
-
-                      text-sm
-
-                      transition
-
-
-
-                      ${
-                        active
-
-                        ?
-
-                        'bg-accent text-white'
-
-                        :
-
-                        'hover:bg-surface'
-
-                      }
-
-
-                    `}
-
-
-                  >
-
-
-
-                    <Icon size={20}/>
-
-
-
-                    {link.name}
-
-
-
-                  </Link>
-
-
-                )
-
-
+              onClick={()=>
+                setContentOpen(!contentOpen)
               }
 
-            )
-          }
+              className="
+                flex
+                w-full
+                items-center
+                justify-between
+                px-4
+                text-xs
+                font-semibold
+                uppercase
+                text-muted-foreground
+              "
+
+            >
+
+              Content
+
+              <ChevronDown
+
+                size={16}
+
+                className={`
+                  transition
+                  ${
+                    contentOpen
+                    ?
+                    'rotate-180'
+                    :
+                    ''
+                  }
+                `}
+
+              />
+
+            </button>
+
+
+
+
+
+            {
+              contentOpen && (
+
+                <div className="
+                  mt-2
+                  space-y-2
+                ">
+
+                  {renderLinks(contentLinks)}
+
+                </div>
+
+              )
+            }
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+          {/* COMMUNICATION */}
+
+
+          <div>
+
+
+            <button
+
+              onClick={()=>
+                setCommunicationOpen(!communicationOpen)
+              }
+
+              className="
+                flex
+                w-full
+                items-center
+                justify-between
+                px-4
+                text-xs
+                font-semibold
+                uppercase
+                text-muted-foreground
+              "
+
+            >
+
+              Communication
+
+
+              <ChevronDown
+
+                size={16}
+
+                className={`
+                  transition
+                  ${
+                    communicationOpen
+                    ?
+                    'rotate-180'
+                    :
+                    ''
+                  }
+                `}
+
+              />
+
+            </button>
+
+
+
+
+
+
+            {
+              communicationOpen && (
+
+                <div className="
+                  mt-2
+                  space-y-2
+                ">
+
+                  {renderLinks(communicationLinks)}
+
+                </div>
+
+              )
+            }
+
+
+          </div>
+
+
+
+
 
 
 
@@ -556,13 +640,13 @@ export default function AdminSidebar(){
 
 
 
-        {/* ===============================
-            LOGOUT
-        =============================== */}
+        {/* LOGOUT */}
 
 
-
-        <div className="mt-8">
+        <div className="
+          mt-6
+          shrink-0
+        ">
 
 
           <LogoutButton />
@@ -575,21 +659,11 @@ export default function AdminSidebar(){
 
 
 
-
       </aside>
-
-
-
 
 
     </>
 
   )
 
-
 }
-
-
-/* =========================================================
-   ADMIN SIDEBAR END
-========================================================= */
