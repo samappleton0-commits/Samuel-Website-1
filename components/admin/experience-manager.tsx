@@ -1,7 +1,12 @@
 
 'use client'
 
-import { useMemo, useState } from 'react'
+
+import {
+  useMemo,
+  useState,
+} from 'react'
+
 
 import {
   Plus,
@@ -13,37 +18,63 @@ import {
   ArrowDown,
 } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase-browser'
+
+import {
+  createClient
+} from '@/lib/supabase-browser'
+
+
+
 
 
 
 type Experience = {
 
+
   id: string
+
 
   position: string
 
+
   company: string
+
 
   location: string
 
+
   start_date: string
+
 
   end_date: string
 
+
   description: string | null
+
 
   display_order: number
 
+
 }
+
+
+
+
+
 
 
 
 type Props = {
 
+
   initialExperience: Experience[]
 
+
 }
+
+
+
+
 
 
 
@@ -61,31 +92,46 @@ export default function ExperienceManager({
 
 
 
-  const [experience, setExperience] =
+
+
+
+  const [experience,setExperience] =
 
     useState<Experience[]>(initialExperience)
 
 
 
-  const [open, setOpen] =
+
+
+
+  const [open,setOpen] =
 
     useState(false)
 
 
 
-  const [editing, setEditing] =
+
+
+
+  const [editing,setEditing] =
 
     useState<Experience | null>(null)
 
 
 
-  const [saving, setSaving] =
+
+
+
+  const [saving,setSaving] =
 
     useState(false)
 
 
 
-  const [message, setMessage] =
+
+
+
+  const [message,setMessage] =
 
     useState('')
 
@@ -95,19 +141,27 @@ export default function ExperienceManager({
 
 
 
-  const sortedExperience = useMemo(() => {
 
 
-    return [...experience].sort(
+  const sortedExperience = useMemo(()=>{
 
-      (a, b) =>
 
-        a.display_order - b.display_order
+    return [
+
+      ...experience
+
+    ].sort(
+
+      (a,b)=>
+
+        a.display_order -
+
+        b.display_order
 
     )
 
 
-  }, [experience])
+  },[experience])
 
 
 
@@ -115,40 +169,85 @@ export default function ExperienceManager({
 
 
 
-  function createNew() {
+
+
+
+
+
+
+
+  function createNew(){
+
+
+
+    const nextOrder =
+
+
+      experience.length > 0
+
+
+      ?
+
+
+      Math.max(
+
+        ...experience.map(
+
+          item =>
+
+            item.display_order
+
+        )
+
+      ) + 1
+
+
+
+      :
+
+
+
+      1
+
+
+
+
+
 
 
     setEditing({
 
-      id: '',
 
-      position: '',
+      id:'',
 
-      company: '',
 
-      location: '',
+      position:'',
 
-      start_date: '',
 
-      end_date: '',
+      company:'',
 
-      description: '',
+
+      location:'',
+
+
+      start_date:'',
+
+
+      end_date:'',
+
+
+      description:'',
+
 
       display_order:
 
-        Math.max(
+        nextOrder,
 
-          ...experience.map(
-
-            item => item.display_order
-
-          ),
-
-          0
-
-        ) + 1,
 
     })
+
+
+
 
 
 
@@ -164,7 +263,11 @@ export default function ExperienceManager({
 
 
 
-  function editItem(item: Experience) {
+
+
+
+
+  function editItem(item:Experience){
 
 
     setEditing(item)
@@ -181,18 +284,27 @@ export default function ExperienceManager({
 
 
 
+
+
+
+
+
   function updateField(
 
-    field: keyof Experience,
+    field:keyof Experience,
 
-    value: string
+    value:string
 
-  ) {
+  ){
 
 
-    if (!editing)
+
+    if(!editing)
 
       return
+
+
+
 
 
 
@@ -200,7 +312,9 @@ export default function ExperienceManager({
 
       ...editing,
 
-      [field]: value,
+
+      [field]:value,
+
 
     })
 
@@ -208,57 +322,117 @@ export default function ExperienceManager({
   }
 
 
-  async function saveItem() {
+
+  async function saveItem(){
 
 
-    if (!editing)
+
+    if(!editing)
 
       return
 
 
 
 
-    try {
+
+
+    // Prevent empty position values
+
+    if(!editing.position.trim()){
+
+
+      setMessage(
+
+        'Position is required.'
+
+      )
+
+
+      return
+
+
+    }
+
+
+
+
+
+
+    try{
+
 
 
       setSaving(true)
 
 
 
-      if (editing.id) {
 
 
 
-        const { error } =
+
+      if(editing.id){
+
+
+
+
+
+        const {error} =
+
 
           await supabase
 
+
             .from('experience')
+
 
             .update({
 
+
               position:
-                editing.position,
+
+                editing.position.trim(),
+
+
 
               company:
-                editing.company,
+
+                editing.company.trim(),
+
+
 
               location:
-                editing.location,
+
+                editing.location.trim(),
+
+
 
               start_date:
+
                 editing.start_date,
 
+
+
               end_date:
+
                 editing.end_date,
 
+
+
               description:
+
                 editing.description,
 
+
+
               display_order:
+
                 editing.display_order,
 
+
+
             })
+
+
 
             .eq(
 
@@ -272,9 +446,15 @@ export default function ExperienceManager({
 
 
 
-        if (error)
+
+
+
+        if(error)
 
           throw error
+
+
+
 
 
 
@@ -282,63 +462,124 @@ export default function ExperienceManager({
 
         setExperience(current =>
 
+
           current.map(item =>
+
 
             item.id === editing.id
 
-              ? editing
 
-              : item
+            ?
+
+
+            editing
+
+
+            :
+
+
+            item
+
 
           )
 
+
         )
+
+
+
+
+
 
 
 
         setMessage(
+
           'Experience updated successfully.'
+
         )
 
 
 
 
-      } else {
 
 
 
-        const { data, error } =
+      }else{
+
+
+
+
+
+
+        const {data,error} =
+
 
           await supabase
 
+
             .from('experience')
+
 
             .insert({
 
+
+
               position:
-                editing.position,
+
+                editing.position.trim(),
+
+
+
 
               company:
-                editing.company,
+
+                editing.company.trim(),
+
+
+
 
               location:
-                editing.location,
+
+                editing.location.trim(),
+
+
+
 
               start_date:
+
                 editing.start_date,
 
+
+
+
               end_date:
+
                 editing.end_date,
 
+
+
+
               description:
+
                 editing.description,
 
+
+
+
               display_order:
+
                 editing.display_order,
+
+
+
 
             })
 
+
+
             .select()
+
 
             .single()
 
@@ -346,7 +587,9 @@ export default function ExperienceManager({
 
 
 
-        if (error)
+
+
+        if(error)
 
           throw error
 
@@ -354,14 +597,21 @@ export default function ExperienceManager({
 
 
 
-        if (data) {
+
+
+
+        if(data){
+
 
 
           setExperience(current => [
 
+
             ...current,
 
+
             data,
+
 
           ])
 
@@ -371,9 +621,17 @@ export default function ExperienceManager({
 
 
 
+
+
+
         setMessage(
+
           'Experience added successfully.'
+
         )
+
+
+
 
 
       }
@@ -383,7 +641,10 @@ export default function ExperienceManager({
 
 
 
+
+
       setOpen(false)
+
 
 
       setEditing(null)
@@ -392,21 +653,37 @@ export default function ExperienceManager({
 
 
 
-    } catch (error) {
+    }
 
 
 
-      console.error(error)
+    catch(error){
 
 
 
-      setMessage(
-        'Unable to save experience.'
+      console.error(
+
+        'SAVE EXPERIENCE ERROR:',
+
+        error
+
       )
 
 
 
-    } finally {
+      setMessage(
+
+        'Unable to save experience.'
+
+      )
+
+
+
+    }
+
+
+
+    finally{
 
 
 
@@ -428,7 +705,11 @@ export default function ExperienceManager({
 
 
 
-  async function deleteItem(id: string) {
+
+
+
+
+  async function deleteItem(id:string){
 
 
 
@@ -443,7 +724,9 @@ export default function ExperienceManager({
 
 
 
-    if (!confirmed)
+
+
+    if(!confirmed)
 
       return
 
@@ -451,13 +734,20 @@ export default function ExperienceManager({
 
 
 
-    const { error } =
+
+
+
+    const {error} =
+
 
       await supabase
 
+
         .from('experience')
 
+
         .delete()
+
 
         .eq(
 
@@ -471,72 +761,78 @@ export default function ExperienceManager({
 
 
 
-    if (error) {
 
-  console.error(
-    'Move down error:',
-    error.message,
-    error.details,
-    error.hint
-  )
 
-  setMessage(
-    'Failed to update order.'
-  )
+    if(error){
 
-  return
 
-}
 
-if (error) {
+      console.error(error)
 
-  setMessage(
-    error.message
-  )
 
-  return
 
-}
+      setMessage(
+
+        error.message
+
+      )
+
+
+
+      return
+
+
+
+    }
+
+
+
+
 
 
 
     setExperience(current =>
 
+
       current.filter(item =>
+
 
         item.id !== id
 
+
       )
 
+
     )
+
 
 
 
 
 
     setMessage(
+
       'Experience deleted successfully.'
+
     )
+
+
 
 
 
   }
 
 
+  async function moveUp(index:number){
 
 
 
-
-
-
-
-  async function moveUp(index: number) {
-
-
-
-    if (index === 0)
+    if(index === 0)
 
       return
+
+
+
 
 
 
@@ -551,6 +847,9 @@ if (error) {
 
 
 
+
+
+
     const current =
 
       items[index]
@@ -558,9 +857,15 @@ if (error) {
 
 
 
+
+
+
     const previous =
 
       items[index - 1]
+
+
+
 
 
 
@@ -574,9 +879,14 @@ if (error) {
 
 
 
+
+
+
     current.display_order =
 
       previous.display_order
+
+
 
 
 
@@ -591,49 +901,84 @@ if (error) {
 
 
 
+
+
     setExperience(items)
 
 
 
+const { error: error1 } =
 
-
-
-    const { data, error } =
   await supabase
+
     .from('experience')
-    .upsert([
-      {
-        id: current.id,
-        display_order: current.display_order,
-      },
-      {
-        id: next.id,
-        display_order: next.display_order,
-      },
-    ])
-    .select()
+
+    .update({
+
+      display_order: current.display_order,
+
+    })
+
+    .eq('id', current.id)
 
 
-console.log('MOVE DOWN RESULT:', {
-  data,
-  error,
-})
 
+if(error1){
 
-if (error) {
+  console.error(error1)
 
-  setMessage(
-    error.message
-  )
+  setMessage(error1.message)
 
   return
 
 }
 
 
-    if (error)
 
-      console.error(error)
+const { error: error2 } =
+
+  await supabase
+
+    .from('experience')
+
+    .update({
+
+      display_order: previous.display_order,
+
+    })
+
+    .eq('id', previous.id)
+
+
+
+if(error2){
+
+  console.error(error2)
+
+  setMessage(error2.message)
+
+  return
+
+}
+
+
+
+setMessage('Experience order updated.')
+
+
+
+
+
+
+
+
+    setMessage(
+
+      'Experience order updated.'
+
+    )
+
+
 
 
 
@@ -647,48 +992,95 @@ if (error) {
 
 
 
-  async function moveDown(index: number) {
-
-  if (index === sortedExperience.length - 1) {
-    return
-  }
 
 
-  try {
-
-    const items = [...sortedExperience]
 
 
-    const current = items[index]
-
-    const next = items[index + 1]
 
 
-    if (!current || !next) {
 
-      console.log(
-        'Missing item',
-        {
-          current,
-          next,
-        }
-      )
+  async function moveDown(index:number){
+
+
+
+    if(
+
+      index ===
+
+      sortedExperience.length - 1
+
+    )
 
       return
-    }
 
 
 
-    const currentOrder =
+
+
+
+
+    const items = [
+
+      ...sortedExperience
+
+    ]
+
+
+
+
+
+
+
+    const current =
+
+      items[index]
+
+
+
+
+
+
+
+    const next =
+
+      items[index + 1]
+
+
+
+
+
+
+
+
+    const temp =
+
       current.display_order
 
 
+
+
+
+
+
+
     current.display_order =
+
       next.display_order
 
 
+
+
+
+
+
     next.display_order =
-      currentOrder
+
+      temp
+
+
+
+
+
 
 
 
@@ -696,80 +1088,102 @@ if (error) {
 
 
 
-    const result =
-      await supabase
-        .from('experience')
-        .upsert([
-          {
-            id: current.id,
-            display_order:
-              current.display_order,
-          },
-          {
-            id: next.id,
-            display_order:
-              next.display_order,
-          },
-        ])
-
-
-    console.log(
-      'MOVE DOWN RESULT',
-      result
-    )
 
 
 
-    if (result.error) {
-
-      console.log(
-        'SUPABASE ERROR',
-        result.error.message
-      )
-
-      setMessage(
-        result.error.message
-      )
-
-      return
-    }
 
 
+const { error: error1 } =
 
-    setMessage(
-      'Experience order updated.'
-    )
+  await supabase
+
+    .from('experience')
+
+    .update({
+
+      display_order: current.display_order,
+
+    })
+
+    .eq('id', current.id)
 
 
-  } catch (error) {
 
+if(error1){
 
-    console.log(
-      'MOVE DOWN CRASH',
-      error
-    )
+  console.error(error1)
 
+  setMessage(error1.message)
 
-    setMessage(
-      'Move down failed.'
-    )
-
-  }
-
+  return
 
 }
 
 
+
+const { error: error2 } =
+
+  await supabase
+
+    .from('experience')
+
+    .update({
+
+      display_order: next.display_order,
+
+    })
+
+    .eq('id', next.id)
+
+
+
+if(error2){
+
+  console.error(error2)
+
+  setMessage(error2.message)
+
+  return
+
+}
+
+
+
+setMessage('Experience order updated.')
+
+
+
+
+    setMessage(
+
+      'Experience order updated.'
+
+    )
+
+
+
+
+
+
+  }
+
+
   return (
 
+
     <div className="space-y-6">
+
+
+
 
 
 
       {
         message && (
 
+
           <div
+
             className="
               rounded-xl
               border
@@ -780,13 +1194,18 @@ if (error) {
               text-sm
               text-green-700
             "
+
           >
+
 
             {message}
 
+
           </div>
 
+
         )
+
       }
 
 
@@ -794,13 +1213,18 @@ if (error) {
 
 
 
+
+
+
       <div
+
         className="
           flex
           items-center
           justify-between
           gap-4
         "
+
       >
 
 
@@ -809,10 +1233,12 @@ if (error) {
 
 
           <h2
+
             className="
               text-2xl
               font-bold
             "
+
           >
 
             Work Experience
@@ -823,15 +1249,18 @@ if (error) {
 
 
           <p
+
             className="
               text-sm
               text-muted-foreground
             "
+
           >
 
             Manage your professional experience.
 
           </p>
+
 
 
         </div>
@@ -841,9 +1270,13 @@ if (error) {
 
 
 
+
+
         <button
 
+
           onClick={createNew}
+
 
           className="
             flex
@@ -855,6 +1288,7 @@ if (error) {
             py-3
             text-white
           "
+
 
         >
 
@@ -870,7 +1304,13 @@ if (error) {
 
 
 
+
+
       </div>
+
+
+
+
 
 
 
@@ -883,15 +1323,20 @@ if (error) {
       <div className="space-y-5">
 
 
+
         {
+
           sortedExperience.map(
 
             (item,index)=>(
 
 
+
               <div
 
+
                 key={item.id}
+
 
                 className="
                   rounded-2xl
@@ -901,18 +1346,24 @@ if (error) {
                   p-6
                 "
 
+
               >
 
 
 
+
+
                 <h3
+
                   className="
                     text-xl
                     font-semibold
                   "
+
                 >
 
                   {item.position}
+
 
                 </h3>
 
@@ -920,29 +1371,38 @@ if (error) {
 
 
 
+
+
                 <p
+
                   className="
                     mt-1
                     text-muted-foreground
                   "
+
                 >
 
                   {item.company}
 
+
                 </p>
 
 
 
 
 
+
                 <p
+
                   className="
                     mt-1
                     text-sm
                   "
+
                 >
 
                   {item.location}
+
 
                 </p>
 
@@ -951,11 +1411,14 @@ if (error) {
 
 
 
+
                 <p
+
                   className="
                     mt-2
                     text-sm
                   "
+
                 >
 
                   {item.start_date}
@@ -974,23 +1437,29 @@ if (error) {
 
 
                 {
+
                   item.description && (
 
+
                     <p
+
                       className="
                         mt-4
                         whitespace-pre-line
                         text-sm
                         text-muted-foreground
                       "
+
                     >
 
                       {item.description}
+
 
                     </p>
 
 
                   )
+
                 }
 
 
@@ -1000,14 +1469,19 @@ if (error) {
 
 
 
+
                 <div
+
                   className="
                     mt-6
                     flex
                     flex-wrap
                     gap-3
                   "
+
                 >
+
+
 
 
 
@@ -1015,11 +1489,16 @@ if (error) {
 
                   <button
 
+
                     onClick={()=>
+
                       moveUp(index)
+
                     }
 
-                    disabled={index === 0}
+
+                    disabled={index===0}
+
 
                     className="
                       flex
@@ -1031,6 +1510,7 @@ if (error) {
                       py-2
                       disabled:opacity-40
                     "
+
 
                   >
 
@@ -1041,7 +1521,6 @@ if (error) {
                     Up
 
 
-
                   </button>
 
 
@@ -1054,14 +1533,22 @@ if (error) {
 
                   <button
 
+
                     onClick={()=>
+
                       moveDown(index)
+
                     }
 
+
                     disabled={
+
                       index ===
+
                       sortedExperience.length - 1
+
                     }
+
 
                     className="
                       flex
@@ -1074,6 +1561,7 @@ if (error) {
                       disabled:opacity-40
                     "
 
+
                   >
 
 
@@ -1081,7 +1569,6 @@ if (error) {
 
 
                     Down
-
 
 
                   </button>
@@ -1096,9 +1583,14 @@ if (error) {
 
                   <button
 
+
                     onClick={()=>
+
+
                       editItem(item)
+
                     }
+
 
                     className="
                       flex
@@ -1109,6 +1601,7 @@ if (error) {
                       px-4
                       py-2
                     "
+
 
                   >
 
@@ -1119,7 +1612,6 @@ if (error) {
                     Edit
 
 
-
                   </button>
 
 
@@ -1132,9 +1624,14 @@ if (error) {
 
                   <button
 
+
                     onClick={()=>
+
+
                       deleteItem(item.id)
+
                     }
+
 
                     className="
                       flex
@@ -1146,6 +1643,7 @@ if (error) {
                       py-2
                     "
 
+
                   >
 
 
@@ -1155,8 +1653,8 @@ if (error) {
                     Delete
 
 
-
                   </button>
+
 
 
 
@@ -1175,6 +1673,8 @@ if (error) {
 
 
           )
+
+
         }
 
 
@@ -1184,6 +1684,7 @@ if (error) {
 
       {
         open && editing && (
+
 
           <div
 
@@ -1201,6 +1702,9 @@ if (error) {
           >
 
 
+
+
+
             <div
 
               className="
@@ -1213,6 +1717,8 @@ if (error) {
               "
 
             >
+
+
 
 
 
@@ -1230,18 +1736,26 @@ if (error) {
 
 
                 <h2
+
                   className="
                     text-xl
                     font-bold
                   "
+
                 >
+
 
                   {
                     editing.id
+
                     ?
+
                     'Edit Experience'
+
                     :
+
                     'Add Experience'
+
                   }
 
 
@@ -1251,7 +1765,10 @@ if (error) {
 
 
 
+
+
                 <button
+
 
                   onClick={()=>{
 
@@ -1261,18 +1778,22 @@ if (error) {
 
                   }}
 
+
                   className="
                     rounded-lg
                     p-2
                     hover:bg-muted
                   "
 
+
                 >
+
 
                   <X size={20}/>
 
 
                 </button>
+
 
 
 
@@ -1292,11 +1813,14 @@ if (error) {
 
 
 
+
+
+
                 <input
 
-                  value={
-                    editing.position
-                  }
+
+                  value={editing.position}
+
 
                   onChange={(e)=>
 
@@ -1310,7 +1834,9 @@ if (error) {
 
                   }
 
+
                   placeholder="Position / Job Title"
+
 
                   className="
                     w-full
@@ -1320,7 +1846,10 @@ if (error) {
                     py-3
                   "
 
+
                 />
+
+
 
 
 
@@ -1330,9 +1859,9 @@ if (error) {
 
                 <input
 
-                  value={
-                    editing.company
-                  }
+
+                  value={editing.company}
+
 
                   onChange={(e)=>
 
@@ -1346,7 +1875,9 @@ if (error) {
 
                   }
 
+
                   placeholder="Company / Organization"
+
 
                   className="
                     w-full
@@ -1356,7 +1887,10 @@ if (error) {
                     py-3
                   "
 
+
                 />
+
+
 
 
 
@@ -1366,9 +1900,9 @@ if (error) {
 
                 <input
 
-                  value={
-                    editing.location
-                  }
+
+                  value={editing.location}
+
 
                   onChange={(e)=>
 
@@ -1382,7 +1916,9 @@ if (error) {
 
                   }
 
+
                   placeholder="Location"
+
 
                   className="
                     w-full
@@ -1392,7 +1928,9 @@ if (error) {
                     py-3
                   "
 
+
                 />
+
 
 
 
@@ -1413,11 +1951,13 @@ if (error) {
 
 
 
+
+
                   <input
 
-                    value={
-                      editing.start_date
-                    }
+
+                    value={editing.start_date}
+
 
                     onChange={(e)=>
 
@@ -1431,7 +1971,9 @@ if (error) {
 
                     }
 
+
                     placeholder="Start Date"
+
 
                     className="
                       rounded-xl
@@ -1439,6 +1981,7 @@ if (error) {
                       px-4
                       py-3
                     "
+
 
                   />
 
@@ -1450,9 +1993,9 @@ if (error) {
 
                   <input
 
-                    value={
-                      editing.end_date
-                    }
+
+                    value={editing.end_date}
+
 
                     onChange={(e)=>
 
@@ -1466,7 +2009,9 @@ if (error) {
 
                     }
 
+
                     placeholder="End Date"
+
 
                     className="
                       rounded-xl
@@ -1475,7 +2020,9 @@ if (error) {
                       py-3
                     "
 
+
                   />
+
 
 
 
@@ -1491,9 +2038,9 @@ if (error) {
 
                 <textarea
 
-                  value={
-                    editing.description ?? ''
-                  }
+
+                  value={editing.description ?? ''}
+
 
                   onChange={(e)=>
 
@@ -1507,9 +2054,12 @@ if (error) {
 
                   }
 
+
                   placeholder="Responsibilities and achievements"
 
+
                   rows={6}
+
 
                   className="
                     w-full
@@ -1519,7 +2069,9 @@ if (error) {
                     py-3
                   "
 
+
                 />
+
 
 
 
@@ -1548,7 +2100,11 @@ if (error) {
 
 
 
+
+
+
                 <button
+
 
                   onClick={()=>{
 
@@ -1558,6 +2114,7 @@ if (error) {
 
                   }}
 
+
                   className="
                     rounded-xl
                     border
@@ -1565,7 +2122,9 @@ if (error) {
                     py-3
                   "
 
+
                 >
+
 
                   Cancel
 
@@ -1578,11 +2137,16 @@ if (error) {
 
 
 
+
+
                 <button
+
 
                   onClick={saveItem}
 
+
                   disabled={saving}
+
 
                   className="
                     flex
@@ -1596,7 +2160,9 @@ if (error) {
                     disabled:opacity-50
                   "
 
+
                 >
+
 
 
                   <Save size={18}/>
@@ -1604,17 +2170,26 @@ if (error) {
 
 
 
+
                   {
+
                     saving
+
                     ?
+
                     'Saving...'
+
                     :
+
                     'Save'
+
                   }
 
 
 
                 </button>
+
+
 
 
 
@@ -1626,7 +2201,11 @@ if (error) {
 
 
 
+
+
             </div>
+
+
 
 
 
@@ -1638,8 +2217,14 @@ if (error) {
 
 
 
+
+
+
+
     </div>
 
+
   )
+
 
 }
