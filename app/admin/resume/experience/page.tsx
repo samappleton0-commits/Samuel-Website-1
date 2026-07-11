@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 
 import { createClient } from '@/lib/supabase-server'
-
+import BackToResume from '@/components/admin/back-to-resume'
 import ExperienceManager from '@/components/admin/experience-manager'
 
 
@@ -69,7 +69,7 @@ export default async function ExperiencePage() {
   return (
 
     <div className="max-w-6xl">
-
+ <BackToResume />
 
       <div className="mb-10">
 

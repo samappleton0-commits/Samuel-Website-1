@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 
 import { createClient } from '@/lib/supabase-server'
+import BackToResume from '@/components/admin/back-to-resume'
 
 import EducationManager from '@/components/admin/education-manager'
 
@@ -72,7 +73,7 @@ export default async function EducationPage() {
 
 
       <div className="mb-10">
-
+ <BackToResume />
 
         <h1 className="text-3xl font-bold">
 
@@ -108,6 +109,7 @@ export default async function EducationPage() {
 
 
     </div>
+    
 
   )
 

@@ -1,59 +1,122 @@
+
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+
 import {
   Plus,
   Pencil,
   Trash2,
   Save,
   X,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react'
 
 import { createClient } from '@/lib/supabase-browser'
 
 
+
 type Experience = {
+
   id: string
+
   position: string
+
   company: string
+
   location: string
+
   start_date: string
+
   end_date: string
+
   description: string | null
+
+  display_order: number
+
 }
+
 
 
 type Props = {
+
   initialExperience: Experience[]
+
 }
 
 
+
+
+
 export default function ExperienceManager({
+
   initialExperience,
+
 }: Props) {
+
 
 
   const supabase = createClient()
 
 
+
   const [experience, setExperience] =
-    useState(initialExperience)
+
+    useState<Experience[]>(initialExperience)
+
 
 
   const [open, setOpen] =
+
     useState(false)
+
 
 
   const [editing, setEditing] =
+
     useState<Experience | null>(null)
 
 
+
   const [saving, setSaving] =
+
     useState(false)
+
+
+
+  const [message, setMessage] =
+
+    useState('')
+
+
+
+
+
+
+
+  const sortedExperience = useMemo(() => {
+
+
+    return [...experience].sort(
+
+      (a, b) =>
+
+        a.display_order - b.display_order
+
+    )
+
+
+  }, [experience])
+
+
+
+
 
 
 
   function createNew() {
+
 
     setEditing({
 
@@ -71,12 +134,31 @@ export default function ExperienceManager({
 
       description: '',
 
+      display_order:
+
+        Math.max(
+
+          ...experience.map(
+
+            item => item.display_order
+
+          ),
+
+          0
+
+        ) + 1,
+
     })
+
 
 
     setOpen(true)
 
+
   }
+
+
+
 
 
 
@@ -84,9 +166,12 @@ export default function ExperienceManager({
 
   function editItem(item: Experience) {
 
+
     setEditing(item)
 
+
     setOpen(true)
+
 
   }
 
@@ -95,12 +180,20 @@ export default function ExperienceManager({
 
 
 
+
   function updateField(
+
     field: keyof Experience,
+
     value: string
+
   ) {
 
-    if (!editing) return
+
+    if (!editing)
+
+      return
+
 
 
     setEditing({
@@ -111,60 +204,85 @@ export default function ExperienceManager({
 
     })
 
+
   }
-
-
-
-
-
 
 
   async function saveItem() {
 
 
-    if (!editing) return
+    if (!editing)
 
+      return
 
-    setSaving(true)
 
 
 
     try {
 
 
+      setSaving(true)
+
+
+
       if (editing.id) {
 
 
-        await supabase
 
-          .from('experience')
+        const { error } =
 
-          .update({
+          await supabase
 
-            position: editing.position,
+            .from('experience')
 
-            company: editing.company,
+            .update({
 
-            location: editing.location,
+              position:
+                editing.position,
 
-            start_date: editing.start_date,
+              company:
+                editing.company,
 
-            end_date: editing.end_date,
+              location:
+                editing.location,
 
-            description: editing.description,
+              start_date:
+                editing.start_date,
 
-          })
+              end_date:
+                editing.end_date,
 
-          .eq(
-            'id',
-            editing.id
-          )
+              description:
+                editing.description,
+
+              display_order:
+                editing.display_order,
+
+            })
+
+            .eq(
+
+              'id',
+
+              editing.id
+
+            )
 
 
 
-        setExperience(
 
-          experience.map(item =>
+
+        if (error)
+
+          throw error
+
+
+
+
+
+        setExperience(current =>
+
+          current.map(item =>
 
             item.id === editing.id
 
@@ -178,36 +296,59 @@ export default function ExperienceManager({
 
 
 
+        setMessage(
+          'Experience updated successfully.'
+        )
+
+
+
+
       } else {
 
 
-        const {
 
-          data,
+        const { data, error } =
 
-        } = await supabase
+          await supabase
 
-          .from('experience')
+            .from('experience')
 
-          .insert({
+            .insert({
 
-            position: editing.position,
+              position:
+                editing.position,
 
-            company: editing.company,
+              company:
+                editing.company,
 
-            location: editing.location,
+              location:
+                editing.location,
 
-            start_date: editing.start_date,
+              start_date:
+                editing.start_date,
 
-            end_date: editing.end_date,
+              end_date:
+                editing.end_date,
 
-            description: editing.description,
+              description:
+                editing.description,
 
-          })
+              display_order:
+                editing.display_order,
 
-          .select()
+            })
 
-          .single()
+            .select()
+
+            .single()
+
+
+
+
+
+        if (error)
+
+          throw error
 
 
 
@@ -216,15 +357,23 @@ export default function ExperienceManager({
         if (data) {
 
 
-          setExperience([
+          setExperience(current => [
 
-            ...experience,
+            ...current,
 
             data,
 
           ])
 
+
         }
+
+
+
+
+        setMessage(
+          'Experience added successfully.'
+        )
 
 
       }
@@ -233,19 +382,40 @@ export default function ExperienceManager({
 
 
 
+
       setOpen(false)
 
+
       setEditing(null)
+
+
+
+
+
+    } catch (error) {
+
+
+
+      console.error(error)
+
+
+
+      setMessage(
+        'Unable to save experience.'
+      )
 
 
 
     } finally {
 
 
+
       setSaving(false)
 
 
+
     }
+
 
 
   }
@@ -257,33 +427,99 @@ export default function ExperienceManager({
 
 
 
-  async function deleteItem(id:string) {
+
+  async function deleteItem(id: string) {
 
 
-    await supabase
 
-      .from('experience')
+    const confirmed =
 
-      .delete()
+      window.confirm(
 
-      .eq(
-        'id',
-        id
+        'Are you sure you want to delete this experience?'
+
       )
 
 
 
-    setExperience(
 
-      experience.filter(
+    if (!confirmed)
 
-        item => item.id !== id
+      return
+
+
+
+
+
+    const { error } =
+
+      await supabase
+
+        .from('experience')
+
+        .delete()
+
+        .eq(
+
+          'id',
+
+          id
+
+        )
+
+
+
+
+
+    if (error) {
+
+  console.error(
+    'Move down error:',
+    error.message,
+    error.details,
+    error.hint
+  )
+
+  setMessage(
+    'Failed to update order.'
+  )
+
+  return
+
+}
+
+if (error) {
+
+  setMessage(
+    error.message
+  )
+
+  return
+
+}
+
+
+
+    setExperience(current =>
+
+      current.filter(item =>
+
+        item.id !== id
 
       )
 
     )
 
 
+
+
+
+    setMessage(
+      'Experience deleted successfully.'
+    )
+
+
+
   }
 
 
@@ -291,6 +527,237 @@ export default function ExperienceManager({
 
 
 
+
+
+
+  async function moveUp(index: number) {
+
+
+
+    if (index === 0)
+
+      return
+
+
+
+
+
+    const items = [
+
+      ...sortedExperience
+
+    ]
+
+
+
+
+    const current =
+
+      items[index]
+
+
+
+
+    const previous =
+
+      items[index - 1]
+
+
+
+
+
+    const temp =
+
+      current.display_order
+
+
+
+
+
+    current.display_order =
+
+      previous.display_order
+
+
+
+
+
+    previous.display_order =
+
+      temp
+
+
+
+
+
+
+    setExperience(items)
+
+
+
+
+
+
+    const { data, error } =
+  await supabase
+    .from('experience')
+    .upsert([
+      {
+        id: current.id,
+        display_order: current.display_order,
+      },
+      {
+        id: next.id,
+        display_order: next.display_order,
+      },
+    ])
+    .select()
+
+
+console.log('MOVE DOWN RESULT:', {
+  data,
+  error,
+})
+
+
+if (error) {
+
+  setMessage(
+    error.message
+  )
+
+  return
+
+}
+
+
+    if (error)
+
+      console.error(error)
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+  async function moveDown(index: number) {
+
+  if (index === sortedExperience.length - 1) {
+    return
+  }
+
+
+  try {
+
+    const items = [...sortedExperience]
+
+
+    const current = items[index]
+
+    const next = items[index + 1]
+
+
+    if (!current || !next) {
+
+      console.log(
+        'Missing item',
+        {
+          current,
+          next,
+        }
+      )
+
+      return
+    }
+
+
+
+    const currentOrder =
+      current.display_order
+
+
+    current.display_order =
+      next.display_order
+
+
+    next.display_order =
+      currentOrder
+
+
+
+    setExperience(items)
+
+
+
+    const result =
+      await supabase
+        .from('experience')
+        .upsert([
+          {
+            id: current.id,
+            display_order:
+              current.display_order,
+          },
+          {
+            id: next.id,
+            display_order:
+              next.display_order,
+          },
+        ])
+
+
+    console.log(
+      'MOVE DOWN RESULT',
+      result
+    )
+
+
+
+    if (result.error) {
+
+      console.log(
+        'SUPABASE ERROR',
+        result.error.message
+      )
+
+      setMessage(
+        result.error.message
+      )
+
+      return
+    }
+
+
+
+    setMessage(
+      'Experience order updated.'
+    )
+
+
+  } catch (error) {
+
+
+    console.log(
+      'MOVE DOWN CRASH',
+      error
+    )
+
+
+    setMessage(
+      'Move down failed.'
+    )
+
+  }
+
+
+}
 
 
   return (
@@ -298,148 +765,109 @@ export default function ExperienceManager({
     <div className="space-y-6">
 
 
-      <button
 
-        onClick={createNew}
+      {
+        message && (
 
+          <div
+            className="
+              rounded-xl
+              border
+              border-green-500/20
+              bg-green-500/10
+              px-4
+              py-3
+              text-sm
+              text-green-700
+            "
+          >
+
+            {message}
+
+          </div>
+
+        )
+      }
+
+
+
+
+
+
+      <div
         className="
           flex
           items-center
-          gap-2
-          rounded-xl
-          bg-accent
-          px-5
-          py-3
-          text-white
+          justify-between
+          gap-4
         "
-
       >
 
-        <Plus size={18}/>
-
-        Add Experience
-
-      </button>
 
 
+        <div>
 
 
+          <h2
+            className="
+              text-2xl
+              font-bold
+            "
+          >
 
-      <div className="space-y-4">
+            Work Experience
 
-
-        {
-
-          experience.map(item => (
-
-
-            <div
-
-              key={item.id}
-
-              className="
-                rounded-2xl
-                border
-                border-border
-                bg-card
-                p-6
-              "
-
-            >
-
-
-              <h2 className="text-lg font-semibold">
-
-                {item.position}
-
-              </h2>
+          </h2>
 
 
 
-              <p className="text-muted-foreground">
 
-                {item.company}
+          <p
+            className="
+              text-sm
+              text-muted-foreground
+            "
+          >
 
-              </p>
+            Manage your professional experience.
+
+          </p>
 
 
-
-              <p className="mt-2 text-sm">
-
-                {item.start_date}
-
-                {' - '}
-
-                {item.end_date}
-
-              </p>
+        </div>
 
 
 
 
 
-              <div className="mt-4 flex gap-3">
+
+        <button
+
+          onClick={createNew}
+
+          className="
+            flex
+            items-center
+            gap-2
+            rounded-xl
+            bg-accent
+            px-5
+            py-3
+            text-white
+          "
+
+        >
 
 
-                <button
-
-                  onClick={() => editItem(item)}
-
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    rounded-lg
-                    border
-                    px-4
-                    py-2
-                  "
-
-                >
-
-                  <Pencil size={16}/>
-
-                  Edit
-
-                </button>
+          <Plus size={18}/>
 
 
+          Add Experience
 
 
 
-                <button
+        </button>
 
-                  onClick={() => deleteItem(item.id)}
-
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    rounded-lg
-                    border
-                    px-4
-                    py-2
-                  "
-
-                >
-
-                  <Trash2 size={16}/>
-
-                  Delete
-
-                </button>
-
-
-
-              </div>
-
-
-            </div>
-
-
-          ))
-
-        }
 
 
       </div>
@@ -450,10 +878,315 @@ export default function ExperienceManager({
 
 
 
+
+
+      <div className="space-y-5">
+
+
+        {
+          sortedExperience.map(
+
+            (item,index)=>(
+
+
+              <div
+
+                key={item.id}
+
+                className="
+                  rounded-2xl
+                  border
+                  border-border
+                  bg-card
+                  p-6
+                "
+
+              >
+
+
+
+                <h3
+                  className="
+                    text-xl
+                    font-semibold
+                  "
+                >
+
+                  {item.position}
+
+                </h3>
+
+
+
+
+
+                <p
+                  className="
+                    mt-1
+                    text-muted-foreground
+                  "
+                >
+
+                  {item.company}
+
+                </p>
+
+
+
+
+
+                <p
+                  className="
+                    mt-1
+                    text-sm
+                  "
+                >
+
+                  {item.location}
+
+                </p>
+
+
+
+
+
+
+                <p
+                  className="
+                    mt-2
+                    text-sm
+                  "
+                >
+
+                  {item.start_date}
+
+                  {' - '}
+
+                  {item.end_date}
+
+
+                </p>
+
+
+
+
+
+
+
+                {
+                  item.description && (
+
+                    <p
+                      className="
+                        mt-4
+                        whitespace-pre-line
+                        text-sm
+                        text-muted-foreground
+                      "
+                    >
+
+                      {item.description}
+
+                    </p>
+
+
+                  )
+                }
+
+
+
+
+
+
+
+
+                <div
+                  className="
+                    mt-6
+                    flex
+                    flex-wrap
+                    gap-3
+                  "
+                >
+
+
+
+
+
+                  <button
+
+                    onClick={()=>
+                      moveUp(index)
+                    }
+
+                    disabled={index === 0}
+
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      px-4
+                      py-2
+                      disabled:opacity-40
+                    "
+
+                  >
+
+
+                    <ArrowUp size={16}/>
+
+
+                    Up
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+
+                  <button
+
+                    onClick={()=>
+                      moveDown(index)
+                    }
+
+                    disabled={
+                      index ===
+                      sortedExperience.length - 1
+                    }
+
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      px-4
+                      py-2
+                      disabled:opacity-40
+                    "
+
+                  >
+
+
+                    <ArrowDown size={16}/>
+
+
+                    Down
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+
+                  <button
+
+                    onClick={()=>
+                      editItem(item)
+                    }
+
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      px-4
+                      py-2
+                    "
+
+                  >
+
+
+                    <Pencil size={16}/>
+
+
+                    Edit
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+
+                  <button
+
+                    onClick={()=>
+                      deleteItem(item.id)
+                    }
+
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      px-4
+                      py-2
+                    "
+
+                  >
+
+
+                    <Trash2 size={16}/>
+
+
+                    Delete
+
+
+
+                  </button>
+
+
+
+
+                </div>
+
+
+
+
+
+              </div>
+
+
+
+            )
+
+
+          )
+        }
+
+
+
+      </div>
+
+
       {
         open && editing && (
 
           <div
+
             className="
               fixed
               inset-0
@@ -464,34 +1197,84 @@ export default function ExperienceManager({
               bg-black/50
               p-4
             "
+
           >
 
+
             <div
+
               className="
                 w-full
                 max-w-xl
                 rounded-3xl
                 bg-background
                 p-6
-                space-y-4
+                shadow-xl
               "
+
             >
 
 
-              <div className="flex justify-between">
 
-                <h2 className="text-xl font-bold">
-                  Work Experience
+              <div
+
+                className="
+                  mb-6
+                  flex
+                  items-center
+                  justify-between
+                "
+
+              >
+
+
+
+                <h2
+                  className="
+                    text-xl
+                    font-bold
+                  "
+                >
+
+                  {
+                    editing.id
+                    ?
+                    'Edit Experience'
+                    :
+                    'Add Experience'
+                  }
+
+
                 </h2>
 
 
+
+
+
                 <button
-                  onClick={() => setOpen(false)}
+
+                  onClick={()=>{
+
+                    setOpen(false)
+
+                    setEditing(null)
+
+                  }}
+
+                  className="
+                    rounded-lg
+                    p-2
+                    hover:bg-muted
+                  "
+
                 >
 
-                  <X />
+                  <X size={20}/>
+
 
                 </button>
+
+
 
               </div>
 
@@ -499,29 +1282,148 @@ export default function ExperienceManager({
 
 
 
-              {
-                [
-                  ['position','Position'],
-                  ['company','Company / Organization'],
-                  ['location','Location'],
-                  ['start_date','Start Date'],
-                  ['end_date','End Date'],
-                ].map(([field,label]) => (
+
+
+
+
+              <div className="space-y-4">
+
+
+
+
+
+                <input
+
+                  value={
+                    editing.position
+                  }
+
+                  onChange={(e)=>
+
+                    updateField(
+
+                      'position',
+
+                      e.target.value
+
+                    )
+
+                  }
+
+                  placeholder="Position / Job Title"
+
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    px-4
+                    py-3
+                  "
+
+                />
+
+
+
+
+
+
+
+                <input
+
+                  value={
+                    editing.company
+                  }
+
+                  onChange={(e)=>
+
+                    updateField(
+
+                      'company',
+
+                      e.target.value
+
+                    )
+
+                  }
+
+                  placeholder="Company / Organization"
+
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    px-4
+                    py-3
+                  "
+
+                />
+
+
+
+
+
+
+
+                <input
+
+                  value={
+                    editing.location
+                  }
+
+                  onChange={(e)=>
+
+                    updateField(
+
+                      'location',
+
+                      e.target.value
+
+                    )
+
+                  }
+
+                  placeholder="Location"
+
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    px-4
+                    py-3
+                  "
+
+                />
+
+
+
+
+
+
+
+
+                <div
+
+                  className="
+                    grid
+                    gap-4
+                    md:grid-cols-2
+                  "
+
+                >
+
 
 
                   <input
 
-                    key={field}
-
                     value={
-                      editing[field as keyof Experience] as string
+                      editing.start_date
                     }
 
                     onChange={(e)=>
 
                       updateField(
 
-                        field as keyof Experience,
+                        'start_date',
 
                         e.target.value
 
@@ -529,10 +1431,9 @@ export default function ExperienceManager({
 
                     }
 
-                    placeholder={label}
+                    placeholder="Start Date"
 
                     className="
-                      w-full
                       rounded-xl
                       border
                       px-4
@@ -542,84 +1443,195 @@ export default function ExperienceManager({
                   />
 
 
-                ))
-
-              }
 
 
 
 
 
-              <textarea
+                  <input
 
-                value={
-                  editing.description ?? ''
-                }
+                    value={
+                      editing.end_date
+                    }
 
-                onChange={(e)=>
+                    onChange={(e)=>
 
-                  updateField(
-                    'description',
-                    e.target.value
-                  )
+                      updateField(
 
-                }
+                        'end_date',
 
-                placeholder="Responsibilities and achievements"
+                        e.target.value
 
-                rows={5}
+                      )
+
+                    }
+
+                    placeholder="End Date"
+
+                    className="
+                      rounded-xl
+                      border
+                      px-4
+                      py-3
+                    "
+
+                  />
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+                <textarea
+
+                  value={
+                    editing.description ?? ''
+                  }
+
+                  onChange={(e)=>
+
+                    updateField(
+
+                      'description',
+
+                      e.target.value
+
+                    )
+
+                  }
+
+                  placeholder="Responsibilities and achievements"
+
+                  rows={6}
+
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    px-4
+                    py-3
+                  "
+
+                />
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+              <div
 
                 className="
-                  w-full
-                  rounded-xl
-                  border
-                  px-4
-                  py-3
-                "
-
-              />
-
-
-
-
-
-
-              <button
-
-                onClick={saveItem}
-
-                disabled={saving}
-
-                className="
+                  mt-6
                   flex
-                  items-center
-                  gap-2
-                  rounded-xl
-                  bg-accent
-                  px-5
-                  py-3
-                  text-white
+                  justify-end
+                  gap-3
                 "
 
               >
 
-                <Save size={18}/>
-
-                {
-                  saving
-                    ? 'Saving...'
-                    : 'Save'
-                }
 
 
-              </button>
+
+                <button
+
+                  onClick={()=>{
+
+                    setOpen(false)
+
+                    setEditing(null)
+
+                  }}
+
+                  className="
+                    rounded-xl
+                    border
+                    px-5
+                    py-3
+                  "
+
+                >
+
+                  Cancel
+
+
+                </button>
+
+
+
+
+
+
+
+                <button
+
+                  onClick={saveItem}
+
+                  disabled={saving}
+
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    rounded-xl
+                    bg-accent
+                    px-5
+                    py-3
+                    text-white
+                    disabled:opacity-50
+                  "
+
+                >
+
+
+                  <Save size={18}/>
+
+
+
+
+                  {
+                    saving
+                    ?
+                    'Saving...'
+                    :
+                    'Save'
+                  }
+
+
+
+                </button>
+
+
+
+
+
+              </div>
+
 
 
 
 
             </div>
 
+
+
           </div>
+
 
         )
       }

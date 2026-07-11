@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-
+import BackToResume from '@/components/admin/back-to-resume'
 import { createClient } from '@/lib/supabase-server'
 
 import ResumeProfileManager from '@/components/admin/resume-profile-manager'
@@ -28,7 +28,7 @@ export default async function ResumeProfilePage() {
     <div className="max-w-5xl">
 
       <div className="mb-10">
-
+ <BackToResume />
         <h1 className="text-3xl font-bold">
           Personal Information
         </h1>

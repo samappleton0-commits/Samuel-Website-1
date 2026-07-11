@@ -1,15 +1,32 @@
+
+
 'use client'
 
-import { useState } from 'react'
+
+import {
+  useMemo,
+  useState,
+} from 'react'
+
+
 import {
   Plus,
   Pencil,
   Trash2,
   Save,
   X,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase-browser'
+
+import {
+  createClient
+} from '@/lib/supabase-browser'
+
+
+
+
 
 
 type Reference = {
@@ -26,7 +43,12 @@ type Reference = {
 
   phone: string
 
+  display_order: number
+
 }
+
+
+
 
 
 
@@ -38,6 +60,11 @@ type Props = {
 
 
 
+
+
+
+
+
 export default function ReferencesManager({
 
   initialReferences,
@@ -45,38 +72,91 @@ export default function ReferencesManager({
 }: Props) {
 
 
+
   const supabase = createClient()
 
 
 
+
+
+
   const [references, setReferences] =
-    useState(initialReferences)
+
+    useState<Reference[]>(initialReferences)
 
 
 
-  const [open, setOpen] =
+
+
+  const [open,setOpen] =
+
     useState(false)
 
 
 
-  const [editing, setEditing] =
+
+
+  const [editing,setEditing] =
+
     useState<Reference | null>(null)
 
 
 
-  const [saving, setSaving] =
+
+
+  const [saving,setSaving] =
+
     useState(false)
 
 
 
 
 
+  const [message,setMessage] =
+
+    useState('')
 
 
-  function addNew(){
+
+
+
+
+
+
+
+  const sortedReferences = useMemo(()=>{
+
+
+    return [
+
+      ...references
+
+    ].sort(
+
+      (a,b)=>
+
+        a.display_order -
+
+        b.display_order
+
+    )
+
+
+  },[references])
+
+
+
+
+
+
+
+
+
+  function createNew(){
 
 
     setEditing({
+
 
       id:'',
 
@@ -90,7 +170,25 @@ export default function ReferencesManager({
 
       phone:'',
 
+      display_order:
+
+        Math.max(
+
+          ...references.map(
+
+            item=>
+
+              item.display_order
+
+          ),
+
+          0
+
+        ) + 1,
+
+
     })
+
 
 
     setOpen(true)
@@ -105,15 +203,18 @@ export default function ReferencesManager({
 
 
 
-  function editReference(item:Reference){
+
+  function editItem(item:Reference){
 
 
     setEditing(item)
 
+
     setOpen(true)
 
 
   }
+
 
 
 
@@ -131,7 +232,12 @@ export default function ReferencesManager({
   ){
 
 
-    if(!editing) return
+
+    if(!editing)
+
+      return
+
+
 
 
 
@@ -149,18 +255,16 @@ export default function ReferencesManager({
 
 
 
+  async function saveItem(){
 
 
 
+    if(!editing)
 
-  async function saveReference(){
-
-
-    if(!editing) return
+      return
 
 
 
-    setSaving(true)
 
 
 
@@ -168,49 +272,96 @@ export default function ReferencesManager({
 
 
 
+      setSaving(true)
+
+
+
+
+
+
       if(editing.id){
 
 
 
-        await supabase
-
-          .from('resume_references')
-
-          .update({
-
-            name:editing.name,
-
-            position:editing.position,
-
-            organization:editing.organization,
-
-            location:editing.location,
-
-            phone:editing.phone,
-
-          })
-
-          .eq(
-
-            'id',
-
-            editing.id
-
-          )
 
 
 
+        const {error}=
+
+          await supabase
+
+            .from('resume_references')
+
+            .update({
 
 
-        setReferences(
+              name:
+                editing.name,
 
-          references.map(item =>
+
+              position:
+                editing.position,
+
+
+              organization:
+                editing.organization,
+
+
+              location:
+                editing.location,
+
+
+              phone:
+                editing.phone,
+
+
+              display_order:
+                editing.display_order,
+
+
+            })
+
+            .eq(
+
+              'id',
+
+              editing.id
+
+            )
+
+
+
+
+
+
+
+
+        if(error)
+
+          throw error
+
+
+
+
+
+
+
+        setReferences(current =>
+
+
+          current.map(item =>
+
 
             item.id === editing.id
 
-            ? editing
+              ?
 
-            : item
+              editing
+
+              :
+
+              item
+
 
           )
 
@@ -218,37 +369,79 @@ export default function ReferencesManager({
 
 
 
-      }
-
-      else {
 
 
+        setMessage(
+          'Reference updated successfully.'
+        )
 
-        const {
 
-          data
 
-        } = await supabase
 
-          .from('resume_references')
 
-          .insert({
 
-            name:editing.name,
 
-            position:editing.position,
 
-            organization:editing.organization,
+      }else{
 
-            location:editing.location,
 
-            phone:editing.phone,
 
-          })
 
-          .select()
 
-          .single()
+
+        const {data,error}=
+
+          await supabase
+
+            .from('resume_references')
+
+            .insert({
+
+
+
+              name:
+                editing.name,
+
+
+              position:
+                editing.position,
+
+
+              organization:
+                editing.organization,
+
+
+              location:
+                editing.location,
+
+
+              phone:
+                editing.phone,
+
+
+              display_order:
+                editing.display_order,
+
+
+
+            })
+
+            .select()
+
+            .single()
+
+
+
+
+
+
+
+
+        if(error)
+
+          throw error
+
+
 
 
 
@@ -257,11 +450,14 @@ export default function ReferencesManager({
         if(data){
 
 
-          setReferences([
+          setReferences(current=>[
 
-            ...references,
+
+            ...current,
+
 
             data,
+
 
           ])
 
@@ -269,7 +465,19 @@ export default function ReferencesManager({
         }
 
 
+
+
+
+
+        setMessage(
+          'Reference added successfully.'
+        )
+
+
+
       }
+
+
 
 
 
@@ -281,14 +489,30 @@ export default function ReferencesManager({
 
 
 
-    }
 
-    finally{
+
+    }catch(error){
+
+
+  console.log(
+    'REFERENCE SAVE ERROR:',
+    error
+  )
+
+
+  setMessage(
+    'Unable to save reference.'
+  )
+
+
+}finally{
+
 
 
       setSaving(false)
 
 
+
     }
 
 
@@ -302,20 +526,18 @@ export default function ReferencesManager({
 
 
 
-  async function deleteReference(id:string){
 
 
-    await supabase
 
-      .from('resume_references')
+  async function deleteItem(id:string){
 
-      .delete()
 
-      .eq(
 
-        'id',
+    const confirmDelete =
 
-        id
+      window.confirm(
+
+        'Delete this reference?'
 
       )
 
@@ -323,15 +545,84 @@ export default function ReferencesManager({
 
 
 
-    setReferences(
 
-      references.filter(
+    if(!confirmDelete)
 
-        item => item.id !== id
+      return
+
+
+
+
+
+
+    const {error}=
+
+      await supabase
+
+        .from('resume_references')
+
+        .delete()
+
+        .eq(
+
+          'id',
+
+          id
+
+        )
+
+
+
+
+
+
+    if(error){
+
+
+
+      console.error(error)
+
+
+
+      setMessage(
+        'Delete failed.'
+      )
+
+
+      return
+
+
+    }
+
+
+
+
+
+
+
+
+    setReferences(current =>
+
+
+      current.filter(item =>
+
+
+        item.id !== id
+
 
       )
+
 
     )
+
+
+
+
+
+    setMessage(
+      'Reference deleted.'
+    )
+
 
 
   }
@@ -342,6 +633,356 @@ export default function ReferencesManager({
 
 
 
+
+
+
+
+
+  async function moveUp(index:number){
+
+
+
+    if(index===0)
+
+      return
+
+
+
+
+
+
+    const items=[
+
+      ...sortedReferences
+
+    ]
+
+
+
+
+
+    const current =
+
+      items[index]
+
+
+
+
+
+    const previous =
+
+      items[index-1]
+
+
+
+
+
+
+
+    const oldOrder =
+
+      current.display_order
+
+
+
+
+
+
+    current.display_order =
+
+      previous.display_order
+
+
+
+
+
+    previous.display_order =
+
+      oldOrder
+
+
+
+
+
+
+
+    setReferences(items)
+
+
+
+
+
+
+
+
+    const firstUpdate =
+
+      await supabase
+
+        .from('resume_references')
+
+        .update({
+
+          display_order:
+
+            current.display_order
+
+        })
+
+        .eq(
+
+          'id',
+
+          current.id
+
+        )
+
+
+
+
+
+
+
+
+    const secondUpdate =
+
+      await supabase
+
+        .from('resume_references')
+
+        .update({
+
+          display_order:
+
+            previous.display_order
+
+        })
+
+        .eq(
+
+          'id',
+
+          previous.id
+
+        )
+
+
+
+
+
+
+
+
+    if(
+
+      firstUpdate.error ||
+
+      secondUpdate.error
+
+    ){
+
+
+
+      console.error(
+
+        firstUpdate.error ||
+
+        secondUpdate.error
+
+      )
+
+
+
+      setMessage(
+        'Unable to update order.'
+      )
+
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  async function moveDown(index:number){
+
+
+
+    if(
+
+      index === sortedReferences.length - 1
+
+    )
+
+      return
+
+
+
+
+
+
+    const items=[
+
+      ...sortedReferences
+
+    ]
+
+
+
+
+
+    const current =
+
+      items[index]
+
+
+
+
+
+    const next =
+
+      items[index+1]
+
+
+
+
+
+
+
+    const oldOrder =
+
+      current.display_order
+
+
+
+
+
+    current.display_order =
+
+      next.display_order
+
+
+
+
+
+    next.display_order =
+
+      oldOrder
+
+
+
+
+
+
+
+    setReferences(items)
+
+
+
+
+
+
+
+
+    const firstUpdate =
+
+      await supabase
+
+        .from('resume_references')
+
+        .update({
+
+          display_order:
+
+            current.display_order
+
+        })
+
+        .eq(
+
+          'id',
+
+          current.id
+
+        )
+
+
+
+
+
+
+
+
+    const secondUpdate =
+
+      await supabase
+
+        .from('resume_references')
+
+        .update({
+
+          display_order:
+
+            next.display_order
+
+        })
+
+        .eq(
+
+          'id',
+
+          next.id
+
+        )
+
+
+
+
+
+
+
+
+    if(
+
+      firstUpdate.error ||
+
+      secondUpdate.error
+
+    ){
+
+
+
+      console.error(
+
+        firstUpdate.error ||
+
+        secondUpdate.error
+
+      )
+
+
+
+      setMessage(
+        'Unable to update order.'
+      )
+
+
+    }
+
+
+
+  }
 
 
 
@@ -353,142 +994,148 @@ export default function ReferencesManager({
 
 
 
-      <button
 
-        onClick={addNew}
+      {
+        message && (
+
+
+          <div
+
+
+            className="
+              rounded-xl
+              border
+              border-green-500/20
+              bg-green-500/10
+              px-4
+              py-3
+              text-sm
+              text-green-700
+            "
+
+
+          >
+
+
+            {message}
+
+
+
+          </div>
+
+
+        )
+      }
+
+
+
+
+
+
+
+
+
+      <div
 
         className="
           flex
           items-center
-          gap-2
-          rounded-xl
-          bg-accent
-          px-5
-          py-3
-          text-white
+          justify-between
+          gap-4
         "
 
       >
 
-        <Plus size={18}/>
-
-        Add Reference
-
-      </button>
 
 
 
 
-
-
-      <div className="space-y-4">
-
-
-        {
-
-          references.map(item => (
-
-
-            <div
-
-              key={item.id}
-
-              className="
-                rounded-2xl
-                border
-                border-border
-                bg-card
-                p-6
-              "
-
-            >
-
-
-              <h2 className="text-lg font-semibold">
-
-                {item.name}
-
-              </h2>
+        <div>
 
 
 
-              <p className="text-accent">
+          <h2
 
-                {item.position}
+            className="
+              text-2xl
+              font-bold
+            "
 
-              </p>
+          >
 
-
-
-              <p className="text-sm text-muted-foreground">
-
-                {item.organization}
-
-              </p>
+            References
 
 
-
-              <div className="mt-4 flex gap-3">
-
-
-                <button
-
-                  onClick={()=>editReference(item)}
-
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    rounded-lg
-                    border
-                    px-4
-                    py-2
-                  "
-
-                >
-
-                  <Pencil size={16}/>
-
-                  Edit
-
-                </button>
+          </h2>
 
 
 
 
-                <button
-
-                  onClick={()=>deleteReference(item.id)}
-
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    rounded-lg
-                    border
-                    px-4
-                    py-2
-                  "
-
-                >
-
-                  <Trash2 size={16}/>
-
-                  Delete
-
-                </button>
 
 
-              </div>
+          <p
+
+            className="
+              text-sm
+              text-muted-foreground
+            "
+
+          >
+
+            Manage professional references.
+
+
+          </p>
 
 
 
-            </div>
 
 
-          ))
+        </div>
 
-        }
+
+
+
+
+
+
+
+
+        <button
+
+
+          onClick={createNew}
+
+
+
+          className="
+            flex
+            items-center
+            gap-2
+            rounded-xl
+            bg-accent
+            px-5
+            py-3
+            text-white
+          "
+
+
+
+        >
+
+
+          <Plus size={18}/>
+
+
+
+          Add Reference
+
+
+
+        </button>
+
+
+
 
 
       </div>
@@ -501,54 +1148,513 @@ export default function ReferencesManager({
 
 
 
+
+
+
+
+      <div className="space-y-4">
+
+
+
+
+
+        {
+
+          sortedReferences.map(
+
+            (item,index)=>(
+
+
+
+
+              <div
+
+
+
+                key={item.id}
+
+
+
+                className="
+                  rounded-2xl
+                  border
+                  border-border
+                  bg-card
+                  p-6
+                "
+
+
+              >
+
+
+
+
+
+                <h3
+
+                  className="
+                    text-xl
+                    font-semibold
+                  "
+
+
+                >
+
+
+
+                  {item.name}
+
+
+
+                </h3>
+
+
+
+
+
+
+
+                <p
+
+                  className="
+                    text-muted-foreground
+                  "
+
+                >
+
+
+
+                  {item.position}
+
+
+
+                </p>
+
+
+
+
+
+
+
+                <p
+
+                  className="
+                    text-sm
+                  "
+
+                >
+
+
+
+                  {item.organization}
+
+
+
+                </p>
+
+
+
+
+
+
+
+
+                <p
+
+                  className="
+                    mt-2
+                    text-sm
+                  "
+
+
+                >
+
+
+                  {item.location}
+
+
+
+                </p>
+
+
+
+
+
+
+
+
+                <p
+
+                  className="
+                    text-sm
+                  "
+
+                >
+
+
+                  {item.phone}
+
+
+
+                </p>
+
+
+
+
+
+
+
+
+
+                <div
+
+                  className="
+                    mt-5
+                    flex
+                    flex-wrap
+                    gap-3
+                  "
+
+
+                >
+
+
+
+
+
+
+
+                  <button
+
+
+                    onClick={()=>moveUp(index)}
+
+
+
+                    disabled={index===0}
+
+
+
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      px-4
+                      py-2
+                      disabled:opacity-40
+                    "
+
+
+
+                  >
+
+
+                    <ArrowUp size={16}/>
+
+
+
+                    Up
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+                  <button
+
+
+                    onClick={()=>moveDown(index)}
+
+
+
+                    disabled={
+
+                      index ===
+
+                      sortedReferences.length - 1
+
+                    }
+
+
+
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      px-4
+                      py-2
+                      disabled:opacity-40
+                    "
+
+
+
+                  >
+
+
+                    <ArrowDown size={16}/>
+
+
+
+                    Down
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+
+                  <button
+
+
+
+                    onClick={()=>editItem(item)}
+
+
+
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      px-4
+                      py-2
+                    "
+
+
+
+                  >
+
+
+
+                    <Pencil size={16}/>
+
+
+
+                    Edit
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+
+                  <button
+
+
+
+                    onClick={()=>deleteItem(item.id)}
+
+
+
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      px-4
+                      py-2
+                    "
+
+
+
+                  >
+
+
+
+                    <Trash2 size={16}/>
+
+
+
+                    Delete
+
+
+
+                  </button>
+
+
+
+
+
+                </div>
+
+
+
+
+
+              </div>
+
+
+
+
+            )
+
+          )
+
+        }
+
+
+
+
+
+
+      </div>
+
+
+
+
       {
         open && editing && (
 
 
-          <div className="
-            fixed
-            inset-0
-            z-50
-            flex
-            items-center
-            justify-center
-            bg-black/50
-            p-4
-          ">
+          <div
 
 
-            <div className="
-              w-full
-              max-w-xl
-              rounded-3xl
-              bg-background
-              p-6
-              space-y-4
-            ">
+            className="
+              fixed
+              inset-0
+              z-50
+              flex
+              items-center
+              justify-center
+              bg-black/50
+              p-4
+            "
+
+
+          >
 
 
 
-              <div className="
-                flex
-                justify-between
-              ">
 
 
-                <h2 className="text-xl font-bold">
+            <div
 
-                  Reference
+
+              className="
+                w-full
+                max-w-xl
+                rounded-3xl
+                bg-background
+                p-6
+                shadow-xl
+                space-y-4
+              "
+
+
+            >
+
+
+
+
+
+              <div
+
+
+                className="
+                  flex
+                  items-center
+                  justify-between
+                "
+
+
+              >
+
+
+
+
+
+                <h2
+
+                  className="
+                    text-xl
+                    font-bold
+                  "
+
+                >
+
+
+
+                  {
+                    editing.id
+                    ?
+                    'Edit Reference'
+                    :
+                    'Add Reference'
+                  }
+
+
+
 
                 </h2>
 
 
 
+
+
+
+
+
                 <button
-                  onClick={()=>setOpen(false)}
+
+
+
+                  onClick={()=>{
+
+
+                    setOpen(false)
+
+                    setEditing(null)
+
+
+
+                  }}
+
+
+
+                  className="
+                    rounded-lg
+                    p-2
+                    hover:bg-muted
+                  "
+
+
+
                 >
 
-                  <X/>
+
+
+                  <X size={20}/>
+
+
 
                 </button>
+
+
+
 
 
               </div>
@@ -560,10 +1666,14 @@ export default function ReferencesManager({
 
 
 
+
+
+
+
               {
                 [
 
-                  ['name','Full Name'],
+                  ['name','Name'],
 
                   ['position','Position'],
 
@@ -577,13 +1687,23 @@ export default function ReferencesManager({
                 ].map(([field,label])=>(
 
 
+
+
                   <input
+
+
 
                     key={field}
 
+
+
                     value={
+
                       editing[field as keyof Reference] as string
+
                     }
+
+
 
                     onChange={(e)=>
 
@@ -597,7 +1717,11 @@ export default function ReferencesManager({
 
                     }
 
+
+
                     placeholder={label}
+
+
 
                     className="
                       w-full
@@ -607,48 +1731,153 @@ export default function ReferencesManager({
                       py-3
                     "
 
+
+
                   />
 
 
-                ))
 
+
+
+                ))
               }
 
 
 
 
 
-              <button
 
-                onClick={saveReference}
 
-                disabled={saving}
+
+
+              <div
+
 
                 className="
                   flex
-                  items-center
-                  gap-2
-                  rounded-xl
-                  bg-accent
-                  px-5
-                  py-3
-                  text-white
+                  justify-end
+                  gap-3
+                  pt-4
                 "
+
 
               >
 
-                <Save size={18}/>
-
-                {
-                  saving
-                  ?
-                  'Saving...'
-                  :
-                  'Save'
-                }
 
 
-              </button>
+
+
+
+                <button
+
+
+
+                  onClick={()=>{
+
+
+                    setOpen(false)
+
+                    setEditing(null)
+
+
+
+                  }}
+
+
+
+                  className="
+                    rounded-xl
+                    border
+                    px-5
+                    py-3
+                  "
+
+
+
+                >
+
+
+
+                  Cancel
+
+
+
+                </button>
+
+
+
+
+
+
+
+
+
+                <button
+
+
+
+                  onClick={saveItem}
+
+
+
+                  disabled={saving}
+
+
+
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    rounded-xl
+                    bg-accent
+                    px-5
+                    py-3
+                    text-white
+                    disabled:opacity-50
+                  "
+
+
+
+                >
+
+
+
+                  <Save size={18}/>
+
+
+
+
+
+                  {
+
+                    saving
+
+                    ?
+
+                    'Saving...'
+
+                    :
+
+                    'Save'
+
+
+                  }
+
+
+
+
+
+                </button>
+
+
+
+
+
+
+
+              </div>
+
+
 
 
 
@@ -657,16 +1886,28 @@ export default function ReferencesManager({
             </div>
 
 
+
+
+
+
           </div>
 
 
+
         )
+
       }
+
+
+
+
 
 
 
     </div>
 
+
   )
+
 
 }

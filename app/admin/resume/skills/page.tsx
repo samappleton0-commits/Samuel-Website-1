@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 
 import { createClient } from '@/lib/supabase-server'
-
+import BackToResume from '@/components/admin/back-to-resume'
 import SkillsManager from '@/components/admin/skills-manager'
 
 
@@ -73,7 +73,7 @@ export default async function SkillsPage() {
 
     <div className="max-w-6xl">
 
-
+ <BackToResume />
       <div className="mb-10">
 
 

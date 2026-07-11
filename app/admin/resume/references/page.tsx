@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 
 import { createClient } from '@/lib/supabase-server'
-
+import BackToResume from '@/components/admin/back-to-resume'
 import ReferencesManager from '@/components/admin/references-manager'
 
 
@@ -74,7 +74,7 @@ export default async function ReferencesPage() {
 
     <div className="max-w-6xl">
 
-
+ <BackToResume />
       <div className="mb-10">
 
 
