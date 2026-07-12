@@ -114,8 +114,9 @@ const [slugEdited, setSlugEdited] = useState(false)
 
   seo_description: initialPost?.seo_description ?? '',
 
-})
+  author_name: initialPost?.author_name ?? 'Samuel Appleton',
 
+})
 
 
 
@@ -213,6 +214,8 @@ const [slugEdited, setSlugEdited] = useState(false)
   title: form.title,
 
   slug: form.slug,
+
+  author_name: form.author_name,
 
   excerpt: form.excerpt || null,
 
@@ -349,6 +352,8 @@ setTimeout(()=>{
         seo_title:'',
 
         seo_description:'',
+
+        author_name:'Samuel Appleton',
 
       })
 
@@ -493,7 +498,49 @@ className="
 
         </div>
 
+{/* ==========================================
+    AUTHOR NAME
+========================================== */}
 
+<div className="space-y-2">
+
+  <label
+    className="
+      text-sm
+      font-medium
+    "
+  >
+    Author Name
+  </label>
+
+
+  <input
+
+    value={form.author_name}
+
+    onChange={(e) =>
+      setForm({
+        ...form,
+        author_name:e.target.value
+      })
+    }
+
+    placeholder="Enter author name"
+
+    className="
+      w-full
+      rounded-xl
+      border
+      border-surface-border
+      bg-background
+      px-4
+      py-3
+      outline-none
+    "
+
+  />
+
+</div>
 
 
 

@@ -2,9 +2,10 @@
 // IMPORTS
 // =====================================================
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase-server'
 import ShareButtons from '@/components/share-buttons'
-
+import Image from 'next/image'
 import RelatedArticles from '@/components/related-articles'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
@@ -16,9 +17,125 @@ import { SiteFooter } from '@/components/site-footer'
 // HELPER FUNCTIONS
 // =====================================================
 
-// =====================================================
-// METADATA
-// =====================================================
+
+export async function generateMetadata({
+
+  params,
+
+}: {
+  params: Promise<{
+    slug:string
+  }>
+}): Promise<Metadata> {
+
+
+  const {
+    slug
+  } = await params
+
+
+
+  const supabase =
+    await createClient()
+
+
+
+  const {
+    data: post
+  } =
+    await supabase
+
+      .from('blog_posts')
+
+      .select(
+        `
+        title,
+        seo_title,
+        seo_description,
+        featured_image,
+        excerpt
+        `
+      )
+
+      .eq(
+        'slug',
+        slug
+      )
+
+      .single()
+
+
+
+  if (!post) {
+
+    return {
+
+      title:
+        'Article Not Found'
+
+    }
+
+  }
+
+
+
+  return {
+
+
+    title:
+
+      post.seo_title ??
+      post.title,
+
+
+
+    description:
+
+      post.seo_description ??
+      post.excerpt ??
+      'Read the latest article from Samuel Appleton.',
+
+
+
+    openGraph: {
+
+
+      title:
+
+        post.seo_title ??
+        post.title,
+
+
+
+      description:
+
+        post.seo_description ??
+        post.excerpt ??
+        '',
+
+
+
+      images:
+
+        post.featured_image
+
+        ?
+
+        [
+          post.featured_image
+        ]
+
+        :
+
+        [],
+
+    },
+
+
+  }
+
+
+}
 
 // =====================================================
 // PAGE
@@ -183,7 +300,9 @@ const {
 
           <span>•</span>
 
-          <span>By Samuel Appleton</span>
+         <span>
+  By {post.author_name ?? 'Samuel Appleton'}
+</span>
 
         </div>
 
@@ -191,58 +310,107 @@ const {
 
     </section>
 
-    {/* =====================================
-        FEATURED IMAGE
-    ===================================== */}
+   {/* =====================================
+    FEATURED IMAGE
+===================================== */}
 
-    {post.featured_image && (
+{post.featured_image && (
 
-      <section className="mx-auto mt-12 max-w-5xl px-4 sm:px-6">
+<section
+  className="
+    mx-auto
+    mt-12
+    max-w-5xl
+    px-4
+    sm:px-6
+  "
+>
 
-        <img
-          src={post.featured_image}
-          alt={post.title}
-          className="
-            w-full
-            rounded-3xl
-            border
-            border-surface-border
-            object-cover
-            shadow-xl
-          "
-        />
+<div
+  className="
+    overflow-hidden
+    rounded-3xl
+    border
+    border-surface-border
+    shadow-xl
+  "
+>
 
-      </section>
+<Image
 
-    )}
+  src={post.featured_image}
 
-    {/* =====================================
-        ARTICLE CONTENT
-        (We'll improve this next)
-    ===================================== */}
+  alt={post.title}
 
-    <section className="mx-auto mt-16 max-w-3xl px-4 sm:px-6">
+  width={1200}
 
-      <article
-        className="
-          prose
-          prose-invert
-          max-w-none
-        "
-      >
+  height={630}
+
+  className="
+    h-auto
+    w-full
+    object-cover
+  "
+
+/>
+
+</div>
+
+
+</section>
+
+)}
+
+<section
+  className="
+    mx-auto
+    mt-16
+    max-w-3xl
+    px-4
+    sm:px-6
+  "
+>
+
+<article
+  className="
+    prose
+    prose-invert
+    max-w-none
+    prose-headings:font-heading
+    prose-headings:text-foreground
+    prose-p:text-muted-foreground
+    prose-p:leading-8
+    prose-a:text-accent
+  "
+>
+
+
+{
+  post.content
+    ?.split('\n\n')
+    .map(
+      (
+        paragraph:string,
+        index:number
+      ) => (
+
         <p
-          className="
-            whitespace-pre-wrap
-            leading-8
-            text-muted-foreground
-          "
+          key={index}
         >
-          {post.content}
+
+          {paragraph}
+
         </p>
 
-      </article>
+      )
+    )
+}
 
-    </section>
+
+</article>
+
+
+</section>
 
     {/* =====================================
         TAGS & SHARE
