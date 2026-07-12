@@ -4,13 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { UserPlus, Loader2 } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase-browser'
+import { createEditorUser } from '@/app/admin/users/actions'
 
 
 export default function AddUserForm(){
 
-
-  const supabase = createClient()
 
   const router = useRouter()
 
@@ -28,139 +26,72 @@ export default function AddUserForm(){
 
 
 
+async function createEditor(
+  e: React.FormEvent
+) {
 
-  async function createEditor(
-    e:React.FormEvent
-  ){
+  e.preventDefault()
 
-    e.preventDefault()
+  if (password.length < 6) {
 
-if(password.length < 6){
+    setMessage(
+      'Password must be at least 6 characters.'
+    )
 
-  setMessage(
-    'Password must be at least 6 characters.'
-  )
-
-  return
-
-}
-    try {
-
-      setLoading(true)
-
-      setMessage('')
-
-
-
-      // Create Auth account
-
-      const {
-        data,
-        error
-      } =
-      await supabase.auth.signUp({
-
-        email,
-
-        password,
-
-      })
-
-
-
-      if(error){
-
-        throw error
-
-      }
-
-
-
-      if(!data.user){
-
-        throw new Error(
-          'User creation failed'
-        )
-
-      }
-
-
-
-
-      // Add role record
-
-      const {
-        error:roleError
-      } =
-
-      await supabase
-
-        .from('admin_users')
-
-        .insert({
-
-          user_id:data.user.id,
-
-          name,
-
-          email,
-
-          role:'editor',
-
-        })
-
-
-
-
-      if(roleError){
-
-        throw roleError
-
-      }
-
-
-
-
-
-      setMessage(
-        'Editor created successfully'
-      )
-
-
-
-      setName('')
-
-      setEmail('')
-
-      setPassword('')
-
-
-
-      router.refresh()
-
-
-
-    }
-   catch(error:any){
-
-  console.error(
-    'Create editor error:',
-    error?.message || error
-  )
-
-  setMessage(
-    error?.message || 'Unable to create editor'
-  )
-
-}
-    finally{
-
-      setLoading(false)
-
-    }
-
+    return
 
   }
+
+  try {
+
+    setLoading(true)
+
+    setMessage('')
+
+    await createEditorUser({
+
+      name,
+
+      email,
+
+      password,
+
+    })
+
+    setMessage(
+      'Editor created successfully.'
+    )
+
+    setName('')
+
+    setEmail('')
+
+    setPassword('')
+
+    router.refresh()
+
+  }
+
+  catch (error: any) {
+
+    console.error(
+      error
+    )
+
+    setMessage(
+      error.message ||
+      'Unable to create editor.'
+    )
+
+  }
+
+  finally {
+
+    setLoading(false)
+
+  }
+
+}
 
 
 
