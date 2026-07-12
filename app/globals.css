@@ -117,3 +117,11 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}

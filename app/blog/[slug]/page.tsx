@@ -377,38 +377,23 @@ const {
     prose-invert
     max-w-none
     prose-headings:font-heading
-    prose-headings:text-foreground
-    prose-p:text-muted-foreground
-    prose-p:leading-8
-    prose-a:text-accent
+    prose-img:rounded-2xl
+    prose-a:text-primary
+    prose-strong:text-white
   "
 >
 
+  <div
 
-{
-  post.content
-    ?.split('\n\n')
-    .map(
-      (
-        paragraph:string,
-        index:number
-      ) => (
+    dangerouslySetInnerHTML={{
 
-        <p
-          key={index}
-        >
+      __html: post.content,
 
-          {paragraph}
+    }}
 
-        </p>
-
-      )
-    )
-}
-
+  />
 
 </article>
-
 
 </section>
 
