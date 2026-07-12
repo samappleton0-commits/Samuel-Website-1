@@ -2,48 +2,57 @@
    ADMIN LAYOUT START
 ========================================================= */
 
+
+import { redirect } from 'next/navigation'
+
 import AdminSidebar from '@/components/admin-sidebar'
 
+import { createClient } from '@/lib/supabase-server'
 
-export default function AdminLayout({
+import { getUserRole } from '@/lib/get-user-role'
+
+
+
+
+
+export default async function AdminLayout({
+
   children,
+
 }: {
+
   children: React.ReactNode
+
 }) {
 
 
-  return (
 
-    <main className="min-h-screen">
-
-
-
+// =========================================================
+// CHECK LOGIN USER
+// =========================================================
 
 
-      {/* =====================================================
-          DESKTOP SIDEBAR
-          Fixed position on large screens
-      ===================================================== */}
+const supabase = await createClient()
 
 
-      <aside
-        className="
-          hidden
-          lg:fixed
-          lg:left-0
-          lg:top-0
-          lg:block
-          lg:h-screen
-          lg:w-[280px]
-          lg:p-6
-        "
-      >
+
+const {
+
+  data:{
+    user
+  }
+
+} = await supabase.auth.getUser()
 
 
-        <AdminSidebar />
 
 
-      </aside>
+
+if(!user){
+
+  redirect('/login')
+
+}
 
 
 
@@ -51,27 +60,22 @@ export default function AdminLayout({
 
 
 
-      {/* =====================================================
-          MOBILE NAVBAR
-          Stays at top on smaller screens
-      ===================================================== */}
+// =========================================================
+// GET USER ROLE
+// =========================================================
 
 
-      <div
-        className="
-          sticky
-          top-0
-          z-50
-          bg-background
-          lg:hidden
-        "
-      >
+const userRole = await getUserRole()
 
 
-        <AdminSidebar />
 
 
-      </div>
+
+if(!userRole){
+
+  redirect('/login')
+
+}
 
 
 
@@ -79,35 +83,146 @@ export default function AdminLayout({
 
 
 
-
-      {/* =====================================================
-          PAGE CONTENT
-      ===================================================== */}
-
-
-      <section
-
-        className="
-          px-4
-          py-16
-          sm:px-6
-          lg:ml-[280px]
-        "
-
-      >
-
-        {children}
-
-
-      </section>
+const role = userRole.role
 
 
 
 
 
-    </main>
 
-  )
+
+// =========================================================
+// CURRENT PATH PROTECTION
+// =========================================================
+
+
+// NOTE:
+// Page-level protection will be added next.
+// This keeps the layout clean.
+
+
+
+
+
+
+// =========================================================
+// ADMIN LAYOUT UI
+// =========================================================
+
+
+
+return (
+
+
+<main className="min-h-screen">
+
+
+
+
+
+
+{/* =====================================================
+    DESKTOP SIDEBAR
+===================================================== */}
+
+
+<aside
+
+className="
+hidden
+lg:fixed
+lg:left-0
+lg:top-0
+lg:block
+lg:h-screen
+lg:w-[280px]
+lg:p-6
+"
+
+>
+
+
+<AdminSidebar />
+
+
+</aside>
+
+
+
+
+
+
+
+
+
+{/* =====================================================
+    MOBILE NAVBAR
+===================================================== */}
+
+
+
+<div
+
+
+className="
+sticky
+top-0
+z-50
+bg-background
+lg:hidden
+"
+
+
+>
+
+
+<AdminSidebar />
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* =====================================================
+    PAGE CONTENT
+===================================================== */}
+
+
+
+<section
+
+
+className="
+px-4
+py-16
+sm:px-6
+lg:ml-[280px]
+"
+
+
+>
+
+
+{children}
+
+
+</section>
+
+
+
+
+
+</main>
+
+
+)
+
 
 }
 

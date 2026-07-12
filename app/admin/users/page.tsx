@@ -6,7 +6,10 @@ import { requireAdmin } from '@/lib/require-role'
 import AddUserForm from '@/components/admin/users/add-user-form'
 import UserManager from '@/components/admin/users/user-manager'
 
-export default async function AdminUsersPage() {
+export default async function AdminUsersPage(){
+
+  await requireAdmin()
+
 
   // Only admins can access this page
   await requireAdmin()

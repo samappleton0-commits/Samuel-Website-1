@@ -6,9 +6,13 @@
 import { createClient } from '@/lib/supabase-server'
 import { getUserRole } from '@/lib/get-user-role'
 import BlogManager from '@/components/admin/blog/blog-manager'
+import { requireEditor } from '@/lib/require-role'
 
 
-export default async function AdminBlogPage() {
+export default async function AdminBlogPage(){
+
+  await requireEditor()
+
 
   const userRole = await getUserRole()
 

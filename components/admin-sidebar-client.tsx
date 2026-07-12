@@ -46,7 +46,20 @@ type Role = 'admin' | 'editor'
 
 type Props = {
 
-  role: Role
+
+role: Role
+
+
+profile: {
+
+name:string
+
+email:string
+
+avatar_url:string
+
+}
+
 
 }
 
@@ -174,10 +187,11 @@ const managementLinks:MenuItem[] = [
 
 export default function AdminSidebarClient({
 
-  role,
+role,
+
+profile,
 
 }:Props){
-
 
 
 
@@ -528,22 +542,15 @@ shrink-0
 
 >
 
-
-
 <Image
 
+src={profile.avatar_url}
 
-src="/profileme.png"
-
-
-alt="Samuel Appleton"
-
+alt={profile.name}
 
 width={90}
 
-
 height={90}
-
 
 className="
 mx-auto
@@ -553,7 +560,6 @@ border-surface-border
 object-cover
 "
 
-
 />
 
 
@@ -562,7 +568,7 @@ object-cover
 
 <h2 className="mt-4 text-xl font-bold">
 
-Samuel Appleton
+{profile.name}
 
 </h2>
 
@@ -579,7 +585,6 @@ text-muted-foreground
 "
 
 >
-
 
 {
 
