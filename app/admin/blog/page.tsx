@@ -4,9 +4,14 @@
 // ======================================================
 
 import { createClient } from '@/lib/supabase-server'
+import { getUserRole } from '@/lib/get-user-role'
 import BlogManager from '@/components/admin/blog/blog-manager'
 
+
 export default async function AdminBlogPage() {
+
+  const userRole = await getUserRole()
+
   const supabase = await createClient()
 
   const { data: posts, error } = await supabase
@@ -35,9 +40,17 @@ export default async function AdminBlogPage() {
 
       </div>
 
-      <BlogManager
-        initialPosts={posts ?? []}
-      />
+    <BlogManager
+
+  initialPosts={posts ?? []}
+
+  userRole={
+    userRole?.role === 'admin'
+      ? 'admin'
+      : 'editor'
+  }
+
+/>
 
     </div>
   )

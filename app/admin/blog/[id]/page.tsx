@@ -9,6 +9,7 @@ import { notFound } from 'next/navigation'
 import BlogEditor from '@/components/admin/blog/blog-editor'
 
 import { createClient } from '@/lib/supabase-server'
+import { getUserRole } from '@/lib/get-user-role'
 
 
 
@@ -35,7 +36,7 @@ export default async function EditBlogPage({
 
  const supabase = await createClient()
 
-
+const userRole = await getUserRole()
 
   const { data:post,error } =
 
@@ -144,12 +145,17 @@ export default async function EditBlogPage({
 
 
 
+<BlogEditor
 
-    <BlogEditor
+  initialPost={post}
 
-      initialPost={post}
+  userRole={
+    userRole?.role === 'admin'
+      ? 'admin'
+      : 'editor'
+  }
 
-    />
+/>
 
 
   </div>

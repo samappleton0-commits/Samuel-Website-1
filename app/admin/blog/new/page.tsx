@@ -6,11 +6,12 @@ import {
 } from 'lucide-react'
 
 import BlogEditor from '@/components/admin/blog/blog-editor'
+import { getUserRole } from '@/lib/get-user-role'
 
 
 
-export default function NewBlogPage() {
-
+export default async function NewBlogPage() {
+  const userRole = await getUserRole()
 
   return (
 
@@ -92,7 +93,15 @@ export default function NewBlogPage() {
 
 
 
-      <BlogEditor />
+     <BlogEditor
+
+  userRole={
+    userRole?.role === 'admin'
+      ? 'admin'
+      : 'editor'
+  }
+
+/>
 
 
     </div>

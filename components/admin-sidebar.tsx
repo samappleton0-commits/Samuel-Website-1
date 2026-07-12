@@ -90,6 +90,14 @@ const communicationLinks = [
 ]
 
 
+const managementLinks = [
+  {
+    name: 'Users',
+    href: '/admin/users',
+    icon: UserRound,
+  },
+]
+
 
 
 
@@ -106,6 +114,8 @@ export default function AdminSidebar() {
 
 
   const [communicationOpen, setCommunicationOpen] = useState(true)
+
+  const [managementOpen, setManagementOpen] = useState(true)
 
 
 
@@ -631,7 +641,72 @@ export default function AdminSidebar() {
           </div>
 
 
+{/* MANAGEMENT */}
 
+<div>
+
+  <button
+
+    onClick={()=>
+      setManagementOpen(!managementOpen)
+    }
+
+    className="
+      flex
+      w-full
+      items-center
+      justify-between
+      px-4
+      text-xs
+      font-semibold
+      uppercase
+      text-muted-foreground
+    "
+
+  >
+
+    Management
+
+
+    <ChevronDown
+
+      size={16}
+
+      className={`
+        transition
+        ${
+          managementOpen
+          ?
+          'rotate-180'
+          :
+          ''
+        }
+      `}
+
+    />
+
+  </button>
+
+
+  {
+    managementOpen && (
+
+      <div
+        className="
+          mt-2
+          space-y-2
+        "
+      >
+
+        {renderLinks(managementLinks)}
+
+      </div>
+
+    )
+  }
+
+
+</div>
 
 
 

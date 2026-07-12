@@ -4,6 +4,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import BlogDeleteButton from './blog-delete-button'
+import BlogStatusButton from './blog-status-button'
 
 import {
   Plus,
@@ -24,7 +25,7 @@ type BlogPost = {
   featured_image: string | null
   category: string | null
   tags: string[] | null
-  status: string
+  status: 'draft' | 'pending' | 'published'
   featured: boolean
   published_at: string | null
   seo_title: string | null
@@ -33,15 +34,21 @@ type BlogPost = {
   updated_at: string
 }
 
-type Props = {
-  initialPosts: BlogPost[]
-}
 
+ type Props = {
+
+  initialPosts: BlogPost[]
+
+  userRole: 'admin' | 'editor'
+
+}
 export default function BlogManager({
 
   initialPosts,
 
-}: Props) {
+  userRole,
+
+}: Props)  {
 
   const [posts] =
 
@@ -125,7 +132,13 @@ export default function BlogManager({
 
     ).length
 
+const pendingPosts =
 
+  posts.filter(
+
+    post=>post.status==='pending'
+
+  ).length
 
   const featuredPosts =
 
@@ -499,41 +512,56 @@ export default function BlogManager({
 
                       </span>
 
+                      
+
                       {
+  post.status === 'published' ? (
 
-                        post.status === 'published' ? (
+    <span
+      className="
+        rounded-full
+        bg-green-500/10
+        px-3
+        py-1
+        text-xs
+        text-green-600
+      "
+    >
+      Published
+    </span>
 
-                          <span
-                            className="
-                              rounded-full
-                              bg-green-500/10
-                              px-3
-                              py-1
-                              text-xs
-                              text-green-600
-                            "
-                          >
-                            Published
-                          </span>
+  ) : post.status === 'pending' ? (
 
-                        ) : (
+    <span
+      className="
+        rounded-full
+        bg-blue-500/10
+        px-3
+        py-1
+        text-xs
+        text-blue-600
+      "
+    >
+      Pending Approval
+    </span>
 
-                          <span
-                            className="
-                              rounded-full
-                              bg-yellow-500/10
-                              px-3
-                              py-1
-                              text-xs
-                              text-yellow-600
-                            "
-                          >
-                            Draft
-                          </span>
+  ) : (
 
-                        )
+    <span
+      className="
+        rounded-full
+        bg-yellow-500/10
+        px-3
+        py-1
+        text-xs
+        text-yellow-600
+      "
+    >
+      Draft
+    </span>
 
-                      }
+  )
+}
 
                       {
 
@@ -642,11 +670,24 @@ export default function BlogManager({
 
   </Link>
 
+<BlogDeleteButton
 
-  <BlogDeleteButton
-    id={post.id}
-  />
+  id={post.id}
 
+  status={post.status}
+
+  userRole={userRole}
+
+/>
+<BlogStatusButton
+
+  id={post.id}
+
+  status={post.status}
+
+  userRole={userRole}
+
+/>
 
   {
     post.featured ? (

@@ -41,7 +41,7 @@ type BlogPost = {
 
   featured_image: string | null
 
-  status: 'draft' | 'published'
+  status: 'draft' | 'pending' | 'published'
 
   featured: boolean
 
@@ -55,8 +55,9 @@ type Props = {
 
   initialPost?: BlogPost
 
-}
+  userRole: 'admin' | 'editor'
 
+}
 // =====================================================
 // COMPONENT
 // =====================================================
@@ -64,6 +65,8 @@ type Props = {
 export default function BlogEditor({
 
   initialPost,
+
+  userRole,
 
 }: Props) {
 
@@ -310,8 +313,17 @@ async function savePost() {
       featured_image:
         form.featured_image || null,
 
-      status:
-        form.status,
+   status:
+
+  userRole === 'editor'
+
+  ? (
+      form.status === 'draft'
+        ? 'draft'
+        : 'pending'
+    )
+
+  : form.status,
 
       featured:
         form.featured,
@@ -322,13 +334,14 @@ async function savePost() {
       seo_description:
         form.seo_description || null,
 
-      published_at:
+    published_at:
 
-        form.status === 'published'
+  userRole === 'admin' &&
+  form.status === 'published'
 
-          ? new Date().toISOString()
+    ? new Date().toISOString()
 
-          : null,
+    : null,
 
     }
 
@@ -1003,42 +1016,52 @@ text-muted-foreground
           Status
         </label>
 
-        <select
+      <select
 
-          value={form.status}
+  value={form.status}
 
-          onChange={(e)=>
+  onChange={(e)=>
 
-            updateField(
-              'status',
-              e.target.value
-            )
+    updateField(
+      'status',
+      e.target.value as 'draft' | 'pending' | 'published'
+    )
 
-          }
+  }
 
-          className="
-            w-full
-            rounded-xl
-            border
-            px-4
-            py-3
-          "
+  className="
+    w-full
+    rounded-xl
+    border
+    px-4
+    py-3
+  "
 
-        >
+>
 
-          <option value="draft">
+  <option value="draft">
+    Draft
+  </option>
 
-            Draft
 
-          </option>
+  <option value="pending">
+    Pending Approval
+  </option>
 
-          <option value="published">
 
-            Published
 
-          </option>
+  {
+    userRole === 'admin' && (
 
-        </select>
+      <option value="published">
+        Published
+      </option>
+
+    )
+  }
+
+
+</select>
 
       </div>
 
@@ -1221,11 +1244,15 @@ text-muted-foreground
 
         ? 'Saving...'
 
-        : initialPost
+       : initialPost
 
-          ? 'Update Article'
+  ? 'Update Article'
 
-          : 'Publish Article'
+  : userRole === 'admin'
+
+    ? 'Publish Article'
+
+    : 'Submit For Approval'
 
       }
 
