@@ -8,64 +8,128 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 
+// =====================================================
+// NAVIGATION LINKS
+// =====================================================
+
 const NAV_LINKS = [
-  { label: 'Home', href: '#home' },
-  { label: 'About', href: '#about' },
-  { label: 'Services', href: '#services' },
-  { label: 'Work', href: '#work' },
-  { label: 'Contact', href: '#contact' },
+
+  {
+    label: 'Home',
+    href: '/',
+  },
+
+  {
+    label: 'About',
+    href: '/#about',
+  },
+
+  {
+    label: 'Services',
+    href: '/#services',
+  },
+
+  {
+    label: 'Work',
+    href: '/#work',
+  },
+
+  {
+    label: 'Blog',
+    href: '/blog',
+  },
+
+  {
+    label: 'Contact',
+    href: '/#contact',
+  },
+
 ]
 
 
 
+
+
+// =====================================================
+// THEME TOGGLE
+// =====================================================
+
 function ThemeToggle() {
+
 
   const [isLight, setIsLight] = useState(false)
 
 
+
   useEffect(() => {
 
-    const stored = localStorage.getItem('theme')
 
-    const light = stored === 'light'
+    const stored =
+      localStorage.getItem('theme')
+
+
+    const light =
+      stored === 'light'
+
 
     setIsLight(light)
+
 
     document.documentElement.classList.toggle(
       'light',
       light
     )
 
+
   }, [])
+
+
 
 
 
   const toggle = () => {
 
-    const next = !isLight
+
+    const next =
+      !isLight
+
+
 
     setIsLight(next)
+
+
 
     document.documentElement.classList.toggle(
       'light',
       next
     )
 
+
+
     localStorage.setItem(
       'theme',
       next ? 'light' : 'dark'
     )
 
+
   }
+
+
+
 
 
 
   return (
 
+
     <button
+
       type="button"
+
       onClick={toggle}
+
       aria-label="Toggle color theme"
+
       className="
         glass
         flex
@@ -77,16 +141,30 @@ function ThemeToggle() {
         transition-colors
         hover:text-accent
       "
+
     >
 
-      {isLight
-        ? <Moon className="size-5" />
-        : <Sun className="size-5" />
+
+      {
+
+        isLight
+
+        ?
+
+        <Moon className="size-5" />
+
+        :
+
+        <Sun className="size-5" />
+
       }
+
 
     </button>
 
+
   )
+
 
 }
 
@@ -94,64 +172,112 @@ function ThemeToggle() {
 
 
 
+
+
+// =====================================================
+// SITE HEADER
+// =====================================================
+
 export function SiteHeader() {
 
 
-  const [open, setOpen] = useState(false)
-
-  const [scrolled, setScrolled] = useState(false)
-
+  const [open,setOpen] =
+    useState(false)
 
 
-  const { scrollYProgress } = useScroll()
+
+  const [scrolled,setScrolled] =
+    useState(false)
+
+
+
+
+
+  const {
+    scrollYProgress
+  } = useScroll()
+
+
+
 
 
   const progress = useSpring(
+
     scrollYProgress,
+
     {
+
       stiffness:120,
+
       damping:30,
+
       restDelta:0.001,
+
     }
+
   )
 
 
 
 
 
-  useEffect(() => {
 
 
-    const onScroll = () => {
+  useEffect(()=>{
+
+
+    const onScroll = ()=>{
+
 
       setScrolled(
+
         window.scrollY > 20
+
       )
 
+
     }
+
+
 
 
 
     onScroll()
 
 
+
     window.addEventListener(
+
       'scroll',
+
       onScroll,
+
       {
         passive:true
       }
+
     )
 
 
-    return () =>
+
+
+
+    return ()=>
+
+
       window.removeEventListener(
+
         'scroll',
+
         onScroll
+
       )
 
 
-  }, [])
+
+  },[])
+
+
 
 
 
@@ -161,8 +287,14 @@ export function SiteHeader() {
 
   return (
 
+
     <header className="fixed inset-x-0 top-0 z-50">
 
+
+
+
+
+      {/* Scroll progress */}
 
       <motion.div
 
@@ -184,23 +316,44 @@ export function SiteHeader() {
 
 
 
+
+
+
+
       <div
+
 
         className={cn(
 
+
           'transition-all duration-300',
 
+
           scrolled
-            ? 'glass shadow-lg shadow-black/20'
-            : 'bg-transparent'
+
+          ?
+
+          'glass shadow-lg shadow-black/20'
+
+          :
+
+          'bg-transparent'
+
 
         )}
+
 
       >
 
 
 
+
+
+
+
         <nav
+
+
           className="
             mx-auto
             flex
@@ -211,21 +364,38 @@ export function SiteHeader() {
             px-4
             sm:px-6
           "
+
+
         >
 
 
 
+
+
+
+
+          {/* LOGO */}
+
+
           <a
-            href="#home"
+
+
+            href="/"
+
+
             className="
               font-heading
               text-lg
               font-bold
               tracking-tight
             "
+
+
           >
 
+
             SAM<span className="text-accent">.</span>
+
 
           </a>
 
@@ -233,35 +403,72 @@ export function SiteHeader() {
 
 
 
-          <ul className="hidden items-center gap-1 lg:flex">
 
-            {NAV_LINKS.map((link)=>(
 
-              <li key={link.href}>
 
-                <a
 
-                  href={link.href}
+          {/* DESKTOP LINKS */}
 
-                  className="
-                    rounded-full
-                    px-3
-                    py-2
-                    text-sm
-                    text-muted-foreground
-                    transition-colors
-                    hover:text-foreground
-                  "
+
+          <ul
+
+
+            className="
+              hidden
+              items-center
+              gap-1
+              lg:flex
+            "
+
+
+          >
+
+
+            {
+
+              NAV_LINKS.map((link)=>(
+
+
+                <li
+
+                  key={link.href}
 
                 >
 
-                  {link.label}
 
-                </a>
+                  <a
 
-              </li>
 
-            ))}
+                    href={link.href}
+
+
+                    className="
+                      rounded-full
+                      px-3
+                      py-2
+                      text-sm
+                      text-muted-foreground
+                      transition-colors
+                      hover:text-foreground
+                    "
+
+
+                  >
+
+
+                    {link.label}
+
+
+                  </a>
+
+
+                </li>
+
+
+              ))
+
+
+            }
 
 
           </ul>
@@ -272,6 +479,11 @@ export function SiteHeader() {
 
 
 
+
+
+          {/* ACTIONS */}
+
+
           <div className="flex items-center gap-2">
 
 
@@ -279,11 +491,17 @@ export function SiteHeader() {
 
 
 
+
+
             <Button
 
+
               render={
-                <a href="#contact"/>
+
+                <a href="/#contact"/>
+
               }
+
 
               className="
                 hidden
@@ -294,9 +512,12 @@ export function SiteHeader() {
                 sm:inline-flex
               "
 
+
             >
 
+
               Contact Me
+
 
             </Button>
 
@@ -304,17 +525,30 @@ export function SiteHeader() {
 
 
 
+
+
+
+            {/* MOBILE MENU BUTTON */}
+
+
             <button
+
 
               type="button"
 
+
               aria-label="Toggle navigation menu"
+
 
               aria-expanded={open}
 
-              onClick={() =>
+
+              onClick={()=>
+
                 setOpen(v=>!v)
+
               }
+
 
               className="
                 glass
@@ -326,13 +560,22 @@ export function SiteHeader() {
                 lg:hidden
               "
 
+
             >
 
-              {open
+
+              {
+
+                open
+
                 ?
+
                 <X className="size-5"/>
+
                 :
+
                 <Menu className="size-5"/>
+
               }
 
 
@@ -340,6 +583,8 @@ export function SiteHeader() {
 
 
           </div>
+
+
 
 
         </nav>
@@ -350,80 +595,108 @@ export function SiteHeader() {
 
 
 
-        {open && (
 
-          <motion.ul
-
-            initial={{
-              opacity:0,
-              height:0
-            }}
-
-            animate={{
-              opacity:1,
-              height:'auto'
-            }}
-
-            className="
-              mx-4
-              mb-3
-              overflow-hidden
-              rounded-2xl
-              border
-              border-surface-border
-              bg-background
-              p-2
-              shadow-xl
-              lg:hidden
-            "
-
-          >
+        {/* MOBILE MENU */}
 
 
-            {NAV_LINKS.map((link)=>(
+        {
+
+          open && (
 
 
-              <li key={link.href}>
+            <motion.ul
 
 
-                <a
-
-                  href={link.href}
-
-                  onClick={()=>
-                    setOpen(false)
-                  }
-
-                  className="
-                    block
-                    rounded-xl
-                    px-4
-                    py-3
-                    text-sm
-                    text-muted-foreground
-                    transition-colors
-                    hover:bg-surface
-                    hover:text-foreground
-                  "
-
-                >
-
-                  {link.label}
-
-                </a>
+              initial={{
+                opacity:0,
+                height:0
+              }}
 
 
-              </li>
+              animate={{
+                opacity:1,
+                height:'auto'
+              }}
 
 
-            ))}
+              className="
+                mx-4
+                mb-3
+                overflow-hidden
+                rounded-2xl
+                border
+                border-surface-border
+                bg-background
+                p-2
+                shadow-xl
+                lg:hidden
+              "
 
 
+            >
 
-          </motion.ul>
+
+              {
+
+                NAV_LINKS.map((link)=>(
 
 
-        )}
+                  <li
+
+                    key={link.href}
+
+                  >
+
+
+                    <a
+
+
+                      href={link.href}
+
+
+                      onClick={()=>setOpen(false)}
+
+
+                      className="
+                        block
+                        rounded-xl
+                        px-4
+                        py-3
+                        text-sm
+                        text-muted-foreground
+                        transition-colors
+                        hover:bg-surface
+                        hover:text-foreground
+                      "
+
+
+                    >
+
+
+                      {link.label}
+
+
+                    </a>
+
+
+                  </li>
+
+
+                ))
+
+
+              }
+
+
+            </motion.ul>
+
+
+          )
+
+
+        }
+
+
 
 
 
@@ -432,6 +705,8 @@ export function SiteHeader() {
 
     </header>
 
+
   )
+
 
 }

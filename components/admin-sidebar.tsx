@@ -81,6 +81,12 @@ const communicationLinks = [
     href: '/admin/announcements',
     icon: Megaphone,
   },
+
+  {
+    name: 'Blog',
+    href: '/admin/blog',
+    icon: FileText,
+  },
 ]
 
 

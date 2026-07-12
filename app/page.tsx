@@ -1,15 +1,16 @@
 import dynamic from 'next/dynamic'
 
 import { createClient } from '@/lib/supabase-server'
-
 import { SiteHeader } from '@/components/site-header'
-import { Hero } from '@/components/hero'
 import { SiteFooter } from '@/components/site-footer'
+import { Hero } from '@/components/hero'
 import { BackToTop } from '@/components/back-to-top'
 
 
 
+// =====================================================
 // Lazy loaded sections
+// =====================================================
 
 const About = dynamic(
   () =>
@@ -82,26 +83,30 @@ const Contact = dynamic(
 
 
 
+// =====================================================
+// Loading Placeholder
+// =====================================================
+
 function SectionLoading() {
 
   return (
 
     <div
       className="
-      mx-auto
-      max-w-6xl
-      px-4
-      py-24
-      sm:px-6
+        mx-auto
+        max-w-6xl
+        px-4
+        py-24
+        sm:px-6
       "
     >
 
       <div
         className="
-        h-40
-        animate-pulse
-        rounded-3xl
-        bg-surface
+          h-40
+          animate-pulse
+          rounded-3xl
+          bg-surface
         "
       />
 
@@ -116,12 +121,19 @@ function SectionLoading() {
 
 
 
+
+// =====================================================
+// HOME PAGE
+// =====================================================
+
 export default async function Page() {
 
 
 
   const supabase =
     await createClient()
+
+
 
 
 
@@ -145,13 +157,12 @@ export default async function Page() {
 
 
 
+
+
   return (
 
     <>
-
-
-      <SiteHeader />
-
+<SiteHeader />
 
       <main>
 
@@ -165,14 +176,19 @@ export default async function Page() {
         <Services />
 
 
+
         <Portfolio
+
           projects={
             projects ?? []
           }
+
         />
 
 
+
         <Gallery />
+
 
 
         <Contact />
@@ -181,11 +197,7 @@ export default async function Page() {
       </main>
 
 
-
-      <SiteFooter />
-
-
-
+<SiteFooter />
       <BackToTop />
 
 

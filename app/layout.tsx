@@ -4,6 +4,8 @@ import { Poppins, Inter, Geist_Mono } from 'next/font/google'
 import { Toaster } from 'sonner'
 
 import './globals.css'
+import { SiteHeader } from '@/components/site-header'
+import { SiteFooter } from '@/components/site-footer'
 
 import WelcomeToast from '@/components/WelcomeToast'
 
@@ -69,23 +71,36 @@ export default function RootLayout({
       className={`${poppins.variable} ${inter.variable} ${geistMono.variable} bg-background`}
     >
 
-      <body className="bg-background font-sans antialiased">
+    <body className="bg-background font-sans antialiased">
 
-        {/* Welcome Notification */}
-        <WelcomeToast />
-
-
-        {/* Website Content */}
-        {children}
+  {/* Welcome Notification */}
+  <WelcomeToast />
 
 
-        {/* Toast Container */}
-        <Toaster
-          position="top-right"
-          richColors
-          closeButton
-          theme="dark"
-        />
+  {/* Global Website Header */}
+  
+
+
+  {/* Website Content */}
+  <main>
+
+    {children}
+
+  </main>
+
+
+  {/* Global Website Footer */}
+ 
+
+
+
+  {/* Toast Container */}
+  <Toaster
+    position="top-right"
+    richColors
+    closeButton
+    theme="dark"
+  />
 
 
         {/* Vercel Analytics */}

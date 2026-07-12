@@ -155,7 +155,6 @@ flex
 min-h-screen
 items-center
 overflow-hidden
-pt-24
 pb-16
 "
 >
