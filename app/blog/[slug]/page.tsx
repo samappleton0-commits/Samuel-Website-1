@@ -372,28 +372,37 @@ const {
 >
 
 <article
-  className="
-    prose
-    prose-invert
-    max-w-none
-    prose-headings:font-heading
-    prose-img:rounded-2xl
-    prose-a:text-primary
-    prose-strong:text-white
-  "
->
 
-  <div
+className="
+prose
+prose-lg
+prose-invert
+max-w-none
 
-    dangerouslySetInnerHTML={{
+prose-headings:font-heading
+prose-headings:font-bold
 
-      __html: post.content,
+prose-h1:text-4xl
+prose-h2:text-3xl
+prose-h3:text-2xl
 
-    }}
+prose-blockquote:border-l-4
+prose-blockquote:pl-4
+prose-blockquote:italic
 
-  />
+prose-img:rounded-2xl
 
-</article>
+prose-a:text-primary
+
+prose-strong:text-white
+
+"
+
+dangerouslySetInnerHTML={{
+  __html: post.content
+}}
+
+/>
 
 </section>
 

@@ -22,8 +22,6 @@ import Highlight from '@tiptap/extension-highlight'
 
 import Link from '@tiptap/extension-link'
 
-import Image from '@tiptap/extension-image'
-
 import Placeholder from '@tiptap/extension-placeholder'
 
 import TextAlign from '@tiptap/extension-text-align'
@@ -140,14 +138,31 @@ supabase
 fileName
 )
 
+if(editor){
+
+console.log(
+  "IMAGE URL:",
+  data.publicUrl
+)
+
 
 editor
 .chain()
 .focus()
-.setImage({
-src:data.publicUrl
+.insertContent({
+
+type:'image',
+
+attrs:{
+
+src:data.publicUrl,
+
+},
+
 })
 .run()
+
+}
 
 
 }
@@ -214,7 +229,13 @@ Underline,
 
 Highlight,
 
-TiptapImage,
+TiptapImage.configure({
+
+inline:false,
+
+allowBase64:false,
+
+}),
 
 HorizontalRule,
 
@@ -360,9 +381,12 @@ title="Redo"
 
 <button
 type="button"
-onClick={()=>
+onClick={()=>{
+console.log('H1 clicked')
+
 editor.chain().focus().toggleHeading({level:1}).run()
-}
+
+}}
 className={`
 rounded-lg
 border
@@ -792,14 +816,26 @@ overflow-hidden
 editor={editor}
 
 className="
-prose
-prose-lg
 max-w-none
 min-h-[400px]
 p-5
 outline-none
 
-before:content-[attr(data-placeholder)]
+prose-headings:font-bold
+
+prose-h1:text-3xl
+
+prose-h2:text-2xl
+
+prose-h3:text-xl
+
+prose-blockquote:border-l-4
+
+prose-blockquote:pl-4
+
+prose-blockquote:italic
+
+prose-img:rounded-xl
 
 "
 
