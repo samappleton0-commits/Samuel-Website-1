@@ -214,8 +214,11 @@ const {
     slug
   )
 
-  .limit(3)
-
+  .limit(10)
+const randomArticles =
+  relatedArticles
+    ?.sort(() => Math.random() - 0.5)
+    .slice(0, 3)
   // ==========================================
   // Handle Missing Article
   // ==========================================
@@ -287,18 +290,7 @@ const {
             })}
           </span>
 
-          <span>•</span>
-
-          <span>
-            ⏱ {Math.max(
-              1,
-              Math.ceil(
-                (post.content ?? '').split(/\s+/).length / 200
-              )
-            )} min read
-          </span>
-
-          <span>•</span>
+         
 
          <span>
   By {post.author_name ?? 'Samuel Appleton'}
@@ -320,7 +312,7 @@ const {
   className="
     mx-auto
     mt-12
-    max-w-5xl
+    max-w-3xl
     px-4
     sm:px-6
   "
@@ -537,10 +529,10 @@ dangerouslySetInnerHTML={{
 
 </section>
 
-   <RelatedArticles
+  <RelatedArticles
 
   articles={
-    relatedArticles ?? []
+    randomArticles ?? []
   }
 
 />
