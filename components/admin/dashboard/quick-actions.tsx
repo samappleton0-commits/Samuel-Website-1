@@ -1,124 +1,198 @@
 'use client'
 
-/* =========================================================
-   IMPORTS
-========================================================= */
-
 import Link from 'next/link'
 
 import {
-  Plus,
+
   FileText,
-  Clock,
-  Eye,
-  LucideIcon,
+
+  Plus,
+
+  Mail,
+
+  User,
+
+  Briefcase,
+
+  GraduationCap,
+
+  Megaphone,
+
+  Home,
+
+  Layout,
+
+  Users,
+
+  Phone,
+
 } from 'lucide-react'
 
-/* =========================================================
-   TYPES
-========================================================= */
+type Props={
 
-type Props = {
-
-  role: 'admin' | 'editor'
+  role:'admin'|'editor'
 
 }
-
-type Action = {
-
-  title: string
-
-  description: string
-
-  href: string
-
-  icon: LucideIcon
-
-}
-
-/* =========================================================
-   COMPONENT
-========================================================= */
 
 export default function QuickActions({
 
   role,
 
-}: Props) {
+}:Props){
 
-  const editorActions: Action[] = [
+  const editorActions=[
 
     {
 
-      title: 'New Article',
+      title:'New Article',
 
-      description: 'Create a brand new blog post.',
+      href:'/admin/blog/new',
 
-      href: '/admin/blog/new',
+      icon:Plus,
 
-      icon: Plus,
+      color:'bg-blue-500',
 
     },
 
     {
 
-      title: 'My Articles',
+      title:'Articles',
 
-      description: 'View all your blog articles.',
+      href:'/admin/blog',
 
-      href: '/admin/blog',
+      icon:FileText,
 
-      icon: FileText,
-
-    },
-
-    {
-
-      title: 'Drafts',
-
-      description: 'Continue writing saved drafts.',
-
-      href: '/admin/blog?status=draft',
-
-      icon: Clock,
-
-    },
-
-    {
-
-      title: 'Pending Review',
-
-      description: 'Articles awaiting approval.',
-
-      href: '/admin/blog?status=pending',
-
-      icon: Eye,
+      color:'bg-sky-500',
 
     },
 
   ]
 
-  const adminActions: Action[] = [
+  const adminActions=[
 
     ...editorActions,
 
+    {
+
+      title:'Announcements',
+
+      href:'/admin/announcements',
+
+      icon:Megaphone,
+
+      color:'bg-red-500',
+
+    },
+
+    {
+
+      title:'Hero',
+
+      href:'/admin/hero',
+
+      icon:Home,
+
+      color:'bg-violet-500',
+
+    },
+
+    {
+
+      title:'About',
+
+      href:'/admin/about',
+
+      icon:User,
+
+      color:'bg-orange-500',
+
+    },
+
+    {
+
+      title:'Experience',
+
+      href:'/admin/experience',
+
+      icon:Briefcase,
+
+      color:'bg-indigo-500',
+
+    },
+
+    {
+
+      title:'Education',
+
+      href:'/admin/education',
+
+      icon:GraduationCap,
+
+      color:'bg-pink-500',
+
+    },
+
+    {
+
+      title:'Messages',
+
+      href:'/admin/messages',
+
+      icon:Mail,
+
+      color:'bg-emerald-500',
+
+    },
+
+    {
+
+      title:'Contact',
+
+      href:'/admin/contact',
+
+      icon:Phone,
+
+      color:'bg-cyan-500',
+
+    },
+
+    {
+
+      title:'Footer',
+
+      href:'/admin/footer',
+
+      icon:Layout,
+
+      color:'bg-slate-500',
+
+    },
+
+    {
+
+      title:'Users',
+
+      href:'/admin/users',
+
+      icon:Users,
+
+      color:'bg-amber-500',
+
+    },
+
   ]
 
-  const actions =
+  const actions=
 
-    role === 'admin'
+    role==='admin'
 
       ? adminActions
 
       : editorActions
 
-  return (
+  return(
 
     <section className="space-y-6">
-
-      {/* ==========================================
-          SECTION TITLE
-      ========================================== */}
 
       <div>
 
@@ -128,108 +202,123 @@ export default function QuickActions({
 
         </h2>
 
-        <p className="mt-1 text-muted-foreground">
+        <p className="text-muted-foreground">
 
-          Jump directly to the most common tasks.
+          Jump directly to any section.
 
         </p>
 
       </div>
 
-      {/* ==========================================
-          GRID
-      ========================================== */}
-
       <div
+
         className="
+
           grid
+
           gap-5
+
           sm:grid-cols-2
-          xl:grid-cols-4
+
+          lg:grid-cols-3
+
+          xl:grid-cols-5
+
         "
+
       >
 
-        {actions.map((action) => {
+        {
 
-          const Icon = action.icon
+          actions.map(action=>{
 
-          return (
+            const Icon=action.icon
 
-            <Link
+            return(
 
-              key={action.title}
+              <Link
 
-              href={action.href}
+                key={action.title}
 
-              className="
-                group
-                rounded-3xl
-                border
-                bg-card
-                p-6
-                transition-all
-                duration-300
-                hover:-translate-y-1
-                hover:border-accent
-                hover:shadow-xl
-              "
+                href={action.href}
 
-            >
-
-              <div
                 className="
-                  flex
-                  h-14
-                  w-14
-                  items-center
-                  justify-center
+
                   rounded-2xl
-                  bg-accent/10
-                  transition
-                  group-hover:bg-accent
+
+                  border
+
+                  bg-card
+
+                  p-5
+
+                  transition-all
+
+                  hover:-translate-y-1
+
+                  hover:shadow-lg
+
                 "
+
               >
 
-                <Icon
-                  size={26}
+                <div
+
+                  className={`
+
+                    mb-5
+
+                    flex
+
+                    h-14
+
+                    w-14
+
+                    items-center
+
+                    justify-center
+
+                    rounded-2xl
+
+                    text-white
+
+                    ${action.color}
+
+                  `}
+
+                >
+
+                  <Icon
+
+                    size={28}
+
+                  />
+
+                </div>
+
+                <h3
+
                   className="
-                    text-accent
-                    transition
-                    group-hover:text-white
+
+                    text-lg
+
+                    font-semibold
+
                   "
-                />
 
-              </div>
+                >
 
-              <h3
-                className="
-                  mt-6
-                  text-lg
-                  font-semibold
-                "
-              >
+                  {action.title}
 
-                {action.title}
+                </h3>
 
-              </h3>
+              </Link>
 
-              <p
-                className="
-                  mt-2
-                  text-sm
-                  text-muted-foreground
-                "
-              >
+            )
 
-                {action.description}
+          })
 
-              </p>
-
-            </Link>
-
-          )
-
-        })}
+        }
 
       </div>
 
