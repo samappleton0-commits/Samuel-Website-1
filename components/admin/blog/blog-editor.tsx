@@ -577,17 +577,7 @@ if (!user) {
       // ================================================
 
 
-      const {
 
-        data:{
-          user
-
-        },
-
-        error:userError
-
-
-      } = await supabase.auth.getUser()
 
 
 
