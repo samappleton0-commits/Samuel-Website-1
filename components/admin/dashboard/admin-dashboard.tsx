@@ -105,17 +105,34 @@ export default async function AdminDashboard({
 
       <StatsGrid
 
-        posts={posts ?? []}
+  stats={{
 
-        contacts={contacts ?? []}
+    articles: posts?.length ?? 0,
 
-        users={users ?? []}
+    published:
+      posts?.filter(
+        post => post.status === 'published'
+      ).length ?? 0,
 
-        experience={experience ?? []}
+    pending:
+      posts?.filter(
+        post => post.status === 'pending'
+      ).length ?? 0,
 
-        education={education ?? []}
+    featured:
+      posts?.filter(
+        post => post.featured === true
+      ).length ?? 0,
 
-      />
+    messages:
+      contacts?.length ?? 0,
+
+    users:
+      users?.length ?? 0,
+
+  }}
+
+/>
 
       <QuickActions />
 

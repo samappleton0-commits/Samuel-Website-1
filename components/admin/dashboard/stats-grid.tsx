@@ -1,351 +1,321 @@
+'use client'
+
+import Link from 'next/link'
+
 import {
-
   FileText,
-
+  CheckCircle,
   Clock,
-
-  Globe,
-
-  UserRound,
-
-  Mail,
-
-  GraduationCap,
-
-  Briefcase,
-
   Star,
-
+  Megaphone,
+  Mail,
+  Users,
+  Settings,
+  Globe,
+  Briefcase,
+  ArrowRight,
 } from 'lucide-react'
+
 
 type Props = {
 
-  posts:any[]
+  stats: {
 
-  contacts:any[]
+    articles:number
 
-  users:any[]
+    published:number
 
-  education:any[]
+    pending:number
 
-  experience:any[]
+    featured:number
+
+    messages:number
+
+    users:number
+
+  }
 
 }
 
+
 export default function StatsGrid({
 
-  posts,
-
-  contacts,
-
-  users,
-
-  education,
-
-  experience,
+  stats,
 
 }:Props){
 
-  const totalArticles =
 
-    posts.length
+const cards = [
+
+  {
+    title:'Articles',
+    value:stats.articles,
+    description:'Manage blog posts',
+    href:'/admin/blog',
+    icon:FileText,
+    color:'bg-blue-500',
+  },
+
+
+  {
+    title:'Published',
+    value:stats.published,
+    description:'Live articles',
+    href:'/admin/blog?status=published',
+    icon:CheckCircle,
+    color:'bg-green-500',
+  },
+
+
+  {
+    title:'Pending',
+    value:stats.pending,
+    description:'Awaiting review',
+    href:'/admin/blog?status=pending',
+    icon:Clock,
+    color:'bg-yellow-500',
+  },
 
-  const publishedArticles =
 
-    posts.filter(
+  {
+    title:'Featured',
+    value:stats.featured,
+    description:'Featured articles',
+    href:'/admin/blog?featured=true',
+    icon:Star,
+    color:'bg-purple-500',
+  },
 
-      post=>post.status==='published'
 
-    ).length
+  {
+    title:'Announcements',
+    value:null,
+    description:'Manage announcements',
+    href:'/admin/announcements',
+    icon:Megaphone,
+    color:'bg-red-500',
+  },
 
-  const draftArticles =
 
-    posts.filter(
+  {
+    title:'Messages',
+    value:stats.messages,
+    description:'Contact inbox',
+    href:'/admin/messages',
+    icon:Mail,
+    color:'bg-emerald-500',
+  },
+
+
+  {
+    title:'Users',
+    value:stats.users,
+    description:'Manage users',
+    href:'/admin/users',
+    icon:Users,
+    color:'bg-indigo-500',
+  },
 
-      post=>post.status==='draft'
 
-    ).length
+  {
+    title:'Settings',
+    value:null,
+    description:'Website configuration',
+    href:'/admin/settings',
+    icon:Settings,
+    color:'bg-slate-500',
+  },
 
-  const pendingArticles =
 
-    posts.filter(
+  {
+    title:'Homepage',
+    value:null,
+    description:'Visit website',
+    href:'/',
+    icon:Globe,
+    color:'bg-cyan-500',
+    external:true,
+  },
 
-      post=>post.status==='pending'
 
-    ).length
+  {
+    title:'Projects',
+    value:null,
+    description:'Manage projects',
+    href:'/admin/projects',
+    icon:Briefcase,
+    color:'bg-orange-500',
+  },
 
-  const featuredArticles =
 
-    posts.filter(
+]
 
-      post=>post.featured
 
-    ).length
+return (
 
-  const totalMessages =
+<section
 
-    contacts.length
+className="
+grid
+gap-5
+sm:grid-cols-2
+lg:grid-cols-3
+xl:grid-cols-5
+"
 
-  const unreadMessages =
+>
 
-    contacts.filter(
+{
 
-      contact=>!contact.read
+cards.map((card)=>{
 
-    ).length
 
-  const totalUsers =
+const Icon = card.icon
 
-    users.length
 
-  const totalEducation =
+return (
 
-    education.length
+<Link
 
-  const totalExperience =
+key={card.title}
 
-    experience.length
+href={card.href}
 
-  const cards = [
+target={
+  card.external
+  ? '_blank'
+  : undefined
+}
 
-    {
+rel={
+  card.external
+  ? 'noopener noreferrer'
+  : undefined
+}
 
-      title:'Articles',
+className="
+group
+rounded-3xl
+border
+bg-card
+p-6
+transition-all
+duration-300
+hover:-translate-y-1
+hover:shadow-xl
+"
 
-      value:totalArticles,
+>
 
-      icon:FileText,
+<div
 
-      color:'text-blue-500',
+className={`
 
-    },
+flex
+h-12
+w-12
+items-center
+justify-center
+rounded-2xl
+text-white
+${card.color}
 
-    {
+`}
 
-      title:'Published',
+>
 
-      value:publishedArticles,
+<Icon size={24}/>
 
-      icon:Globe,
+</div>
 
-      color:'text-green-500',
 
-    },
+<div className="mt-5 flex items-end justify-between">
 
-    {
 
-      title:'Drafts',
+<div>
 
-      value:draftArticles,
 
-      icon:Clock,
+{
 
-      color:'text-yellow-500',
+card.value !== null && (
 
-    },
+<p
 
-    {
+className="
+text-3xl
+font-bold
+"
 
-      title:'Pending',
+>
 
-      value:pendingArticles,
+{card.value}
 
-      icon:Clock,
+</p>
 
-      color:'text-orange-500',
+)
 
-    },
+}
 
-    {
 
-      title:'Featured',
+<h3
 
-      value:featuredArticles,
+className="
+mt-1
+font-semibold
+"
 
-      icon:Star,
+>
 
-      color:'text-amber-500',
+{card.title}
 
-    },
+</h3>
 
-    {
 
-      title:'Messages',
+<p
 
-      value:totalMessages,
+className="
+text-sm
+text-muted-foreground
+"
 
-      icon:Mail,
+>
 
-      color:'text-cyan-500',
+{card.description}
 
-    },
+</p>
 
-    {
 
-      title:'Unread',
+</div>
 
-      value:unreadMessages,
 
-      icon:Mail,
+<ArrowRight
 
-      color:'text-red-500',
+size={20}
 
-    },
+className="
+opacity-0
+transition
+group-hover:opacity-100
+"
 
-    {
+/>
 
-      title:'Users',
 
-      value:totalUsers,
+</div>
 
-      icon:UserRound,
 
-      color:'text-purple-500',
+</Link>
 
-    },
+)
 
-    {
 
-      title:'Experience',
+})
 
-      value:totalExperience,
+}
 
-      icon:Briefcase,
 
-      color:'text-indigo-500',
+</section>
 
-    },
-
-    {
-
-      title:'Education',
-
-      value:totalEducation,
-
-      icon:GraduationCap,
-
-      color:'text-pink-500',
-
-    },
-
-  ]
-
-  return(
-
-    <div
-
-      className="
-
-        grid
-
-        gap-5
-
-        sm:grid-cols-2
-
-        xl:grid-cols-5
-
-      "
-
-    >
-
-      {
-
-        cards.map(card=>{
-
-          const Icon = card.icon
-
-          return(
-
-            <div
-
-              key={card.title}
-
-              className="
-
-                rounded-2xl
-
-                border
-
-                bg-card
-
-                p-6
-
-                transition
-
-                hover:-translate-y-1
-
-                hover:shadow-lg
-
-              "
-
-            >
-
-              <div
-
-                className="
-
-                  flex
-
-                  items-center
-
-                  justify-between
-
-                "
-
-              >
-
-                <Icon
-
-                  className={card.color}
-
-                  size={28}
-
-                />
-
-                <span
-
-                  className="
-
-                    text-3xl
-
-                    font-bold
-
-                  "
-
-                >
-
-                  {card.value}
-
-                </span>
-
-              </div>
-
-              <h3
-
-                className="
-
-                  mt-6
-
-                  font-semibold
-
-                "
-
-              >
-
-                {card.title}
-
-              </h3>
-
-            </div>
-
-          )
-
-        })
-
-      }
-
-    </div>
-
-  )
+)
 
 }
