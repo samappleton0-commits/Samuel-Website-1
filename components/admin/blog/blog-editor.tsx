@@ -559,7 +559,19 @@ export default function BlogEditor({
 
 
 
+const {
+  data: { user },
+} = await supabase.auth.getUser()
 
+if (!user) {
+
+  setMessage('You must be logged in.')
+
+  setSaving(false)
+
+  return
+
+}
       // ================================================
       // GET CURRENT USER
       // ================================================
@@ -695,7 +707,7 @@ export default function BlogEditor({
           form.author_name,
 
 
-
+user_id: user.id,
         excerpt:
 
           form.excerpt || null,

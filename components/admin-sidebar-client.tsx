@@ -16,7 +16,7 @@ import {
   Menu,
 
   X,
-
+ Megaphone,
   ChevronDown,
 
   FolderKanban,
@@ -144,20 +144,25 @@ const contentLinks:MenuItem[] = [
 // BLOG SECTION
 // ------------------------------------------------------
 
-
-const communicationLinks:MenuItem[] = [
-
+const communicationLinks = [
 
   {
-    name:'Blog',
-    href:'/admin/blog',
-    icon:FileText,
+    name: 'Blog',
+    href: '/admin/blog',
+    icon: FileText,
   },
-
 
 ]
 
+const adminCommunicationLinks = [
 
+  {
+    name: 'Announcements',
+    href: '/admin/announcements',
+    icon: Megaphone,
+  },
+
+]
 
 
 
@@ -903,12 +908,57 @@ space-y-2
 
 >
 
+{/* =====================================================
+    COMMUNICATION
+===================================================== */}
+
+
+<div>
+
+
+
+
+
 
 {
+communicationOpen && (
 
-renderLinks(communicationLinks)
+<div
+className="
+mt-2
+space-y-2
+"
+>
+
+
+{/* BLOG - ADMIN + EDITOR */}
+
+{renderLinks(communicationLinks)}
+
+
+
+
+{/* ANNOUNCEMENTS - ADMIN ONLY */}
+
+{
+role === 'admin' && (
+
+renderLinks(adminCommunicationLinks)
+
+)
 
 }
+
+
+
+</div>
+
+)
+
+}
+
+
+</div>
 
 
 </div>
