@@ -562,6 +562,7 @@ export default function BlogEditor({
 const {
   data: { user },
 } = await supabase.auth.getUser()
+console.log("CURRENT USER:", user)
 
 if (!user) {
 
@@ -581,25 +582,19 @@ if (!user) {
 
 
 
+if(
 
-      if(
+  !user
 
-        userError ||
+){
 
-        !user
+  throw new Error(
 
-      ){
+    'User session not found.'
 
+  )
 
-        throw new Error(
-
-          'User session not found.'
-
-        )
-
-
-      }
-
+}
 
 
 
@@ -902,48 +897,37 @@ user_id: user.id,
 
     }
 
+catch(error){
 
-    catch(error:any){
-
-
-      console.error(
-
-        'SAVE BLOG ERROR:',
-
-        error
-
-      )
-
+  console.error(
+    "SAVE BLOG ERROR:",
+    JSON.stringify(
+      error,
+      null,
+      2
+    )
+  )
 
 
-      setMessage(
+  setMessage(
 
-        error.message ||
+    error instanceof Error
+      ? error.message
+      : 'Unable to save article.'
 
-        'Unable to save article.'
-
-      )
-
-
-
-    }
+  )
 
 
-
-    finally{
-
-
-      setSaving(false)
+}
 
 
-    }
+finally{
 
+  setSaving(false)
 
+}
 
   }
-
-
-
   // =====================================================
   // SAVE ARTICLE END
   // =====================================================
@@ -2024,9 +2008,3 @@ user_id: user.id,
 
 
 }
-
-
-
-// =====================================================
-// BLOG EDITOR END
-// =====================================================

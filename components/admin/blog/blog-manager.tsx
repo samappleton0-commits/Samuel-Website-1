@@ -1,8 +1,9 @@
-
 'use client'
 
 import { useMemo, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
+
 import BlogDeleteButton from './blog-delete-button'
 import BlogStatusButton from './blog-status-button'
 
@@ -16,30 +17,243 @@ import {
   Clock,
 } from 'lucide-react'
 
+
 type BlogPost = {
+
   id: string
+
   title: string
+
   slug: string
+
   excerpt: string | null
+
   content: string
+
   featured_image: string | null
+
   category: string | null
+
   tags: string[] | null
-  status: 'draft' | 'pending' | 'published'
+
+  status:
+    | 'draft'
+    | 'pending'
+    | 'published'
+
   featured: boolean
+
   published_at: string | null
+
   seo_title: string | null
+
   seo_description: string | null
+
   created_at: string
+
   updated_at: string
+
+  author_name: string | null
+
+  user_id: string | null
+
 }
 
 
- type Props = {
+
+type Props = {
 
   initialPosts: BlogPost[]
 
-  userRole: 'admin' | 'editor'
+  userRole:
+    | 'admin'
+    | 'editor'
+
+}
+
+
+function StatCard({
+
+  icon,
+
+  value,
+
+  label,
+
+}: {
+
+  icon: React.ReactNode
+
+  value: number
+
+  label: string
+
+}) {
+
+  return (
+
+    <div
+      className="
+        rounded-2xl
+        border
+        bg-card
+        p-6
+      "
+    >
+
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+        "
+      >
+
+        {icon}
+
+
+        <span
+          className="
+            text-3xl
+            font-bold
+          "
+        >
+
+          {value}
+
+        </span>
+
+
+      </div>
+
+
+      <p
+        className="
+          mt-4
+          text-sm
+          text-muted-foreground
+        "
+      >
+
+        {label}
+
+      </p>
+
+
+    </div>
+
+  )
+
+}
+
+
+
+
+
+function Badge({
+
+  children,
+
+  status,
+
+}: {
+
+  children?: React.ReactNode
+
+  status?: 'draft' | 'pending' | 'published'
+
+}) {
+
+
+  if(status){
+
+
+    const styles = {
+
+      published:
+      `
+      bg-green-500/10
+      text-green-600
+      `,
+
+
+      pending:
+      `
+      bg-blue-500/10
+      text-blue-600
+      `,
+
+
+      draft:
+      `
+      bg-yellow-500/10
+      text-yellow-600
+      `
+
+    }
+
+
+
+    const labels = {
+
+      published:'Published',
+
+      pending:'Pending Approval',
+
+      draft:'Draft'
+
+    }
+
+
+
+    return (
+
+      <span
+        className={`
+          rounded-full
+          px-3
+          py-1
+          text-xs
+          ${styles[status]}
+        `}
+      >
+
+        {labels[status]}
+
+
+      </span>
+
+
+    )
+
+
+  }
+
+
+
+
+
+  return (
+
+    <span
+
+      className="
+        rounded-full
+        bg-muted
+        px-3
+        py-1
+        text-xs
+      "
+
+    >
+
+      {children}
+
+
+    </span>
+
+
+  )
 
 }
 export default function BlogManager({
@@ -48,9 +262,10 @@ export default function BlogManager({
 
   userRole,
 
-}: Props)  {
+}: Props) {
 
-  const [posts] =
+
+  const [posts,setPosts] =
 
     useState<BlogPost[]>(
 
@@ -70,39 +285,49 @@ export default function BlogManager({
 
     useMemo(()=>{
 
+
       const value =
 
-        search.toLowerCase()
+        search
+          .toLowerCase()
+          .trim()
+
+
+
+      if(!value)
+
+        return posts
+
+
 
       return posts.filter(post=>{
+
 
         return (
 
           post.title
-
             .toLowerCase()
-
             .includes(value)
+
 
           ||
 
           (post.category ?? '')
-
             .toLowerCase()
-
             .includes(value)
+
 
           ||
 
-          (post.slug)
-
+          post.slug
             .toLowerCase()
-
             .includes(value)
 
         )
 
+
       })
+
 
     },[posts,search])
 
@@ -118,7 +343,8 @@ export default function BlogManager({
 
     posts.filter(
 
-      post=>post.status==='published'
+      post =>
+        post.status === 'published'
 
     ).length
 
@@ -128,52 +354,85 @@ export default function BlogManager({
 
     posts.filter(
 
-      post=>post.status==='draft'
+      post =>
+        post.status === 'draft'
 
     ).length
 
-const pendingPosts =
 
-  posts.filter(
 
-    post=>post.status==='pending'
+  const pendingPosts =
 
-  ).length
+    posts.filter(
+
+      post =>
+        post.status === 'pending'
+
+    ).length
+
+
 
   const featuredPosts =
 
     posts.filter(
 
-      post=>post.featured
+      post =>
+        post.featured
 
     ).length
 
-
-  return (
+      return (
 
     <div className="space-y-8">
 
-      {/* Header */}
 
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      {/* HEADER */}
+
+      <div
+        className="
+          flex
+          flex-col
+          gap-4
+          lg:flex-row
+          lg:items-center
+          lg:justify-between
+        "
+      >
 
         <div>
 
-          <h2 className="text-2xl font-bold">
+          <h2
+            className="
+              text-2xl
+              font-bold
+            "
+          >
             Blog Articles
           </h2>
 
-          <p className="text-muted-foreground mt-2">
+
+          <p
+            className="
+              mt-2
+              text-muted-foreground
+            "
+          >
             Create, edit and manage your blog articles.
           </p>
 
+
         </div>
 
+
+
         <Link
+
           href="/admin/blog/new"
+
           className="
             inline-flex
             items-center
+            justify-center
             gap-2
             rounded-xl
             bg-accent
@@ -183,123 +442,16 @@ const pendingPosts =
             transition
             hover:opacity-90
           "
+
         >
 
-          <Plus size={18} />
+          <Plus size={18}/>
 
           New Article
 
+
         </Link>
 
-      </div>
-
-
-
-
-
-      {/* Statistics */}
-
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-
-        <div className="rounded-2xl border bg-card p-6">
-
-          <div className="flex items-center justify-between">
-
-            <FileText className="text-accent" />
-
-            <span className="text-3xl font-bold">
-
-              {totalPosts}
-
-            </span>
-
-          </div>
-
-          <p className="mt-4 text-sm text-muted-foreground">
-
-            Total Articles
-
-          </p>
-
-        </div>
-
-
-
-
-
-        <div className="rounded-2xl border bg-card p-6">
-
-          <div className="flex items-center justify-between">
-
-            <Globe className="text-green-600" />
-
-            <span className="text-3xl font-bold">
-
-              {publishedPosts}
-
-            </span>
-
-          </div>
-
-          <p className="mt-4 text-sm text-muted-foreground">
-
-            Published
-
-          </p>
-
-        </div>
-
-
-
-
-
-        <div className="rounded-2xl border bg-card p-6">
-
-          <div className="flex items-center justify-between">
-
-            <Clock className="text-yellow-500" />
-
-            <span className="text-3xl font-bold">
-
-              {draftPosts}
-
-            </span>
-
-          </div>
-
-          <p className="mt-4 text-sm text-muted-foreground">
-
-            Drafts
-
-          </p>
-
-        </div>
-
-
-
-
-
-        <div className="rounded-2xl border bg-card p-6">
-
-          <div className="flex items-center justify-between">
-
-            <Star className="text-amber-500" />
-
-            <span className="text-3xl font-bold">
-
-              {featuredPosts}
-
-            </span>
-
-          </div>
-
-          <p className="mt-4 text-sm text-muted-foreground">
-
-            Featured Articles
-
-          </p>
-
-        </div>
 
       </div>
 
@@ -307,12 +459,99 @@ const pendingPosts =
 
 
 
-      {/* Search */}
+      {/* STATISTICS */}
 
-      <div className="relative">
+
+      <div
+        className="
+          grid
+          gap-5
+          sm:grid-cols-2
+          xl:grid-cols-5
+        "
+      >
+
+
+        <StatCard
+
+          icon={<FileText className="text-accent"/>}
+
+          title="Total Articles"
+
+          value={totalPosts}
+
+        />
+
+
+
+        <StatCard
+
+          icon={<Globe className="text-green-600"/>}
+
+          title="Published"
+
+          value={publishedPosts}
+
+        />
+
+
+
+        <StatCard
+
+          icon={<Clock className="text-yellow-500"/>}
+
+          title="Drafts"
+
+          value={draftPosts}
+
+        />
+
+
+
+        <StatCard
+
+          icon={<Clock className="text-blue-500"/>}
+
+          title="Pending"
+
+          value={pendingPosts}
+
+        />
+
+
+
+        <StatCard
+
+          icon={<Star className="text-amber-500"/>}
+
+          title="Featured"
+
+          value={featuredPosts}
+
+        />
+
+
+      </div>
+
+
+
+
+
+
+      {/* SEARCH */}
+
+
+      <div
+        className="
+          relative
+        "
+      >
+
 
         <Search
+
           size={18}
+
           className="
             absolute
             left-4
@@ -320,7 +559,10 @@ const pendingPosts =
             -translate-y-1/2
             text-muted-foreground
           "
+
         />
+
+
 
         <input
 
@@ -332,13 +574,10 @@ const pendingPosts =
 
           onChange={(e)=>
 
-            setSearch(
-
-              e.target.value
-
-            )
+            setSearch(e.target.value)
 
           }
+
 
           className="
             w-full
@@ -349,19 +588,21 @@ const pendingPosts =
             pl-12
             pr-4
             outline-none
+            transition
             focus:ring-2
             focus:ring-accent
           "
 
         />
 
-      </div>
 
+      </div>
+            {/* POSTS LIST */}
 
       <div className="space-y-5">
 
-        {
 
+        {
           filteredPosts.length === 0 ? (
 
             <div
@@ -375,12 +616,16 @@ const pendingPosts =
             >
 
               <FileText
+
                 size={50}
+
                 className="
                   mx-auto
                   text-muted-foreground
                 "
+
               />
+
 
               <h3
                 className="
@@ -392,22 +637,27 @@ const pendingPosts =
                 No Articles Found
               </h3>
 
+
               <p
                 className="
                   mt-2
                   text-muted-foreground
                 "
               >
-                Create your first blog article.
+                Try another search or create a new article.
               </p>
+
 
             </div>
 
+
           ) : (
+
 
             filteredPosts.map(post => (
 
-              <div
+
+              <article
 
                 key={post.id}
 
@@ -420,6 +670,7 @@ const pendingPosts =
 
               >
 
+
                 <div
                   className="
                     flex
@@ -428,10 +679,13 @@ const pendingPosts =
                   "
                 >
 
-                  {/* Thumbnail */}
+
+                  {/* IMAGE */}
+
 
                   <div
                     className="
+                      relative
                       h-52
                       w-full
                       bg-muted
@@ -440,27 +694,36 @@ const pendingPosts =
                     "
                   >
 
-                    {
 
+                    {
                       post.featured_image ? (
 
-                        <img
+
+                        <Image
 
                           src={post.featured_image}
 
                           alt={post.title}
 
+                          fill
+
+                          sizes="
+                            (max-width:1024px) 100vw,
+                            288px
+                          "
+
                           className="
-                            h-full
-                            w-full
                             object-cover
                           "
 
                         />
 
+
                       ) : (
 
+
                         <div
+
                           className="
                             flex
                             h-full
@@ -468,19 +731,27 @@ const pendingPosts =
                             justify-center
                             text-muted-foreground
                           "
+
                         >
 
                           No Image
 
+
                         </div>
 
-                      )
 
+                      )
                     }
+
 
                   </div>
 
-                  {/* Content */}
+
+
+
+
+                  {/* CONTENT */}
+
 
                   <div
                     className="
@@ -489,82 +760,37 @@ const pendingPosts =
                     "
                   >
 
+
+
                     <div
                       className="
                         flex
                         flex-wrap
-                        items-center
                         gap-2
                       "
                     >
 
-                      <span
-                        className="
-                          rounded-full
-                          bg-muted
-                          px-3
-                          py-1
-                          text-xs
-                        "
-                      >
 
-                        {post.category || 'General'}
 
-                      </span>
+                      <Badge>
 
-                      
+                        {post.category ?? 'General'}
 
-                      {
-  post.status === 'published' ? (
+                      </Badge>
 
-    <span
-      className="
-        rounded-full
-        bg-green-500/10
-        px-3
-        py-1
-        text-xs
-        text-green-600
-      "
-    >
-      Published
-    </span>
 
-  ) : post.status === 'pending' ? (
 
-    <span
-      className="
-        rounded-full
-        bg-blue-500/10
-        px-3
-        py-1
-        text-xs
-        text-blue-600
-      "
-    >
-      Pending Approval
-    </span>
 
-  ) : (
+                      <Badge
 
-    <span
-      className="
-        rounded-full
-        bg-yellow-500/10
-        px-3
-        py-1
-        text-xs
-        text-yellow-600
-      "
-    >
-      Draft
-    </span>
+                        status={post.status}
 
-  )
-}
+                      />
+
+
+
 
                       {
-
                         post.featured && (
 
                           <span
@@ -577,238 +803,219 @@ const pendingPosts =
                               text-amber-600
                             "
                           >
+
                             Featured
+
                           </span>
 
                         )
-
                       }
+
+
 
                     </div>
 
+
+
+
+
                     <h3
+
                       className="
                         mt-5
                         text-2xl
                         font-bold
                       "
+
                     >
+
                       {post.title}
+
                     </h3>
 
-                    {
 
+
+
+
+                    {
                       post.excerpt && (
 
                         <p
+
                           className="
                             mt-3
                             line-clamp-3
                             text-muted-foreground
                           "
+
                         >
+
                           {post.excerpt}
+
                         </p>
 
-                      )
 
+                      )
                     }
 
+
+
+
+
+
                     <p
+
                       className="
                         mt-5
                         text-sm
                         text-muted-foreground
                       "
+
                     >
 
                       {
-
                         post.published_at
 
-                          ? new Date(
-                              post.published_at
-                            ).toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-})
+                        ?
 
-                          : 'Not Published'
+                        new Date(
 
+                          post.published_at
+
+                        ).toLocaleDateString(
+
+                          'en-US',
+
+                          {
+
+                            year:'numeric',
+
+                            month:'long',
+
+                            day:'numeric'
+
+                          }
+
+                        )
+
+                        :
+
+                        'Not Published'
                       }
+
 
                     </p>
 
-                   <div
-  className="
-    mt-6
-    flex
-    flex-wrap
-    gap-3
-  "
->
-
-  <Link
-    href={`/admin/blog/${post.id}`}
-    className="
-      inline-flex
-      items-center
-      gap-2
-      rounded-xl
-      border
-      px-4
-      py-2
-      transition
-      hover:bg-muted
-    "
-  >
-
-    <Pencil size={16} />
-
-    Edit
-
-  </Link>
-
-<BlogDeleteButton
-
-  id={post.id}
-
-  status={post.status}
-
-  userRole={userRole}
-
-/>
-<BlogStatusButton
-
-  id={post.id}
-
-  status={post.status}
-
-  userRole={userRole}
-
-/>
-
-  {
-    post.featured ? (
-
-      <button
-        className="
-          inline-flex
-          items-center
-          gap-2
-          rounded-xl
-          border
-          border-yellow-300
-          px-4
-          py-2
-          text-yellow-700
-        "
-      >
-
-        <Star
-          size={16}
-          fill="currentColor"
-        />
-
-        Featured
-
-      </button>
-
-    ) : (
-
-      <button
-        className="
-          inline-flex
-          items-center
-          gap-2
-          rounded-xl
-          border
-          px-4
-          py-2
-        "
-      >
-
-        <Star size={16} />
-
-        Feature
-
-      </button>
-
-    )
-  }
-
-
-  {
-    post.status === 'draft' ? (
-
-      <span
-        className="
-          rounded-xl
-          bg-yellow-100
-          px-4
-          py-2
-          text-sm
-          text-yellow-700
-        "
-      >
-
-        Draft
-
-      </span>
-
-    ) : (
-
-      <span
-        className="
-          rounded-xl
-          bg-green-100
-          px-4
-          py-2
-          text-sm
-          text-green-700
-        "
-      >
-
-        Published
-
-      </span>
-
-    )
-  }
-
-</div>
 
 
 
-                    
+
+
+                    {/* ACTIONS */}
+
+
+                    <div
+
+                      className="
+                        mt-6
+                        flex
+                        flex-wrap
+                        gap-3
+                      "
+
+                    >
+
+
+
+                      <Link
+
+                        href={`/admin/blog/${post.id}`}
+
+                        className="
+                          inline-flex
+                          items-center
+                          gap-2
+                          rounded-xl
+                          border
+                          px-4
+                          py-2
+                          transition
+                          hover:bg-muted
+                        "
+
+                      >
+
+                        <Pencil size={16}/>
+
+                        Edit
+
+
+                      </Link>
+
+
+
+
+
+                      <BlogDeleteButton
+
+                        id={post.id}
+
+                        status={post.status}
+
+                        userRole={userRole}
+
+                      />
+
+
+
+
+
+                      <BlogStatusButton
+
+                        id={post.id}
+
+                        status={post.status}
+
+                        userRole={userRole}
+
+                      />
+
+
+
+
+
+                    </div>
+
+
 
                   </div>
 
+
                 </div>
 
-              </div>
+
+              </article>
+
 
             ))
 
-          )
 
+          )
         }
+
 
       </div>
 
 
-                
 
 
-            {
+
+      {
         filteredPosts.length > 0 && (
 
           <div
             className="
-              flex
-              justify-center
-              pt-4
+              text-center
               text-sm
               text-muted-foreground
             "
@@ -825,5 +1032,6 @@ const pendingPosts =
     </div>
 
   )
+
 
 }
