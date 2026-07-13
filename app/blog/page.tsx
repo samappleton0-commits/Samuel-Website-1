@@ -1,67 +1,399 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { SiteHeader } from '@/components/site-header'
-import { SiteFooter } from '@/components/site-footer'
 import { createClient } from '@/lib/supabase-server'
 
+import { SiteHeader } from '@/components/site-header'
+import { SiteFooter } from '@/components/site-footer'
+
+import FeaturedSlider from '@/components/blog/featured-slider'
+import ArticleCard from '@/components/blog/article-card'
+import BlogPagination from '@/components/blog/blog-pagination'
+import BlogFilters from '@/components/blog/blog-filters'
+
 import {
-  ArrowRight,
-  Calendar,
   FileText,
 } from 'lucide-react'
 
 
 
-export default async function BlogPage() {
 
 
-  const supabase =
-    await createClient()
+type Props = {
+
+  searchParams: Promise<{
+
+    page?: string
+
+    search?: string
+
+    category?: string
+
+  }>
+
+}
+
+
+
+
+
+
+export default async function BlogPage({
+
+  searchParams,
+
+}: Props) {
+
+
+
+  const params = await searchParams
+
+
+
+
+
+  const currentPage = Number(
+
+    params.page ?? '1'
+
+  )
+
+
+
+  const search = params.search ?? ''
+
+
+
+  const category = params.category ?? ''
+
+
+
+
+
+
+
+  const postsPerPage = 8
+
+
+
+
+
+  const start =
+
+    (currentPage - 1) *
+
+    postsPerPage
+
+
+
+
+
+  const end =
+
+    start +
+
+    postsPerPage -
+
+    1
+
+
+
+
+
+
+
+  const supabase = await createClient()
+
+
+
+
+
+
+  // =====================================
+  // FEATURED ARTICLES
+  // ALWAYS AVAILABLE
+  // =====================================
+
+
+  const {
+
+    data: featuredPosts,
+
+  } = await supabase
+
+
+    .from('blog_posts')
+
+
+    .select(`
+
+      id,
+
+      title,
+
+      slug,
+
+      excerpt,
+
+      featured_image,
+
+      category,
+
+      featured,
+
+      published_at,
+
+      created_at
+
+    `)
+
+
+    .eq(
+
+      'status',
+
+      'published'
+
+    )
+
+
+    .eq(
+
+      'featured',
+
+      true
+
+    )
+
+
+    .order(
+
+      'published_at',
+
+      {
+
+        ascending:false
+
+      }
+
+    )
+
+
+    .limit(5)
+
+
+
+
+
+
+  // =====================================
+  // BUILD NORMAL ARTICLE QUERY
+  // =====================================
+
+
+  let query = supabase
+
+
+    .from('blog_posts')
+
+
+    .select(
+
+      `
+
+      id,
+
+      title,
+
+      slug,
+
+      excerpt,
+
+      featured_image,
+
+      category,
+
+      published_at,
+
+      created_at
+
+      `,
+
+      {
+
+        count:'exact'
+
+      }
+
+    )
+
+
+    .eq(
+
+      'status',
+
+      'published'
+
+    )
+
+
+    .eq(
+
+      'featured',
+
+      false
+
+    )
+
+
+
+
+
+  // =====================================
+  // SEARCH FILTER
+  // =====================================
+
+
+  if(search){
+
+
+    query = query.or(
+
+      `title.ilike.%${search}%,excerpt.ilike.%${search}%`
+
+    )
+
+
+  }
+
+
+
+
+
+
+  // =====================================
+  // CATEGORY FILTER
+  // =====================================
+
+
+  if(category){
+
+
+    query = query.eq(
+
+      'category',
+
+      category
+
+    )
+
+
+  }
+
+
+
 
 
 
   const {
+
     data: posts,
-  } =
-    await supabase
 
-      .from('blog_posts')
+    error,
 
-      .select('*')
+    count,
 
-      .eq(
-        'status',
-        'published'
-      )
-
-      .order(
-        'published_at',
-        {
-          ascending:false,
-        }
-      )
+  } = await query
 
 
+    .order(
+
+      'published_at',
+
+      {
+
+        ascending:false
+
+      }
+
+    )
 
 
+    .range(
 
-  const articles =
-    posts ?? []
+      start,
 
+      end
 
-
-  const featuredArticle =
-    articles.find(
-      (post)=>post.featured
     )
 
 
 
-  const normalArticles =
-    articles.filter(
-      (post)=>
-        post.id !== featuredArticle?.id
+
+
+
+
+
+  if(error){
+
+
+    console.error(
+
+      'Blog loading error:',
+
+      error
+
     )
+
+
+  }
+
+
+
+
+
+
+
+  const articles = posts ?? []
+
+
+
+
+  const featuredArticles = featuredPosts ?? []
+
+
+
+
+
+  const totalPages = Math.ceil(
+
+    (count ?? 0) /
+
+    postsPerPage
+
+  )
+
+
+
+
+
+
+
+
+  const categories = [
+
+    'All',
+
+    'Web Development',
+
+    'Programming',
+
+    'ICT',
+
+    'Technology',
+
+    'Tutorials',
+
+  ]
+
+
 
 
 
@@ -69,569 +401,486 @@ export default async function BlogPage() {
 
   return (
 
-
-
- <>
-
-    <SiteHeader />
-
-    <main
-      className="
-        mx-auto
-        max-w-7xl
-        px-4
-        pb-20
-        pt-28
-        sm:px-6
-        lg:px-8
-      "
-    >
+    <>
 
 
 
-      {/* HEADER */}
 
-      <section
+
+      <SiteHeader />
+
+
+
+
+
+
+
+      <main
+
         className="
-          mb-14
-          text-center
+          mx-auto
+
+          max-w-7xl
+
+          px-4
+
+          pt-28
+
+          pb-24
+
+          sm:px-6
+
+          lg:px-8
         "
+
       >
 
-        <p
+
+
+
+
+
+        {/* HEADER */}
+
+
+
+
+
+        <section
+
           className="
-            mb-3
-            text-sm
-            font-medium
-            uppercase
-            tracking-widest
-            text-accent
+            mb-10
+
+            text-center
           "
+
         >
 
-          Blog
-
-        </p>
 
 
 
-        <h1
-          className="
-            text-4xl
-            font-bold
-            tracking-tight
-            sm:text-5xl
-          "
-        >
+          <p
 
-          Articles & Insights
-
-        </h1>
-
-
-
-        <p
-          className="
-            mx-auto
-            mt-4
-            max-w-2xl
-            text-muted-foreground
-          "
-        >
-
-          Explore my latest articles,
-          tutorials and updates about
-          technology, development and ICT.
-
-        </p>
-
-
-      </section>
-
-
-
-
-
-
-
-
-      {/* EMPTY STATE */}
-
-      {
-        articles.length === 0 && (
-
-          <div
             className="
-              rounded-3xl
-              border
-              bg-card
-              p-16
-              text-center
+              text-sm
+
+              font-semibold
+
+              uppercase
+
+              tracking-[0.25em]
+
+              text-primary
             "
+
           >
 
+            Blog
+
+
+          </p>
+
+
+
+
+
+
+
+          <h1
+
+            className="
+              mt-4
+
+              text-5xl
+
+              font-black
+            "
+
+          >
+
+            Articles & Insights
+
+
+          </h1>
+
+
+
+
+
+
+          <p
+
+            className="
+              mx-auto
+
+              mt-5
+
+              max-w-3xl
+
+              text-muted-foreground
+            "
+
+          >
+
+            Explore my latest articles,
+            tutorials,
+            technology insights,
+            software engineering,
+            ICT,
+            and web development.
+
+
+          </p>
+
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+        {/* FILTERS */}
+
+
+
+
+
+        <BlogFilters
+
+          categories={categories}
+
+          currentSearch={search}
+
+          currentCategory={category}
+
+        />
+
+
+
+
+
+
+
+
+        {/* EMPTY STATE */}
+
+
+
+
+
+        {articles.length === 0 && (
+
+
+          <section
+
+            className="
+              mt-12
+
+              rounded-3xl
+
+              border
+
+              bg-card
+
+              p-20
+
+              text-center
+            "
+
+          >
+
+
+
             <FileText
-              size={50}
+
+              size={60}
+
               className="
                 mx-auto
+
                 text-muted-foreground
               "
+
             />
 
 
+
             <h2
+
               className="
-                mt-5
-                text-xl
-                font-semibold
+                mt-6
+
+                text-3xl
+
+                font-bold
               "
+
             >
 
-              No articles yet
+              No Articles Found
+
 
             </h2>
 
 
+
             <p
+
               className="
-                mt-2
+                mt-3
+
                 text-muted-foreground
               "
+
             >
 
-              New blog posts will appear here.
+              Try another search or category.
+
 
             </p>
 
 
-          </div>
 
-        )
-      }
+          </section>
 
 
-
+        )}
 
 
 
 
 
 
-      {/* FEATURED ARTICLE */}
+        {/* FEATURED SLIDER */}
 
-      {
-        featuredArticle && (
+
+
+
+
+        {featuredArticles.length > 0 && (
+
+
+
+          <FeaturedSlider
+
+            articles={featuredArticles}
+
+          />
+
+
+
+        )}
+
+
+
+
+
+
+
+
+
+        {/* ARTICLES GRID */}
+
+
+
+
+
+        {articles.length > 0 && (
+
+
+
 
           <section
+
             className="
-              mb-16
+              mt-16
             "
+
           >
 
+
+
+
+
             <div
+
               className="
-                overflow-hidden
-                rounded-3xl
-                border
-                bg-card
-                shadow-sm
+                mb-10
               "
+
             >
 
 
-              <div
+
+
+              <h2
+
                 className="
-                  grid
-                  lg:grid-cols-2
+                  text-3xl
+
+                  font-bold
                 "
+
               >
 
-
-                <div
-                  className="
-                    relative
-                    min-h-[320px]
-                  "
-                >
-
-                  {
-                    featuredArticle.featured_image && (
-
-                      <Image
-
-                        src={
-                          featuredArticle.featured_image
-                        }
-
-                        alt={
-                          featuredArticle.title
-                        }
-
-                        fill
-
-                        className="
-                          object-cover
-                        "
-
-                      />
-
-                    )
-                  }
+                Latest Articles
 
 
-                </div>
+              </h2>
 
 
 
 
 
-                <div
-                  className="
-                    flex
-                    flex-col
-                    justify-center
-                    p-8
-                    lg:p-12
-                  "
-                >
+              <p
+
+                className="
+                  mt-2
+
+                  text-muted-foreground
+                "
+
+              >
+
+                Browse the newest articles from the blog.
 
 
-                  <span
-                    className="
-                      mb-4
-                      w-fit
-                      rounded-full
-                      bg-accent/10
-                      px-4
-                      py-1
-                      text-sm
-                      text-accent
-                    "
-                  >
-
-                    Featured
-
-                  </span>
+              </p>
 
 
 
-
-                  <h2
-                    className="
-                      text-3xl
-                      font-bold
-                    "
-                  >
-
-                    {featuredArticle.title}
-
-                  </h2>
-
-
-
-
-                  {
-                    featuredArticle.excerpt && (
-
-                      <p
-                        className="
-                          mt-4
-                          text-muted-foreground
-                        "
-                      >
-
-                        {featuredArticle.excerpt}
-
-                      </p>
-
-                    )
-                  }
-
-
-
-
-
-                  <Link
-
-                    href={
-                      `/blog/${featuredArticle.slug}`
-                    }
-
-                    className="
-                      mt-6
-                      inline-flex
-                      items-center
-                      gap-2
-                      text-sm
-                      font-medium
-                      text-accent
-                    "
-
-                  >
-
-                    Read Article
-
-                    <ArrowRight size={16}/>
-
-
-                  </Link>
-
-
-
-                </div>
-
-
-
-              </div>
 
 
             </div>
 
 
-          </section>
-
-        )
-      }
 
 
 
-
-
-
-
-
-
-
-      {/* ARTICLE GRID */}
-
-
-      {
-        normalArticles.length > 0 && (
-
-          <section>
-
-
-            <h2
-              className="
-                mb-8
-                text-2xl
-                font-bold
-              "
-            >
-
-              Latest Articles
-
-            </h2>
 
 
 
 
             <div
+
               className="
                 grid
+
                 gap-8
-                md:grid-cols-2
+
+                sm:grid-cols-2
+
                 lg:grid-cols-3
+
+                xl:grid-cols-4
               "
+
             >
 
 
-              {
-                normalArticles.map((post)=>(
-
-
-                  <article
-
-                    key={
-                      post.id
-                    }
-
-                    className="
-                      group
-                      overflow-hidden
-                      rounded-3xl
-                      border
-                      bg-card
-                      transition
-                      hover:-translate-y-1
-                    "
-
-                  >
-
-
-
-                    <div
-                      className="
-                        relative
-                        h-52
-                      "
-                    >
-
-                      {
-                        post.featured_image && (
-
-                          <Image
-
-                            src={
-                              post.featured_image
-                            }
-
-                            alt={
-                              post.title
-                            }
-
-                            fill
-
-                            className="
-                              object-cover
-                              transition
-                              duration-500
-                              group-hover:scale-105
-                            "
-
-                          />
-
-                        )
-                      }
-
-                    </div>
 
 
 
 
-
-                    <div
-                      className="
-                        p-6
-                      "
-                    >
+              {articles.map((post)=>(
 
 
 
-                      <div
-                        className="
-                          flex
-                          items-center
-                          gap-2
-                          text-xs
-                          text-muted-foreground
-                        "
-                      >
-
-                        <Calendar size={14}/>
-
-                        {
-                          post.published_at
-                          ?
-                          new Date(
-                            post.published_at
-                          )
-                          .toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-})
-                          :
-                          ''
-                        }
+                <ArticleCard
 
 
-                      </div>
+                  key={post.id}
+
+
+                  post={post}
+
+
+                />
 
 
 
-
-
-                      <h3
-                        className="
-                          mt-4
-                          text-xl
-                          font-bold
-                        "
-                      >
-
-                        {post.title}
-
-                      </h3>
+              ))}
 
 
 
-
-
-                      {
-                        post.excerpt && (
-
-                          <p
-                            className="
-                              mt-3
-                              line-clamp-3
-                              text-sm
-                              text-muted-foreground
-                            "
-                          >
-
-                            {post.excerpt}
-
-                          </p>
-
-                        )
-                      }
-
-
-
-
-                      <Link
-
-                        href={
-                          `/blog/${post.slug}`
-                        }
-
-                        className="
-                          mt-5
-                          inline-flex
-                          items-center
-                          gap-2
-                          text-sm
-                          font-medium
-                          text-accent
-                        "
-
-                      >
-
-                        Read More
-
-                        <ArrowRight size={16}/>
-
-
-                      </Link>
-
-
-
-                    </div>
-
-
-                  </article>
-
-
-                ))
-              }
 
 
             </div>
 
 
+
+
+
+
+
+
+
+            {/* PAGINATION */}
+
+
+
+
+
+            <BlogPagination
+
+
+              currentPage={currentPage}
+
+
+              totalPages={totalPages}
+
+
+              search={search}
+
+
+              category={category}
+
+
+            />
+
+
+
+
+
+
           </section>
 
-        )
-      }
 
 
 
-    </main>
-<SiteFooter />
+
+        )}
 
 
-</>
+
+
+
+
+
+      </main>
+
+
+
+
+
+
+
+      <SiteFooter />
+
+
+
+
+
+    </>
+
+
   )
+
 
 }

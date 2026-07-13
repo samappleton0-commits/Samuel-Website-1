@@ -26,7 +26,6 @@ type Props = {
 
 
 
-
 export default function RelatedArticles({
 
   articles,
@@ -46,23 +45,17 @@ export default function RelatedArticles({
 
     <section
       className="
-        mx-auto
-        mt-20
-        max-w-6xl
-        px-4
-        sm:px-6
+        w-full
       "
     >
 
 
-      {/* ==========================================
-          RELATED ARTICLES TITLE
-      ========================================== */}
+      {/* TITLE */}
 
       <h2
         className="
-          mb-8
-          text-2xl
+          mb-6
+          text-xl
           font-bold
         "
       >
@@ -74,11 +67,13 @@ export default function RelatedArticles({
 
 
 
+      {/* ARTICLES LIST */}
+
       <div
         className="
-          grid
+          flex
+          flex-col
           gap-6
-          md:grid-cols-3
         "
       >
 
@@ -95,7 +90,7 @@ export default function RelatedArticles({
             className="
               group
               overflow-hidden
-              rounded-3xl
+              rounded-2xl
               border
               border-surface-border
               bg-background
@@ -106,40 +101,59 @@ export default function RelatedArticles({
           >
 
 
+
+            {/* IMAGE */}
+
             {article.featured_image && (
 
-              <Image
-
-                src={article.featured_image}
-
-                alt={article.title}
-
-                width={600}
-
-                height={400}
-
+              <div
                 className="
-                  h-48
+                  relative
+                  h-40
                   w-full
-                  object-cover
+                  overflow-hidden
                 "
+              >
 
-              />
+                <Image
+
+                  src={article.featured_image}
+
+                  alt={article.title}
+
+                  fill
+
+                  className="
+                    object-cover
+                    transition
+                    duration-300
+                    group-hover:scale-105
+                  "
+
+                />
+
+              </div>
 
             )}
 
 
 
+
+            {/* CONTENT */}
+
             <div
               className="
-                p-5
+                p-4
               "
             >
 
 
+
               <p
                 className="
-                  text-sm
+                  text-xs
+                  font-medium
+                  uppercase
                   text-accent
                 "
               >
@@ -150,12 +164,19 @@ export default function RelatedArticles({
 
 
 
+
               <h3
+
                 className="
                   mt-2
+                  line-clamp-3
+                  text-sm
                   font-semibold
+                  leading-snug
+                  transition
                   group-hover:text-accent
                 "
+
               >
 
                 {article.title}
@@ -163,7 +184,9 @@ export default function RelatedArticles({
               </h3>
 
 
+
             </div>
+
 
 
           </Link>
@@ -172,7 +195,9 @@ export default function RelatedArticles({
         ))}
 
 
+
       </div>
+
 
 
     </section>
