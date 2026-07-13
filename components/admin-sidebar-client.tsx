@@ -1,8 +1,6 @@
 'use client'
 
 
-
-
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -16,7 +14,9 @@ import {
   Menu,
 
   X,
- Megaphone,
+
+  Megaphone,
+
   ChevronDown,
 
   FolderKanban,
@@ -33,6 +33,8 @@ import {
 
   Images,
 
+  Settings,
+
 } from 'lucide-react'
 
 
@@ -41,27 +43,30 @@ import LogoutButton from '@/components/logout-button'
 
 
 
+
 type Role = 'admin' | 'editor'
+
+
+
 
 
 type Props = {
 
+  role: Role
 
-role: Role
+  profile: {
 
+    name:string
 
-profile: {
+    email:string
 
-name:string
+    avatar_url:string
 
-email:string
-
-avatar_url:string
-
-}
-
+  }
 
 }
+
+
 
 
 
@@ -78,6 +83,15 @@ type MenuItem = {
 }
 
 
+
+
+
+
+
+// =================================
+// CONTENT SECTION
+// ADMIN ONLY
+// =================================
 
 
 const contentLinks:MenuItem[] = [
@@ -139,47 +153,69 @@ const contentLinks:MenuItem[] = [
 
 
 
-// ------------------------------------------------------
+// =================================
+// COMMUNICATION
 // ADMIN + EDITOR
-// BLOG SECTION
-// ------------------------------------------------------
+// =================================
 
-const communicationLinks = [
 
-  {
-    name: 'Blog',
-    href: '/admin/blog',
-    icon: FileText,
-  },
-
-]
-
-const adminCommunicationLinks = [
+const communicationLinks:MenuItem[] = [
 
   {
-    name: 'Announcements',
-    href: '/admin/announcements',
-    icon: Megaphone,
+
+    name:'Blog',
+
+    href:'/admin/blog',
+
+    icon:FileText,
+
   },
+
 
 ]
 
 
 
 
-// ------------------------------------------------------
-// ADMIN ONLY
+
+
+const adminCommunicationLinks:MenuItem[] = [
+
+  {
+
+    name:'Announcements',
+
+    href:'/admin/announcements',
+
+    icon:Megaphone,
+
+  },
+
+
+]
+
+
+
+
+
+
+
+// =================================
 // MANAGEMENT
-// ------------------------------------------------------
+// ADMIN + EDITOR
+// =================================
 
 
 const managementLinks:MenuItem[] = [
 
-
   {
-    name:'Users',
-    href:'/admin/users',
-    icon:UserRound,
+
+    name:'Settings',
+
+    href:'/admin/settings',
+
+    icon:Settings,
+
   },
 
 
@@ -190,963 +226,906 @@ const managementLinks:MenuItem[] = [
 
 
 
+// =================================
+// ADMIN ONLY MANAGEMENT
+// =================================
+
+
+const adminManagementLinks:MenuItem[] = [
+
+  {
+
+    name:'Users',
+
+    href:'/admin/users',
+
+    icon:UserRound,
+
+  },
+
+
+]
+
 export default function AdminSidebarClient({
 
-role,
+  role,
 
-profile,
+  profile,
 
 }:Props){
 
 
 
-const pathname = usePathname()
+  const pathname = usePathname()
 
 
 
+  const [open,setOpen] = useState(false)
 
 
+  const [contentOpen,setContentOpen] = useState(true)
 
 
+  const [communicationOpen,setCommunicationOpen] = useState(true)
 
-const [open,setOpen] = useState(false)
 
+  const [managementOpen,setManagementOpen] = useState(true)
 
-const [contentOpen,setContentOpen] = useState(true)
 
 
-const [communicationOpen,setCommunicationOpen] = useState(true)
 
 
-const [managementOpen,setManagementOpen] = useState(true)
+  function renderLinks(items:MenuItem[]){
 
 
+    return items.map((link)=>{
 
 
-function renderLinks(items:MenuItem[]){
+      const Icon = link.icon
 
 
-return items.map((link)=>{
+      const active = pathname === link.href
 
 
-const Icon = link.icon
 
 
+      return (
 
-const active =
-pathname === link.href
+        <Link
 
+          key={link.name}
 
+          href={link.href}
 
+          onClick={()=>setOpen(false)}
 
+          className={`
 
+            flex
 
-return (
+            items-center
 
-<Link
+            gap-3
 
+            rounded-xl
 
-key={link.name}
+            px-4
 
+            py-3
 
-href={link.href}
+            text-sm
 
+            transition
 
-onClick={()=>setOpen(false)}
 
+            ${
+              active
 
+              ?
 
-className={`
+              'bg-accent text-white'
 
-flex
+              :
 
-items-center
+              'hover:bg-surface'
 
-gap-3
+            }
 
-rounded-xl
 
-px-4
+          `}
 
-py-3
+        >
 
-text-sm
 
-transition
+          <Icon size={20}/>
 
 
+          {link.name}
 
-${
-active
 
-?
+        </Link>
 
-'bg-accent text-white'
+      )
 
-:
 
-'hover:bg-surface'
+    })
 
-}
 
+  }
 
-`}
 
 
 
->
 
 
-<Icon size={20}/>
+  return (
 
+    <>
 
-{link.name}
 
+      {/* MOBILE HEADER */}
 
-</Link>
+      <div
 
+        className="
+          flex
+          items-center
+          justify-between
+          rounded-3xl
+          glass
+          p-4
+          mb-4
+          lg:hidden
+        "
 
-)
+      >
 
 
-})
+        <h2 className="font-bold text-lg">
 
-}
+          Admin Panel
 
+        </h2>
 
 
 
-return (
 
-<>
+        <button
 
+          onClick={()=>setOpen(true)}
 
+          className="
+            rounded-xl
+            p-2
+            hover:bg-surface
+          "
 
-<div
+        >
 
-className="
-flex
-items-center
-justify-between
-rounded-3xl
-glass
-p-4
-mb-4
-lg:hidden
-"
+          <Menu size={25}/>
 
->
 
+        </button>
 
-<h2 className="font-bold text-lg">
 
-Admin Panel
+      </div>
 
-</h2>
 
 
 
 
-<button
 
 
-onClick={()=>setOpen(true)}
+      {/* MOBILE OVERLAY */}
 
 
-className="
-rounded-xl
-p-2
-hover:bg-surface
-"
+      {
 
+        open && (
 
->
+          <div
 
+            onClick={()=>setOpen(false)}
 
-<Menu size={25}/>
+            className="
+              fixed
+              inset-0
+              z-40
+              bg-black/50
+              lg:hidden
+            "
 
+          />
 
-</button>
 
+        )
 
-</div>
+      }
 
 
 
 
-{
 
-open && (
 
-<div
 
+      {/* SIDEBAR CONTAINER */}
 
-onClick={()=>setOpen(false)}
 
+      <aside
 
-className="
-fixed
-inset-0
-z-40
-bg-black/50
-lg:hidden
-"
 
+        className={`
 
-/>
+          flex
 
-)
+          flex-col
 
-}
+          rounded-3xl
 
+          p-6
 
+          bg-background
 
+          border
 
-<aside
+          border-surface-border
 
 
-className={`
+          fixed
 
+          top-0
 
-flex
+          left-0
 
-flex-col
+          z-50
 
 
-rounded-3xl
+          h-screen
 
+          w-72
 
-p-6
 
+          transition-transform
 
-bg-background
+          duration-300
 
 
-border
+          ${
+            open
 
-border-surface-border
+            ?
 
+            'translate-x-0'
 
+            :
 
-fixed
+            '-translate-x-full'
 
+          }
 
-top-0
 
 
-left-0
+          lg:static
 
+          lg:h-screen
 
-z-50
+          lg:w-auto
 
+          lg:translate-x-0
 
 
-h-screen
+        `}
 
 
-w-72
+      >
 
 
 
-transition-transform
 
 
-duration-300
 
+        {/* MOBILE CLOSE BUTTON */}
 
 
+        <div
 
-${
-open
+          className="
+            flex
+            justify-end
+            mb-4
+            lg:hidden
+          "
 
-?
+        >
 
-'translate-x-0'
+          <button
 
-:
+            onClick={()=>setOpen(false)}
 
-'-translate-x-full'
+            className="
+              rounded-xl
+              p-2
+              hover:bg-surface
+            "
 
-}
+          >
 
+            <X size={22}/>
 
 
+          </button>
 
-lg:static
 
+        </div>
 
-lg:h-screen
+                {/* PROFILE */}
 
 
-lg:w-auto
+        <div
 
+          className="
+            mb-6
+            text-center
+            shrink-0
+          "
 
-lg:translate-x-0
+        >
 
 
+          <Image
 
-`}
+            src={profile.avatar_url}
 
+            alt={profile.name}
 
->
+            width={90}
 
+            height={90}
 
+            className="
+              mx-auto
+              rounded-full
+              border
+              border-surface-border
+              object-cover
+            "
 
+          />
 
-<div
 
 
-className="
-flex
-justify-end
-mb-4
-lg:hidden
-"
 
+          <h2 className="mt-4 text-xl font-bold">
 
->
+            {profile.name}
 
+          </h2>
 
-<button
 
 
-onClick={()=>setOpen(false)}
 
+          <p
 
-className="
-rounded-xl
-p-2
-hover:bg-surface
-"
+            className="
+              mt-1
+              text-sm
+              text-muted-foreground
+            "
 
+          >
 
->
+            {
 
+              role === 'admin'
 
-<X size={22}/>
+              ?
 
+              'Administrator'
 
-</button>
+              :
 
+              'Editor'
 
-</div>
+            }
 
 
+          </p>
 
 
+        </div>
 
-<div
 
 
-className="
-mb-6
-text-center
-shrink-0
-"
 
 
->
 
-<Image
 
-src={profile.avatar_url}
+        <nav
 
-alt={profile.name}
+          className="
+            flex-1
+            overflow-y-auto
+            hide-scrollbar
+            space-y-6
+            pr-1
+          "
 
-width={90}
+        >
 
-height={90}
 
-className="
-mx-auto
-rounded-full
-border
-border-surface-border
-object-cover
-"
 
-/>
 
 
 
+          {/* DASHBOARD */}
 
 
-<h2 className="mt-4 text-xl font-bold">
 
-{profile.name}
+          <Link
 
-</h2>
 
+            href="/admin"
 
 
+            onClick={()=>setOpen(false)}
 
 
-<p
 
-className="
-mt-1
-text-sm
-text-muted-foreground
-"
+            className={`
 
->
 
-{
+              flex
 
-role === 'admin'
+              items-center
 
-?
+              gap-3
 
-'Administrator'
+              rounded-xl
 
-:
+              px-4
 
-'Editor'
+              py-3
 
-}
+              text-sm
 
+              transition
 
-</p>
 
 
+              ${
+                pathname === '/admin'
 
+                ?
 
-</div>
+                'bg-accent text-white'
 
+                :
 
+                'hover:bg-surface'
 
+              }
 
-<nav
 
+            `}
 
-className="
-flex-1
-overflow-y-auto
-hide-scrollbar
-space-y-6
-pr-1
-"
 
+          >
 
->
 
+            <LayoutDashboard size={20}/>
 
 
+            Dashboard
 
-<Link
 
+          </Link>
 
-href="/admin"
 
 
-onClick={()=>setOpen(false)}
 
 
 
-className={`
 
 
-flex
 
-items-center
+          {/* CONTENT */}
 
-gap-3
+          
+          {
 
-rounded-xl
+            role === 'admin' && (
 
-px-4
 
-py-3
+              <div>
 
-text-sm
 
-transition
 
+                <button
 
 
+                  onClick={()=>setContentOpen(!contentOpen)}
 
-${
-pathname === '/admin'
 
-?
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    justify-between
+                    px-4
+                    text-xs
+                    font-semibold
+                    uppercase
+                    text-muted-foreground
+                  "
 
-'bg-accent text-white'
 
-:
+                >
 
-'hover:bg-surface'
 
-}
+                  Content
 
 
 
-`}
 
+                  <ChevronDown
 
+                    size={16}
 
->
+                    className={
 
+                      contentOpen
 
-<LayoutDashboard size={20}/>
+                      ?
 
+                      'rotate-180 transition'
 
-Dashboard
+                      :
 
+                      'transition'
 
-</Link>
+                    }
 
+                  />
 
 
+                </button>
 
-{
 
-role === 'admin' && (
 
-<div>
 
 
+                {
 
-<button
+                  contentOpen && (
 
 
-onClick={()=>setContentOpen(!contentOpen)}
+                    <div
 
+                      className="
+                        mt-2
+                        space-y-2
+                      "
 
-className="
-flex
-w-full
-items-center
-justify-between
-px-4
-text-xs
-font-semibold
-uppercase
-text-muted-foreground
-"
+                    >
 
 
->
+                      {
 
+                        renderLinks(contentLinks)
 
-Content
+                      }
 
 
+                    </div>
 
-<ChevronDown
 
+                  )
 
-size={16}
+                }
 
 
-className={`
 
-transition
+              </div>
 
 
-${
-contentOpen
+            )
 
-?
+          }
+                    {/* COMMUNICATION */}
 
-'rotate-180'
 
-:
+          <div>
 
-''
 
-}
+            <button
 
 
-`}
+              onClick={()=>setCommunicationOpen(!communicationOpen)}
 
 
-/>
+              className="
+                flex
+                w-full
+                items-center
+                justify-between
+                px-4
+                text-xs
+                font-semibold
+                uppercase
+                text-muted-foreground
+              "
 
 
-</button>
+            >
 
 
+              Communication
 
 
 
+              <ChevronDown
 
+                size={16}
 
-{
+                className={
 
-contentOpen && (
+                  communicationOpen
 
+                  ?
 
-<div
+                  'rotate-180 transition'
 
+                  :
 
-className="
-mt-2
-space-y-2
-"
+                  'transition'
 
+                }
 
->
+              />
 
 
-{
+            </button>
 
-renderLinks(contentLinks)
 
-}
 
 
-</div>
 
+            {
 
-)
 
-}
+              communicationOpen && (
 
 
+                <div
 
+                  className="
+                    mt-2
+                    space-y-2
+                  "
 
-</div>
+                >
 
 
-)
 
-}
+                  {/* BLOG */}
 
+                  {
 
+                    renderLinks(communicationLinks)
 
+                  }
 
-<div>
 
 
 
-<button
+                  {/* ANNOUNCEMENTS ADMIN ONLY */}
 
 
-onClick={()=>setCommunicationOpen(!communicationOpen)}
+                  {
 
+                    role === 'admin' && (
 
+                      renderLinks(adminCommunicationLinks)
 
-className="
-flex
-w-full
-items-center
-justify-between
-px-4
-text-xs
-font-semibold
-uppercase
-text-muted-foreground
-"
+                    )
 
+                  }
 
 
->
 
+                </div>
 
-Communication
 
+              )
 
 
+            }
 
 
-<ChevronDown
 
+          </div>
 
-size={16}
 
 
-className={`
 
 
-transition
 
 
-${
-communicationOpen
+          {/* MANAGEMENT */}
 
-?
 
-'rotate-180'
 
-:
+          {
 
-''
 
-}
+            <div>
 
 
-`}
+              <button
 
 
-/>
+                onClick={()=>setManagementOpen(!managementOpen)}
 
 
+                className="
+                  flex
+                  w-full
+                  items-center
+                  justify-between
+                  px-4
+                  text-xs
+                  font-semibold
+                  uppercase
+                  text-muted-foreground
+                "
 
-</button>
 
+              >
 
 
+                Management
 
 
 
 
 
+                <ChevronDown
 
-{
+                  size={16}
 
-communicationOpen && (
+                  className={
 
+                    managementOpen
 
-<div
+                    ?
 
+                    'rotate-180 transition'
 
-className="
-mt-2
-space-y-2
-"
+                    :
 
+                    'transition'
 
->
+                  }
 
-{/* =====================================================
-    COMMUNICATION
-===================================================== */}
+                />
 
 
-<div>
+              </button>
 
 
 
 
 
+              {
 
-{
-communicationOpen && (
 
-<div
-className="
-mt-2
-space-y-2
-"
->
+                managementOpen && (
 
 
-{/* BLOG - ADMIN + EDITOR */}
+                  <div
 
-{renderLinks(communicationLinks)}
+                    className="
+                      mt-2
+                      space-y-2
+                    "
 
+                  >
 
 
 
-{/* ANNOUNCEMENTS - ADMIN ONLY */}
 
-{
-role === 'admin' && (
+                    {/* SETTINGS ADMIN + EDITOR */}
 
-renderLinks(adminCommunicationLinks)
 
-)
 
-}
+                    {
 
+                      renderLinks(managementLinks)
 
+                    }
 
-</div>
 
-)
 
-}
 
 
-</div>
 
 
-</div>
+                    {/* USERS ADMIN ONLY */}
 
 
-)
 
+                    {
 
-}
+                      role === 'admin' && (
 
+                        renderLinks(adminManagementLinks)
 
+                      )
 
+                    }
 
-</div>
 
 
 
+                  </div>
 
 
-{
+                )
 
-role === 'admin' && (
 
+              }
 
-<div>
 
 
+            </div>
 
-<button
 
+          }
 
-onClick={()=>setManagementOpen(!managementOpen)}
 
 
 
-className="
-flex
-w-full
-items-center
-justify-between
-px-4
-text-xs
-font-semibold
-uppercase
-text-muted-foreground
-"
 
+        </nav>
 
 
->
 
 
-Management
 
 
 
+        {/* LOGOUT */}
 
 
 
-<ChevronDown
+        <div
 
+          className="
+            mt-6
+            shrink-0
+          "
 
-size={16}
+        >
 
 
-className={`
+          <LogoutButton />
 
 
-transition
+        </div>
 
 
-${
-managementOpen
 
-?
 
-'rotate-180'
 
-:
+      </aside>
 
-''
 
-}
 
 
-`}
+    </>
 
 
-/>
-
-
-
-</button>
-
-
-
-
-
-
-
-{
-
-managementOpen && (
-
-
-<div
-
-
-className="
-mt-2
-space-y-2
-"
-
-
->
-
-
-{
-
-renderLinks(managementLinks)
-
-}
-
-
-
-</div>
-
-
-)
-
-
-}
-
-
-
-
-
-</div>
-
-
-
-)
-
-}
-
-
-
-
-
-</nav>
-
-
-
-
-<div
-
-
-className="
-mt-6
-shrink-0
-"
-
-
->
-
-
-<LogoutButton />
-
-
-</div>
-
-
-
-
-
-
-
-</aside>
-
-
-
-
-
-
-</>
-
-)
-
+  )
 
 
 }

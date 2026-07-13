@@ -1,15 +1,29 @@
+'use server'
+
 // ======================================================
 // GET CURRENT USER ROLE + PROFILE
 // lib/get-user-role.ts
 // ======================================================
 
+import { unstable_noStore as noStore } from 'next/cache'
+
 import { createClient } from '@/lib/supabase-server'
+
+
+
 
 
 export async function getUserRole(){
 
 
+  // Prevent Next.js from caching user profile data
+  noStore()
+
+
+
   const supabase = await createClient()
+
+
 
 
 
@@ -17,9 +31,12 @@ export async function getUserRole(){
   // GET AUTH USER
   // ======================================================
 
+
   const {
+
     data:{
       user
+
     },
 
     error:userError
@@ -28,23 +45,35 @@ export async function getUserRole(){
 
 
 
+
+
   if(userError || !user){
 
+
     console.error(
+
       'Authentication error:',
+
       userError
+
     )
 
+
     return null
+
 
   }
 
 
 
 
+
+
+
   // ======================================================
-  // GET ADMIN USER PROFILE
+  // GET ADMIN PROFILE
   // ======================================================
+
 
   const {
 
@@ -54,7 +83,9 @@ export async function getUserRole(){
 
   } = await supabase
 
+
     .from('admin_users')
+
 
     .select(`
 
@@ -72,6 +103,7 @@ export async function getUserRole(){
 
     `)
 
+
     .eq(
 
       'user_id',
@@ -80,11 +112,15 @@ export async function getUserRole(){
 
     )
 
+
     .maybeSingle()
 
 
 
+
+
   if(error){
+
 
     console.error(
 
@@ -94,9 +130,15 @@ export async function getUserRole(){
 
     )
 
+
     return null
 
+
   }
+
+
+
+
 
 
 
@@ -118,10 +160,22 @@ export async function getUserRole(){
 
   }
 
-console.log(
-  "ADMIN PROFILE:",
-  adminUser
-)
+
+
+
+
+
+
+  console.log(
+
+    'CURRENT ADMIN PROFILE:',
+
+    adminUser
+
+  )
+
+
+
 
 
   return adminUser
