@@ -1,18 +1,11 @@
 'use client'
 
-// =====================================================
-// BLOG EDITOR START
-// =====================================================
-
-
-// =====================================================
-// IMPORTS
-// =====================================================
 
 import {
   useEffect,
   useState,
 } from 'react'
+
 
 import {
   useRouter,
@@ -33,61 +26,259 @@ import {
 
 
 
+
+
 // =====================================================
-// TYPES START
+// BLOG STATUS
 // =====================================================
 
 
 type BlogStatus =
+
   | 'draft'
+
   | 'pending'
+
   | 'published'
 
 
 
-export type BlogPost = {
-
-  id?: string
-
-  user_id?: string
 
 
-  title: string
-
-  slug: string
-
-
-  author_name: string | null
+// =====================================================
+// CATEGORY TAG OPTIONS
+// =====================================================
 
 
-  excerpt: string | null
+const CATEGORY_TAGS:Record<string,string[]> = {
 
 
-  content: string
+  "Technology":[
+
+    "Next.js",
+
+    "React",
+
+    "TypeScript",
+
+    "Supabase",
+
+    "Tailwind CSS",
+
+    "AI",
+
+    "Cloud Computing"
+
+  ],
 
 
-  category: string | null
+
+  "Programming":[
+
+    "JavaScript",
+
+    "Python",
+
+    "Algorithms",
+
+    "Software Development",
+
+    "Coding"
+
+  ],
 
 
-  tags: string[] | null
+
+  "Web Development":[
+
+    "Frontend",
+
+    "Backend",
+
+    "Full Stack",
+
+    "API",
+
+    "UI/UX"
+
+  ],
 
 
-  featured_image: string | null
+
+  "Artificial Intelligence":[
+
+    "Machine Learning",
+
+    "Automation",
+
+    "AI Tools",
+
+    "Data Science"
+
+  ],
 
 
-  status: BlogStatus
+
+  "Cybersecurity":[
+
+    "Security",
+
+    "Privacy",
+
+    "Networking",
+
+    "Ethical Hacking"
+
+  ],
 
 
-  featured: boolean
+
+  "Health & Wellness":[
+
+    "Fitness",
+
+    "Nutrition",
+
+    "Healthy Living",
+
+    "Wellness"
+
+  ],
 
 
-  seo_title: string | null
+
+  "Business & Finance":[
+
+    "Entrepreneurship",
+
+    "Startup",
+
+    "Marketing",
+
+    "Finance",
+
+    "Leadership"
+
+  ],
 
 
-  seo_description: string | null
+
+  "Lifestyle & Travel":[
+
+    "Travel",
+
+    "Culture",
+
+    "Adventure",
+
+    "Lifestyle"
+
+  ],
+
+
+
+  "Personal Development":[
+
+    "Productivity",
+
+    "Career",
+
+    "Motivation",
+
+    "Growth"
+
+  ],
+
+
+
+  "Tutorials":[
+
+    "Guides",
+
+    "How To",
+
+    "Learning",
+
+    "Step By Step"
+
+  ]
 
 
 }
+
+
+
+
+
+
+// =====================================================
+// BLOG TYPE
+// =====================================================
+
+
+export type BlogPost = {
+
+
+  id?:string
+
+
+  user_id?:string
+
+
+
+  title:string
+
+
+
+  slug:string
+
+
+
+  author_name:string | null
+
+
+
+  excerpt:string | null
+
+
+
+  content:string
+
+
+
+  category:string | null
+
+
+
+  tags:string[] | null
+
+
+
+  featured_image:string | null
+
+
+
+  status:BlogStatus
+
+
+
+  featured:boolean
+
+
+
+  seo_title:string | null
+
+
+
+  seo_description:string | null
+
+
+
+}
+
+
+
+
 
 
 
@@ -98,17 +289,29 @@ export type BlogPost = {
 
 type Props = {
 
-  initialPost?: BlogPost
+
+  initialPost?:BlogPost
 
 
-  userRole: 'admin' | 'editor'
+
+  userRole:
+
+    | 'admin'
+
+    | 'editor'
+
 
 }
 
 
 
+
+
+
+
+
 // =====================================================
-// COMPONENT START
+// COMPONENT
 // =====================================================
 
 
@@ -118,24 +321,24 @@ export default function BlogEditor({
 
   userRole,
 
-}: Props) {
+}:Props){
 
-
-
-  // =====================================================
-  // SETUP
-  // =====================================================
 
 
   const router = useRouter()
+
 
 
   const supabase = createClient()
 
 
 
+
+
+
+
   // =====================================================
-  // STATES START
+  // STATES
   // =====================================================
 
 
@@ -157,6 +360,10 @@ export default function BlogEditor({
 
 
 
+
+
+
+
   const [form,setForm] =
 
     useState({
@@ -169,308 +376,400 @@ export default function BlogEditor({
 
 
 
+
       slug:
 
         initialPost?.slug ?? '',
 
 
 
+
+
       author_name:
 
-        initialPost?.author_name
-
-        ??
+        initialPost?.author_name ??
 
         'Samuel Appleton',
 
 
 
+
+
       excerpt:
 
-        initialPost?.excerpt
+        initialPost?.excerpt ?? '',
 
-        ??
 
-        '',
 
 
 
       content:
 
-        initialPost?.content
+        initialPost?.content ?? '',
 
-        ??
 
-        '',
 
 
 
       category:
 
-        initialPost?.category
+        initialPost?.category ?? '',
 
-        ??
 
-        '',
 
 
 
       tags:
 
-        initialPost?.tags?.join(', ')
+        initialPost?.tags ?? [],
 
-        ??
 
-        '',
 
 
 
       featured_image:
 
-        initialPost?.featured_image
+        initialPost?.featured_image ?? '',
 
-        ??
 
-        '',
 
 
 
       status:
 
-        initialPost?.status
+        initialPost?.status ?? 'draft',
 
-        ??
 
-        'draft',
 
 
 
       featured:
 
-        initialPost?.featured
+        initialPost?.featured ?? false,
 
-        ??
 
-        false,
 
 
 
       seo_title:
 
-        initialPost?.seo_title
+        initialPost?.seo_title ?? '',
 
-        ??
 
-        '',
 
 
 
       seo_description:
 
-        initialPost?.seo_description
-
-        ??
-
-        '',
-
+        initialPost?.seo_description ?? '',
 
 
     })
 
 
 
-  // =====================================================
-  // STATES END
-  // =====================================================
+
+// =====================================================
+// UPDATE FIELD
+// =====================================================
+
+
+function updateField(
+
+  field:keyof typeof form,
+
+  value:any
+
+){
+
+
+  setForm(previous => ({
+
+
+    ...previous,
+
+
+    [field]:value,
+
+
+  }))
+
+
+}
 
 
 
 
 
-  // =====================================================
-  // UPDATE FIELD
-  // =====================================================
+
+// =====================================================
+// TOGGLE TAG
+// =====================================================
 
 
-  function updateField(
-
-    field:keyof typeof form,
-
-    value:any
-
-  ){
+function toggleTag(tag:string){
 
 
-    setForm(previous => ({
+  setForm(previous => ({
 
 
-      ...previous,
+    ...previous,
 
 
-      [field]:value,
+    tags:
 
 
-    }))
+      previous.tags.includes(tag)
+
+
+      ?
+
+
+      previous.tags.filter(
+
+        item => item !== tag
+
+      )
+
+
+      :
+
+
+      [
+
+        ...previous.tags,
+
+        tag
+
+      ]
+
+
+
+  }))
+
+
+}
+
+
+
+
+
+
+
+// =====================================================
+// AUTO SLUG GENERATOR
+// =====================================================
+
+
+useEffect(()=>{
+
+
+  if(slugEdited) return
+
+
+
+  updateField(
+
+    'slug',
+
+    form.title
+
+      .toLowerCase()
+
+      .trim()
+
+      .replace(
+
+        /[^a-z0-9\s-]/g,
+
+        ''
+
+      )
+
+      .replace(
+
+        /\s+/g,
+
+        '-'
+
+      )
+
+  )
+
+
+
+},[
+
+  form.title,
+
+  slugEdited
+
+])
+
+
+
+
+
+
+
+// =====================================================
+// IMAGE UPLOAD
+// =====================================================
+
+
+async function uploadFeaturedImage(
+
+  file:File
+
+){
+
+
+
+  const extension =
+
+    file.name
+
+      .split('.')
+
+      .pop()
+
+
+
+  const fileName =
+
+    `blog-${Date.now()}.${extension}`
+
+
+
+
+
+  const {
+
+    error
+
+  } = await supabase.storage
+
+    .from('blog-images')
+
+    .upload(
+
+      fileName,
+
+      file
+
+    )
+
+
+
+
+
+  if(error){
+
+
+    console.error(
+
+      'IMAGE UPLOAD ERROR',
+
+      error
+
+    )
+
+
+    setMessage(
+
+      'Image upload failed'
+
+    )
+
+
+    return
 
 
   }
 
 
 
-  // =====================================================
-  // AUTO SLUG GENERATOR
-  // =====================================================
 
 
-  useEffect(()=>{
+  const {
 
+    data
 
-    if(slugEdited) return
+  } = supabase.storage
 
+    .from('blog-images')
 
+    .getPublicUrl(
 
-    updateField(
-
-      'slug',
-
-      form.title
-
-        .toLowerCase()
-
-        .trim()
-
-        .replace(
-
-          /[^a-z0-9\s-]/g,
-
-          ''
-
-        )
-
-        .replace(
-
-          /\s+/g,
-
-          '-'
-
-        )
+      fileName
 
     )
 
 
 
-  },[
-
-    form.title,
-
-    slugEdited
-
-  ])
 
 
+  updateField(
+
+    'featured_image',
+
+    data.publicUrl
+
+  )
 
 
-// =====================================================
-// PART 1 END
-// =====================================================
-  // =====================================================
-  // IMAGE UPLOAD START
-  // =====================================================
-
-
-  async function uploadFeaturedImage(
-
-    file:File
-
-  ){
-
-
-    const extension =
-
-      file.name.split('.').pop()
+}
 
 
 
-    const fileName =
-
-      `blog-${Date.now()}.${extension}`
 
 
 
-    const {
 
-      error
 
-    } = await supabase
+function handleFeaturedImageUpload(){
 
-      .storage
 
-      .from('blog-images')
 
-      .upload(
+  const input =
 
-        fileName,
+    document.createElement(
+
+      'input'
+
+    )
+
+
+
+  input.type = 'file'
+
+
+  input.accept = 'image/*'
+
+
+
+
+
+  input.onchange = async()=>{
+
+
+    const file =
+
+      input.files?.[0]
+
+
+
+    if(file){
+
+
+      await uploadFeaturedImage(
 
         file
 
       )
 
 
-
-
-    if(error){
-
-
-      console.error(
-
-        'Image upload error:',
-
-        error
-
-      )
-
-
-      setMessage(
-
-        'Image upload failed.'
-
-      )
-
-
-      return
-
-
     }
-
-
-
-
-    const {
-
-      data
-
-    } = supabase
-
-      .storage
-
-      .from('blog-images')
-
-      .getPublicUrl(
-
-        fileName
-
-      )
-
-
-
-
-    updateField(
-
-      'featured_image',
-
-      data.publicUrl
-
-    )
 
 
   }
@@ -479,103 +778,80 @@ export default function BlogEditor({
 
 
 
-  function handleFeaturedImageUpload(){
+  input.click()
 
 
-    const input =
-
-      document.createElement(
-
-        'input'
-
-      )
-
-
-
-    input.type = 'file'
-
-
-    input.accept = 'image/*'
-
-
-
-    input.onchange = async ()=>{
-
-
-      const file =
-
-        input.files?.[0]
-
-
-
-      if(file){
-
-
-        await uploadFeaturedImage(
-
-          file
-
-        )
-
-
-      }
-
-
-    }
-
-
-
-    input.click()
-
-
-  }
-
-
-
-  // =====================================================
-  // IMAGE UPLOAD END
-  // =====================================================
+}
 
 
 
 
 
 
-  // =====================================================
-  // SAVE ARTICLE START
-  // =====================================================
 
 
-  async function savePost(){
+
+// =====================================================
+// SAVE ARTICLE
+// =====================================================
 
 
-    try{
+async function savePost(){
 
 
-      setSaving(true)
+
+try{
 
 
-      setMessage('')
+setSaving(true)
+
+
+setMessage('')
+
+
+
 
 
 
 const {
-  data: { user },
+
+  data:{
+
+    user
+
+  }
+
 } = await supabase.auth.getUser()
-console.log("CURRENT USER:", user)
 
-if (!user) {
 
-  setMessage('You must be logged in.')
 
-  setSaving(false)
+
+
+if(!user){
+
+
+  setMessage(
+
+    'You must login first.'
+
+  )
+
 
   return
 
+
 }
-      // ================================================
-      // GET CURRENT USER
-      // ================================================
+
+
+
+
+
+
+let finalStatus:
+
+BlogStatus =
+
+form.status as BlogStatus
 
 
 
@@ -584,1427 +860,1649 @@ if (!user) {
 
 if(
 
-  !user
+  userRole === 'editor'
+
+  &&
+
+  form.status === 'published'
 
 ){
 
-  throw new Error(
 
-    'User session not found.'
+  finalStatus = 'pending'
 
-  )
 
 }
 
 
 
 
-      // ================================================
-      // PREPARE TAGS
-      // ================================================
 
 
-      const tagsArray =
 
-        form.tags
+const articleData = {
 
-          .split(',')
 
-          .map(tag =>
+  user_id:user.id,
 
-            tag.trim()
 
-          )
 
-          .filter(Boolean)
+  title:
 
+    form.title,
 
 
 
+  slug:
 
-      // ================================================
-      // PREPARE STATUS
-      // ================================================
+    form.slug,
 
 
-      let finalStatus:
 
+  author_name:
 
+    form.author_name,
 
-      BlogStatus =
 
 
+  excerpt:
 
-        form.status
+    form.excerpt || null,
 
 
 
-      if(
+  content:
 
-        userRole === 'editor'
+    form.content,
 
-      ){
 
 
-        if(
+  category:
 
-          form.status === 'published'
+    form.category || null,
 
-        ){
 
 
-          finalStatus = 'pending'
+  tags:
 
+    form.tags,
 
-        }
 
 
-      }
+  featured_image:
 
+    form.featured_image || null,
 
 
 
-      // ================================================
-      // ARTICLE DATA
-      // ================================================
+  status:
 
+    finalStatus,
 
-      const articleData = {
 
 
-        user_id:user.id,
+  featured:
 
+    form.featured,
 
-        title:
 
-          form.title,
 
+  seo_title:
 
+    form.seo_title || null,
 
-        slug:
 
-          form.slug,
 
+  seo_description:
 
+    form.seo_description || null,
 
-        author_name:
 
-          form.author_name,
 
+  published_at:
 
-user_id: user.id,
-        excerpt:
 
-          form.excerpt || null,
+    finalStatus === 'published'
 
+    ? new Date().toISOString()
 
+    : null,
 
-        content:
 
-          form.content,
+}
 
 
 
-        category:
 
-          form.category || null,
 
+console.log(
 
+  'ARTICLE DATA',
 
-        tags:
+  articleData
 
-          tagsArray,
+)
 
 
 
-        featured_image:
 
-          form.featured_image || null,
 
 
+if(initialPost?.id){
 
-        status:
 
-          finalStatus,
 
+const {
 
+error
 
-        featured:
+}=await supabase
 
-          form.featured,
+.from('blog_posts')
 
+.update(articleData)
 
+.eq(
 
-        seo_title:
+'id',
 
-          form.seo_title || null,
+initialPost.id
 
+)
 
 
-        seo_description:
 
-          form.seo_description || null,
 
 
+if(error)
 
-        published_at:
+throw error
 
 
-          finalStatus === 'published'
 
-          ?
+}
 
-          new Date().toISOString()
 
-          :
 
-          null,
 
+else{
 
 
-      }
 
+const {
 
+error
 
+}=await supabase
 
+.from('blog_posts')
 
-      console.log(
+.insert(articleData)
 
-        'BLOG DATA:',
 
-        articleData
 
-      )
 
 
+if(error)
 
+throw error
 
 
-      // =================================================
-      // UPDATE ARTICLE
-      // =================================================
 
+}
 
-      if(initialPost?.id){
 
 
 
-        const {
 
-          error
 
-        } = await supabase
+setMessage(
 
-          .from('blog_posts')
+initialPost?.id
 
-          .update(
+?
 
-            articleData
+'Article updated successfully'
 
-          )
+:
 
-          .eq(
+'Article created successfully'
 
-            'id',
+)
 
-            initialPost.id
 
-          )
 
 
 
 
-        if(error){
+setTimeout(()=>{
 
-          throw error
 
-        }
+router.push(
 
+'/admin/blog'
 
+)
 
-      }
 
+},1000)
 
 
-      // =================================================
-      // CREATE ARTICLE
-      // =================================================
 
 
-      else{
+}
 
 
-        const {
 
-          error
 
-        } = await supabase
-
-          .from('blog_posts')
-
-          .insert(
-
-            articleData
-
-          )
-
-
-
-
-        if(error){
-
-          throw error
-
-        }
-
-
-      }
-
-
-
-
-      setMessage(
-
-        initialPost?.id
-
-        ?
-
-        'Article updated successfully.'
-
-        :
-
-        'Article created successfully.'
-
-      )
-
-
-
-
-      setTimeout(()=>{
-
-
-        router.push(
-
-          '/admin/blog'
-
-        )
-
-
-      },1000)
-
-
-
-
-    }
 
 catch(error){
 
-  console.error(
-    "SAVE BLOG ERROR:",
-    JSON.stringify(
-      error,
-      null,
-      2
-    )
-  )
+
+console.error(
+
+'SAVE ERROR',
+
+error
+
+)
 
 
-  setMessage(
+setMessage(
 
-    error instanceof Error
-      ? error.message
-      : 'Unable to save article.'
+'Unable to save article'
 
-  )
+)
 
 
 }
+
+
 
 
 finally{
 
-  setSaving(false)
+
+setSaving(false)
+
 
 }
 
-  }
-  // =====================================================
-  // SAVE ARTICLE END
-  // =====================================================
 
-  // =====================================================
-  // UI START
-  // =====================================================
 
+}
 
-  return (
+// =====================================================
+// UI
+// =====================================================
 
 
-    <div
-      className="
-        mx-auto
-        max-w-5xl
-        space-y-8
-      "
-    >
+return (
 
+<div
 
+className="
+mx-auto
+max-w-5xl
+space-y-8
+"
 
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
+>
 
 
-      <div
-        className="
-          flex
-          flex-col
-          gap-4
-          sm:flex-row
-          sm:items-center
-          sm:justify-between
-        "
-      >
 
 
-        <div>
 
+{/* HEADER */}
 
-          <h1
-            className="
-              text-3xl
-              font-bold
-            "
-          >
 
-            {
-              initialPost
+<div
 
-              ?
+className="
+flex
+flex-col
+gap-4
+sm:flex-row
+sm:items-center
+sm:justify-between
+"
 
-              'Edit Article'
+>
 
-              :
 
-              'Create Article'
-            }
+<div>
 
+<h1
 
-          </h1>
+className="
+text-3xl
+font-bold
+"
 
+>
 
-          <p
-            className="
-              mt-2
-              text-muted-foreground
-            "
-          >
+{
 
-            Write and manage your blog content.
+initialPost
 
+?
 
-          </p>
+'Edit Article'
 
+:
 
-        </div>
+'Create Article'
 
+}
 
 
-        <button
+</h1>
 
-          type="button"
 
-          onClick={savePost}
+<p
 
-          disabled={saving}
+className="
+mt-2
+text-muted-foreground
+"
 
-          className="
-            inline-flex
-            items-center
-            gap-2
-            rounded-xl
-            bg-primary
-            px-6
-            py-3
-            text-white
-            disabled:opacity-50
-          "
+>
 
-        >
+Write and manage your blog content.
 
+</p>
 
-          <Save size={18}/>
 
+</div>
 
-          {
 
-            saving
 
-            ?
 
-            'Saving...'
 
-            :
+<button
 
-            'Save Article'
 
-          }
+type="button"
 
 
-        </button>
+onClick={savePost}
 
 
+disabled={saving}
 
-      </div>
 
 
+className="
+inline-flex
+items-center
+gap-2
+rounded-xl
+bg-primary
+px-6
+py-3
+text-white
+disabled:opacity-50
+"
 
 
+>
 
-      {/* =====================================================
-          MESSAGE
-      ===================================================== */}
 
+<Save size={18}/>
 
-      {
-        message && (
 
-          <div
-            className="
-              rounded-xl
-              border
-              px-4
-              py-3
-              text-sm
-            "
-          >
 
-            {message}
+{
 
+saving
 
-          </div>
+?
 
-        )
-      }
+'Saving...'
 
+:
 
+'Save Article'
 
+}
 
 
+</button>
 
 
-      {/* =====================================================
-          ARTICLE INFORMATION
-      ===================================================== */}
 
+</div>
 
 
-      <div
-        className="
-          space-y-6
-          rounded-2xl
-          border
-          p-6
-        "
-      >
 
 
 
 
-        {/* TITLE */}
 
 
-        <div>
 
+{/* MESSAGE */}
 
-          <label
-            className="
-              mb-2
-              block
-              text-sm
-              font-medium
-            "
-          >
 
-            Article Title
 
-          </label>
+{
 
+message && (
 
+<div
 
-          <input
+className="
+rounded-xl
+border
+px-4
+py-3
+"
 
-            value={form.title}
+>
 
-            onChange={(e)=>
+{message}
 
-              updateField(
+</div>
 
-                'title',
+)
 
-                e.target.value
+}
 
-              )
 
-            }
 
 
-            placeholder="Enter article title"
 
 
-            className="
-              w-full
-              rounded-xl
-              border
-              px-4
-              py-3
-            "
 
-          />
 
 
-        </div>
+<div
 
+className="
+space-y-6
+rounded-2xl
+border
+p-6
+"
 
+>
 
 
 
-        {/* SLUG */}
 
 
-        <div>
 
+{/* TITLE */}
 
-          <label
-            className="
-              mb-2
-              block
-              text-sm
-              font-medium
-            "
-          >
 
-            Slug
+<div>
 
-          </label>
 
+<label
 
+className="
+mb-2
+block
+text-sm
+font-medium
+"
 
-          <input
+>
 
+Article Title
 
-            value={form.slug}
+</label>
 
 
-            onChange={(e)=>{
+<input
 
 
-              setSlugEdited(true)
+value={form.title}
 
 
-              updateField(
+onChange={(e)=>
 
-                'slug',
+updateField(
 
-                e.target.value
+'title',
 
-              )
+e.target.value
 
+)
 
-            }}
+}
 
 
-            className="
-              w-full
-              rounded-xl
-              border
-              px-4
-              py-3
-            "
+className="
+w-full
+rounded-xl
+border
+px-4
+py-3
+"
 
-          />
 
+placeholder="Enter article title"
 
-        </div>
 
 
+/>
 
 
+</div>
 
 
-        {/* AUTHOR */}
 
 
-        <div>
 
 
-          <label
-            className="
-              mb-2
-              block
-              text-sm
-              font-medium
-            "
-          >
 
-            Author Name
 
-          </label>
 
+{/* SLUG */}
 
 
-          <input
+<div>
 
 
-            value={form.author_name}
+<label
 
+className="
+mb-2
+block
+text-sm
+font-medium
+"
 
-            onChange={(e)=>
+>
 
-              updateField(
+Slug
 
-                'author_name',
+</label>
 
-                e.target.value
 
-              )
+<input
 
-            }
 
+value={form.slug}
 
-            className="
-              w-full
-              rounded-xl
-              border
-              px-4
-              py-3
-            "
 
 
-          />
+onChange={(e)=>{
 
 
-        </div>
+setSlugEdited(true)
 
 
+updateField(
 
+'slug',
 
+e.target.value
 
+)
 
 
-        {/* EXCERPT */}
+}}
 
 
-        <div>
 
+className="
+w-full
+rounded-xl
+border
+px-4
+py-3
+"
 
-          <label
-            className="
-              mb-2
-              block
-              text-sm
-              font-medium
-            "
-          >
 
-            Short Description
+/>
 
-          </label>
 
+</div>
 
 
-          <textarea
 
 
-            value={form.excerpt}
 
 
-            onChange={(e)=>
 
-              updateField(
 
-                'excerpt',
 
-                e.target.value
+{/* AUTHOR */}
 
-              )
 
-            }
+<div>
 
 
-            rows={4}
+<label
 
+className="
+mb-2
+block
+text-sm
+font-medium
+"
 
-            className="
-              w-full
-              rounded-xl
-              border
-              px-4
-              py-3
-            "
+>
 
+Author Name
 
-          />
+</label>
 
 
-        </div>
+<input
 
 
+value={form.author_name}
 
 
 
-        {/* CONTENT EDITOR */}
+onChange={(e)=>
 
+updateField(
 
+'author_name',
 
-        <div>
+e.target.value
 
+)
 
-          <label
-            className="
-              mb-2
-              block
-              text-sm
-              font-medium
-            "
-          >
+}
 
-            Article Content
 
-          </label>
+className="
+w-full
+rounded-xl
+border
+px-4
+py-3
+"
 
 
+/>
 
-          <BlogEditorContent
 
+</div>
 
-            value={form.content}
 
 
-            onChange={(value)=>
 
-              updateField(
 
-                'content',
 
-                value
 
-              )
 
-            }
 
+{/* EXCERPT */}
 
-          />
 
+<div>
 
-        </div>
 
+<label
 
+className="
+mb-2
+block
+text-sm
+font-medium
+"
 
+>
 
+Short Description
 
-        {/* CATEGORY + TAGS */}
+</label>
 
 
-        <div
-          className="
-            grid
-            gap-6
-            md:grid-cols-2
-          "
-        >
+<textarea
 
 
-          <div>
+rows={4}
 
 
-            <label
-              className="
-                mb-2
-                block
-                text-sm
-                font-medium
-              "
-            >
 
-              Category
+value={form.excerpt}
 
-            </label>
 
 
+onChange={(e)=>
 
-            <input
+updateField(
 
+'excerpt',
 
-              value={form.category}
+e.target.value
 
+)
 
-              onChange={(e)=>
+}
 
-                updateField(
 
-                  'category',
 
-                  e.target.value
+className="
+w-full
+rounded-xl
+border
+px-4
+py-3
+"
 
-                )
 
-              }
+/>
 
 
-              placeholder="Technology"
 
+</div>
 
-              className="
-                w-full
-                rounded-xl
-                border
-                px-4
-                py-3
-              "
 
-            />
 
 
-          </div>
 
 
 
 
 
-          <div>
+{/* CONTENT */}
 
 
-            <label
-              className="
-                mb-2
-                block
-                text-sm
-                font-medium
-              "
-            >
+<div>
 
-              Tags
 
-            </label>
+<label
 
+className="
+mb-2
+block
+text-sm
+font-medium
+"
 
+>
 
-            <input
+Article Content
 
+</label>
 
-              value={form.tags}
 
 
-              onChange={(e)=>
+<BlogEditorContent
 
-                updateField(
 
-                  'tags',
+value={form.content}
 
-                  e.target.value
 
-                )
 
-              }
+onChange={(value)=>
 
+updateField(
 
-              placeholder="nextjs, react"
+'content',
 
+value
 
-              className="
-                w-full
-                rounded-xl
-                border
-                px-4
-                py-3
-              "
+)
 
-            />
+}
 
 
-          </div>
 
+/>
 
-        </div>
 
+</div>
 
 
 
 
-        {/* =====================================================
-            FEATURED IMAGE
-        ===================================================== */}
 
 
-        <div>
 
 
-          <label
-            className="
-              mb-2
-              block
-              text-sm
-              font-medium
-            "
-          >
 
-            Featured Image
+{/* CATEGORY + TAGS */}
 
-          </label>
 
 
+<div
 
-          <button
+className="
+grid
+gap-6
+md:grid-cols-2
+"
 
-            type="button"
+>
 
-            onClick={handleFeaturedImageUpload}
 
-            className="
-              rounded-xl
-              border
-              px-5
-              py-3
-              hover:bg-muted
-            "
 
-          >
 
-            Upload Featured Image
 
 
-          </button>
+{/* CATEGORY */}
 
 
+<div>
 
 
-          {
-            form.featured_image && (
+<label
 
+className="
+mb-2
+block
+text-sm
+font-medium
+"
 
-              <div
-                className="
-                  mt-4
-                  space-y-3
-                "
-              >
+>
 
+Category
 
-                <img
+</label>
 
-                  src={form.featured_image}
 
-                  alt="Featured preview"
 
-                  className="
-                    h-48
-                    w-full
-                    rounded-xl
-                    object-cover
-                  "
+<select
 
-                />
 
+value={form.category}
 
-              </div>
 
 
-            )
-          }
+onChange={(e)=>{
 
 
-        </div>
+updateField(
 
+'category',
 
+e.target.value
 
+)
 
 
 
+updateField(
 
-        {/* =====================================================
-            STATUS + FEATURED
-        ===================================================== */}
+'tags',
 
+[]
 
+)
 
-        <div
-          className="
-            grid
-            gap-6
-            md:grid-cols-2
-          "
-        >
 
 
-          <div>
+}}
 
 
-            <label
-              className="
-                mb-2
-                block
-                text-sm
-                font-medium
-              "
-            >
 
-              Status
 
-            </label>
+className="
+w-full
+rounded-xl
+border
+bg-background
+text-foreground
+px-4
+py-3
+outline-none
+focus:ring-2
+focus:ring-primary
+"
+>
 
+<option
+value=""
+className="bg-background text-foreground"
+>
 
+Select category
 
-            <select
+</option>
 
 
-              value={form.status}
+{
 
+Object.keys(CATEGORY_TAGS)
 
-              onChange={(e)=>
+.map(category=>(
 
-                updateField(
 
-                  'status',
+<option
 
-                  e.target.value as BlogStatus
+key={category}
 
-                )
+value={category}
 
-              }
+className="bg-background text-foreground"
 
+>
 
-              className="
-                w-full
-                rounded-xl
-                border
-                px-4
-                py-3
-              "
+{category}
 
+</option>
 
-            >
 
+))
 
-              <option value="draft">
 
-                Draft
+}
 
-              </option>
 
 
+</select>
 
-              <option value="pending">
 
-                Pending Review
 
-              </option>
+</div>
 
 
 
 
-              {
-                userRole === 'admin' && (
 
-                  <option value="published">
 
-                    Published
 
-                  </option>
 
-                )
-              }
 
+{/* TAGS */}
 
-            </select>
 
 
-          </div>
+<div>
 
 
+<label
 
+className="
+mb-2
+block
+text-sm
+font-medium
+"
 
+>
 
+Tags
 
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-              pt-8
-            "
-          >
+</label>
 
 
-            <input
 
-              type="checkbox"
 
-              checked={form.featured}
+<div
 
+className="
+rounded-xl
+border
+p-4
+space-y-3
+"
 
-              onChange={(e)=>
+>
 
-                updateField(
 
-                  'featured',
 
-                  e.target.checked
+{
 
-                )
+form.category && CATEGORY_TAGS[form.category]
 
-              }
+?
 
-            />
+CATEGORY_TAGS[form.category].map(tag=>(
 
 
-            <span>
 
-              Featured Article
+<label
 
-            </span>
 
+key={tag}
 
-          </div>
 
 
+className="
+flex
+items-center
+gap-3
+cursor-pointer
+"
 
-        </div>
 
+>
 
 
+<input
 
 
+type="checkbox"
 
 
 
-        {/* =====================================================
-            SEO
-        ===================================================== */}
+checked={
 
+form.tags.includes(tag)
 
+}
 
-        <div>
 
 
-          <label
-            className="
-              mb-2
-              block
-              text-sm
-              font-medium
-            "
-          >
 
-            SEO Title
+onChange={()=>
 
-          </label>
 
+toggleTag(tag)
 
+}
 
-          <input
 
 
-            value={form.seo_title}
 
+/>
 
-            onChange={(e)=>
 
-              updateField(
+<span>
 
-                'seo_title',
+{tag}
 
-                e.target.value
+</span>
 
-              )
 
-            }
 
+</label>
 
-            className="
-              w-full
-              rounded-xl
-              border
-              px-4
-              py-3
-            "
 
 
-          />
+))
 
 
-        </div>
+:
 
 
+<p
 
+className="
+text-sm
+text-muted-foreground
+"
 
+>
 
-        <div>
+Select category first
 
+</p>
 
-          <label
-            className="
-              mb-2
-              block
-              text-sm
-              font-medium
-            "
-          >
 
-            SEO Description
 
-          </label>
+}
 
 
 
-          <textarea
+</div>
 
 
-            value={form.seo_description}
 
+</div>
 
-            onChange={(e)=>
 
-              updateField(
 
-                'seo_description',
 
-                e.target.value
+</div>
 
-              )
 
-            }
 
 
-            rows={4}
 
 
-            className="
-              w-full
-              rounded-xl
-              border
-              px-4
-              py-3
-            "
 
 
-          />
+{/* FEATURED IMAGE */}
 
 
-        </div>
 
+<div>
 
 
-      </div>
+<label
 
+className="
+mb-2
+block
+text-sm
+font-medium
+"
 
+>
 
+Featured Image
 
+</label>
 
 
 
-      {/* =====================================================
-          FOOTER SAVE BUTTON
-      ===================================================== */}
 
+<button
 
 
-      <div
-        className="
-          flex
-          justify-end
-          border-t
-          pt-6
-        "
-      >
+type="button"
 
 
-        <button
+onClick={handleFeaturedImageUpload}
 
 
-          type="button"
 
+className="
+rounded-xl
+border
+px-5
+py-3
+hover:bg-muted
+"
 
-          onClick={savePost}
 
+>
 
-          disabled={saving}
 
+Upload Featured Image
 
 
-          className="
-            inline-flex
-            items-center
-            gap-2
-            rounded-xl
-            bg-primary
-            px-6
-            py-3
-            text-white
-            disabled:opacity-50
-          "
+</button>
 
 
-        >
 
 
-          <Save size={18}/>
 
+{
 
+form.featured_image && (
 
-          {
 
+<img
 
-            saving
 
-            ?
+src={form.featured_image}
 
-            'Saving...'
 
+alt="Featured preview"
 
-            :
 
+className="
+mt-4
+h-48
+w-full
+rounded-xl
+object-cover
+"
 
-            initialPost
 
-            ?
+/>
 
-            'Update Article'
 
+)
 
-            :
 
+}
 
-            userRole === 'admin'
 
-            ?
 
-            'Publish Article'
+</div>
 
 
-            :
 
-            'Submit For Approval'
 
 
-          }
 
 
 
-        </button>
 
+{/* STATUS + FEATURED */}
 
 
-      </div>
 
+<div
 
+className="
+grid
+gap-6
+md:grid-cols-2
+"
 
+>
 
 
-    </div>
 
 
-  )
 
+<div>
+
+
+<label
+
+className="
+mb-2
+block
+text-sm
+font-medium
+"
+
+>
+
+Status
+
+</label>
+
+
+
+<select
+
+
+
+value={form.status}
+
+
+
+onChange={(e)=>
+
+updateField(
+
+'status',
+
+e.target.value as BlogStatus
+
+)
+
+}
+
+
+
+
+className="
+w-full
+rounded-xl
+border
+px-4
+py-3
+"
+
+>
+
+
+
+<option value="draft">
+
+Draft
+
+</option>
+
+
+
+
+<option value="pending">
+
+Pending Review
+
+</option>
+
+
+
+
+
+{
+
+userRole === 'admin' && (
+
+
+<option value="published">
+
+Published
+
+</option>
+
+
+)
+
+
+}
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div
+
+className="
+flex
+items-center
+gap-3
+pt-8
+"
+
+>
+
+
+<input
+
+
+type="checkbox"
+
+
+
+checked={form.featured}
+
+
+
+onChange={(e)=>
+
+updateField(
+
+'featured',
+
+e.target.checked
+
+)
+
+}
+
+
+
+/>
+
+
+<span>
+
+Featured Article
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* SEO TITLE */}
+
+
+
+<div>
+
+
+<label
+
+className="
+mb-2
+block
+text-sm
+font-medium
+"
+
+>
+
+SEO Title
+
+</label>
+
+
+
+<input
+
+
+
+value={form.seo_title}
+
+
+
+onChange={(e)=>
+
+updateField(
+
+'seo_title',
+
+e.target.value
+
+)
+
+}
+
+
+
+
+className="
+w-full
+rounded-xl
+border
+px-4
+py-3
+"
+
+
+/>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* SEO DESCRIPTION */}
+
+
+
+<div>
+
+
+<label
+
+className="
+mb-2
+block
+text-sm
+font-medium
+"
+
+>
+
+SEO Description
+
+</label>
+
+
+
+<textarea
+
+
+
+rows={4}
+
+
+
+value={form.seo_description}
+
+
+
+onChange={(e)=>
+
+updateField(
+
+'seo_description',
+
+e.target.value
+
+)
+
+}
+
+
+
+
+className="
+w-full
+rounded-xl
+border
+px-4
+py-3
+"
+
+
+/>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* FOOTER SAVE BUTTON */}
+
+
+
+<div
+
+className="
+flex
+justify-end
+border-t
+pt-6
+"
+
+>
+
+
+<button
+
+
+
+type="button"
+
+
+
+onClick={savePost}
+
+
+
+disabled={saving}
+
+
+
+className="
+inline-flex
+items-center
+gap-2
+rounded-xl
+bg-primary
+px-6
+py-3
+text-white
+disabled:opacity-50
+"
+
+
+>
+
+
+
+<Save size={18}/>
+
+
+
+
+{
+
+saving
+
+?
+
+'Saving...'
+
+
+:
+
+
+initialPost
+
+?
+
+'Update Article'
+
+
+:
+
+
+userRole === 'admin'
+
+
+?
+
+'Publish Article'
+
+
+:
+
+'Submit For Approval'
+
+
+
+}
+
+
+
+</button>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+)
 
 }

@@ -10,466 +10,277 @@ import BlogFilters from '@/components/blog/blog-filters'
 
 import {
   FileText,
+  Search,
 } from 'lucide-react'
 
-
-
-
-
 type Props = {
-
   searchParams: Promise<{
-
     page?: string
-
     search?: string
-
     category?: string
-
   }>
-
 }
 
-
-
-
-
+const POSTS_PER_PAGE = 8
 
 export default async function BlogPage({
-
   searchParams,
-
 }: Props) {
-
-
 
   const params = await searchParams
 
-
-
-
-
-  const currentPage = Number(
-
-    params.page ?? '1'
-
+  const currentPage = Math.max(
+    Number(params.page ?? '1'),
+    1
   )
 
+  const search = (params.search ?? '').trim()
 
-
-  const search = params.search ?? ''
-
-
-
-  const category = params.category ?? ''
-
-
-
-
-
-
-
-  const postsPerPage = 8
-
-
-
-
+  const category = (params.category ?? '').trim()
 
   const start =
-
     (currentPage - 1) *
-
-    postsPerPage
-
-
-
-
+    POSTS_PER_PAGE
 
   const end =
-
     start +
-
-    postsPerPage -
-
+    POSTS_PER_PAGE -
     1
 
-
-
-
-
-
-
-  const supabase = await createClient()
-
-
-
-
-
+  const supabase =
+    await createClient()
 
   // =====================================
-  // FEATURED ARTICLES
-  // ALWAYS AVAILABLE
+  // FEATURED POSTS
   // =====================================
-
 
   const {
 
-    data: featuredPosts,
+    data: featuredPosts = [],
+
+    error: featuredError,
 
   } = await supabase
 
-
     .from('blog_posts')
 
-
     .select(`
-
       id,
-
       title,
-
       slug,
-
       excerpt,
-
       featured_image,
-
       category,
-
       featured,
-
       published_at,
-
-      created_at
-
+      created_at,
+      author_name
     `)
 
+    .eq('status', 'published')
 
-    .eq(
+    .eq('featured', true)
 
-      'status',
-
-      'published'
-
-    )
-
-
-    .eq(
-
-      'featured',
-
-      true
-
-    )
-
-
-    .order(
-
-      'published_at',
-
-      {
-
-        ascending:false
-
-      }
-
-    )
-
+    .order('published_at', {
+      ascending: false,
+    })
 
     .limit(5)
 
+  if (featuredError) {
 
+    console.error(
+      'Featured posts error:',
+      featuredError
+    )
 
+  }
 
-
-
+    // =====================================
+  // BLOG QUERY
   // =====================================
-  // BUILD NORMAL ARTICLE QUERY
-  // =====================================
-
 
   let query = supabase
 
-
     .from('blog_posts')
 
-
     .select(
-
       `
-
       id,
-
       title,
-
       slug,
-
       excerpt,
-
+      content,
       featured_image,
-
       category,
-
+      tags,
+      featured,
       published_at,
-
-      created_at
-
+      created_at,
+      author_name
       `,
-
       {
-
-        count:'exact'
-
+        count: 'exact',
       }
-
     )
-
-
-    .eq(
-
-      'status',
-
-      'published'
-
-    )
-
-
-    .eq(
-
-      'featured',
-
-      false
-
-    )
-
-
-
-
+.eq('status', 'published')
 
   // =====================================
-  // SEARCH FILTER
+  // SEARCH
   // =====================================
 
+  if (search.length > 0) {
 
-  if(search){
-
+   const escapedSearch = search
+  .replace(/[,%]/g, ' ')
+  .trim()
 
     query = query.or(
-
-      `title.ilike.%${search}%,excerpt.ilike.%${search}%`
-
+      [
+        `title.ilike.%${escapedSearch}%`,
+        `excerpt.ilike.%${escapedSearch}%`,
+        `content.ilike.%${escapedSearch}%`,
+      ].join(',')
     )
-
 
   }
 
-
-
-
-
-
   // =====================================
-  // CATEGORY FILTER
+  // CATEGORY
   // =====================================
 
-
-  if(category){
-
+  if (category) {
 
     query = query.eq(
-
       'category',
-
       category
-
     )
-
 
   }
 
-
-
-
-
+  // =====================================
+  // GET POSTS
+  // =====================================
 
   const {
 
-    data: posts,
+    data: posts = [],
 
     error,
 
-    count,
+    count = 0,
 
   } = await query
 
-
     .order(
-
       'published_at',
-
       {
-
-        ascending:false
-
+        ascending: false,
       }
-
     )
-
 
     .range(
-
       start,
-
       end
-
     )
 
-
-
-
-
-
-
-
-  if(error){
-
+  if (error) {
 
     console.error(
-
       'Blog loading error:',
-
       error
-
     )
-
 
   }
 
+ const articles = posts ?? []
 
+const featuredArticles = featuredPosts ?? []
 
-
-
-
-
-  const articles = posts ?? []
-
-
-
-
-  const featuredArticles = featuredPosts ?? []
-
-
-
-
-
-  const totalPages = Math.ceil(
-
-    (count ?? 0) /
-
-    postsPerPage
-
+ const totalPages = Math.max(
+  1,
+  Math.ceil(
+    (count ?? 0) / POSTS_PER_PAGE
   )
+)
 
-
-
-
-
-
-
+  // =====================================
+  // CATEGORIES
+  // =====================================
 
   const categories = [
 
     'All',
 
-    'Web Development',
+    'Technology',
 
     'Programming',
 
-    'ICT',
+    'Web Development',
 
-    'Technology',
+    'Artificial Intelligence',
+
+    'Cybersecurity',
+
+    'Health & Wellness',
+
+    'Business & Finance',
+
+    'Lifestyle & Travel',
+
+    'Personal Development',
 
     'Tutorials',
 
   ]
 
+  const hasFilters =
+    !!search ||
+    !!category
 
-
-
-
-
-
-  return (
+      return (
 
     <>
 
-
-
-
-
       <SiteHeader />
-
-
-
-
-
 
 
       <main
 
         className="
           mx-auto
-
           max-w-7xl
-
           px-4
-
-          pt-28
-
           pb-24
-
+          pt-28
           sm:px-6
-
           lg:px-8
         "
 
       >
 
 
-
-
-
-
-        {/* HEADER */}
-
-
-
+        {/* ============================
+            BLOG HEADER
+        ============================= */}
 
 
         <section
 
           className="
-            mb-10
-
+            mb-12
             text-center
           "
 
         >
 
-
-
-
           <p
 
             className="
               text-sm
-
               font-semibold
-
               uppercase
-
               tracking-[0.25em]
-
               text-primary
             "
 
@@ -477,22 +288,14 @@ export default async function BlogPage({
 
             Blog
 
-
           </p>
-
-
-
-
-
 
 
           <h1
 
             className="
               mt-4
-
               text-5xl
-
               font-black
             "
 
@@ -500,39 +303,26 @@ export default async function BlogPage({
 
             Articles & Insights
 
-
           </h1>
-
-
-
-
 
 
           <p
 
             className="
               mx-auto
-
               mt-5
-
               max-w-3xl
-
               text-muted-foreground
             "
 
           >
 
-            Explore my latest articles,
-            tutorials,
-            technology insights,
-            software engineering,
-            ICT,
-            and web development.
-
+            Explore articles about technology,
+            programming, software development,
+            business, personal growth,
+            and modern digital trends.
 
           </p>
-
-
 
 
         </section>
@@ -541,14 +331,9 @@ export default async function BlogPage({
 
 
 
-
-
-
-
-        {/* FILTERS */}
-
-
-
+        {/* ============================
+            FILTERS
+        ============================= */}
 
 
         <BlogFilters
@@ -565,37 +350,125 @@ export default async function BlogPage({
 
 
 
+        {/* ============================
+            SEARCH SUMMARY
+        ============================= */}
 
 
-
-        {/* EMPTY STATE */}
-
-
-
-
-
-        {articles.length === 0 && (
-
+        {hasFilters && (
 
           <section
 
             className="
-              mt-12
-
+              mb-10
               rounded-3xl
-
               border
-
               bg-card
-
-              p-20
-
+              p-6
               text-center
             "
 
           >
 
+            <div
 
+              className="
+                flex
+                items-center
+                justify-center
+                gap-2
+                text-sm
+                text-muted-foreground
+              "
+
+            >
+
+              <Search size={18}/>
+
+
+              <span>
+
+                Showing
+
+                {' '}
+
+                <strong className="text-foreground">
+
+                  {count}
+
+                </strong>
+
+                {' '}
+
+                article
+
+                {count === 1 ? '' : 's'}
+
+                {search && (
+
+                  <>
+
+                    {' '}for{' '}
+
+                    <strong className="text-foreground">
+
+                      "{search}"
+
+                    </strong>
+
+                  </>
+
+                )}
+
+                {category && (
+
+                  <>
+
+                    {' '}in{' '}
+
+                    <strong className="text-foreground">
+
+                      {category}
+
+                    </strong>
+
+                  </>
+
+                )}
+
+              </span>
+
+
+            </div>
+
+
+          </section>
+
+        )}
+
+
+
+
+
+
+        {/* ============================
+            EMPTY STATE
+        ============================= */}
+
+
+        {articles.length === 0 && (
+
+          <section
+
+            className="
+              rounded-3xl
+              border
+              bg-card
+              p-16
+              text-center
+            "
+
+          >
 
             <FileText
 
@@ -603,21 +476,17 @@ export default async function BlogPage({
 
               className="
                 mx-auto
-
                 text-muted-foreground
               "
 
             />
 
 
-
             <h2
 
               className="
                 mt-6
-
                 text-3xl
-
                 font-bold
               "
 
@@ -625,30 +494,25 @@ export default async function BlogPage({
 
               No Articles Found
 
-
             </h2>
-
 
 
             <p
 
               className="
                 mt-3
-
                 text-muted-foreground
               "
 
             >
 
-              Try another search or category.
-
+              Try searching with another keyword
+              or choose another category.
 
             </p>
 
 
-
           </section>
-
 
         )}
 
@@ -657,15 +521,13 @@ export default async function BlogPage({
 
 
 
-        {/* FEATURED SLIDER */}
+        {/* ============================
+            FEATURED ARTICLES
+            ONLY SHOW WHEN NO FILTER
+        ============================= */}
 
 
-
-
-
-        {featuredArticles.length > 0 && (
-
-
+        {!hasFilters && featuredArticles.length > 0 && (
 
           <FeaturedSlider
 
@@ -673,28 +535,14 @@ export default async function BlogPage({
 
           />
 
-
-
         )}
 
-
-
-
-
-
-
-
-
-        {/* ARTICLES GRID */}
-
-
-
+                {/* ============================
+            ARTICLE GRID
+        ============================= */}
 
 
         {articles.length > 0 && (
-
-
-
 
           <section
 
@@ -704,10 +552,6 @@ export default async function BlogPage({
 
           >
 
-
-
-
-
             <div
 
               className="
@@ -716,51 +560,47 @@ export default async function BlogPage({
 
             >
 
-
-
-
               <h2
 
                 className="
                   text-3xl
-
                   font-bold
                 "
 
               >
 
-                Latest Articles
+                {hasFilters
 
+                  ? 'Search Results'
+
+                  : 'Latest Articles'
+
+                }
 
               </h2>
-
-
-
 
 
               <p
 
                 className="
                   mt-2
-
                   text-muted-foreground
                 "
 
               >
 
-                Browse the newest articles from the blog.
+                {hasFilters
 
+                  ? `Found ${count} article${count === 1 ? '' : 's'} matching your search.`
+
+                  : 'Browse the newest articles from the blog.'
+
+                }
 
               </p>
 
 
-
-
-
             </div>
-
-
-
 
 
 
@@ -771,44 +611,27 @@ export default async function BlogPage({
 
               className="
                 grid
-
                 gap-8
-
                 sm:grid-cols-2
-
                 lg:grid-cols-3
-
                 xl:grid-cols-4
               "
 
             >
 
-
-
-
-
-
               {articles.map((post)=>(
-
 
 
                 <ArticleCard
 
-
                   key={post.id}
 
-
                   post={post}
-
 
                 />
 
 
-
               ))}
-
-
-
 
 
             </div>
@@ -819,47 +642,41 @@ export default async function BlogPage({
 
 
 
+            {/* ============================
+                PAGINATION
+            ============================= */}
 
 
-            {/* PAGINATION */}
+            {totalPages > 1 && (
 
+              <div
 
+                className="
+                  mt-16
+                "
 
+              >
 
+                <BlogPagination
 
-            <BlogPagination
+                  currentPage={currentPage}
 
+                  totalPages={totalPages}
 
-              currentPage={currentPage}
+                  search={search}
 
+                  category={category}
 
-              totalPages={totalPages}
+                />
 
+              </div>
 
-              search={search}
-
-
-              category={category}
-
-
-            />
-
-
-
-
+            )}
 
 
           </section>
 
-
-
-
-
         )}
-
-
-
-
 
 
 
@@ -867,20 +684,11 @@ export default async function BlogPage({
 
 
 
-
-
-
-
       <SiteFooter />
-
-
-
 
 
     </>
 
-
   )
-
 
 }
