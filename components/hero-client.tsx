@@ -38,9 +38,6 @@ export default function HeroClient({
 
 
 
-
-
-
   const data = {
 
 
@@ -141,10 +138,6 @@ export default function HeroClient({
 
 
 
-
-
-
-
   return (
 
 <section
@@ -152,15 +145,14 @@ id="home"
 className="
 relative
 flex
-min-h-screen
+min-h-[100svh]
 items-center
 overflow-hidden
+pt-24
 pb-16
+sm:pt-28
 "
 >
-
-
-
 
 
 <Image
@@ -185,16 +177,13 @@ opacity-30
 
 
 
-
-
-<div className="
+<div
+className="
 absolute
 inset-0
 bg-black/50
-"/>
-
-
-
+"
+/>
 
 
 
@@ -209,29 +198,34 @@ inset-0
 >
 
 
-<div className="
+<div
+className="
 absolute
--top-24
--left-24
+-left-[6rem]
+-top-[6rem]
 size-96
 rounded-full
 bg-primary/25
 blur-3xl
-"/>
+"
+/>
 
 
-<div className="
+<div
+className="
 absolute
+right-[-6rem]
 top-1/3
--right-24
 size-96
 rounded-full
 bg-secondary/20
 blur-3xl
-"/>
+"
+/>
 
 
-<div className="
+<div
+className="
 absolute
 bottom-0
 left-1/3
@@ -239,20 +233,13 @@ size-72
 rounded-full
 bg-accent/15
 blur-3xl
-"/>
+"
+/>
 
 
 </div>
-
-
-
-
-
-
-
-
-
-<div className="
+<div
+className="
 relative
 z-10
 mx-auto
@@ -260,15 +247,13 @@ grid
 w-full
 max-w-6xl
 items-center
-gap-12
+gap-10
 px-4
 sm:px-6
 lg:grid-cols-2
-">
-
-
-
-
+lg:gap-16
+"
+>
 
 
 
@@ -292,43 +277,56 @@ ease:[0.22,1,0.36,1],
 className="
 text-center
 lg:text-left
-lg:text-justify
 "
 
 >
 
 
 
-
-
-
-<div className="
+<div
+className="
 flex
 justify-center
 lg:justify-start
-">
+"
+>
 
 
-<span className="
+<span
+className="
 glass
 inline-flex
+max-w-full
 items-center
+justify-center
 gap-2
 rounded-full
 px-4
-py-1.5
-text-sm
+py-2
+text-center
+text-xs
 text-white
-">
+sm:text-sm
+"
+>
 
 
-<Sparkles className="
+<Sparkles
+className="
 size-4
+shrink-0
 text-accent
-"/>
+"
+/>
 
 
+<span
+className="
+break-words
+"
+>
 {data.availability}
+</span>
 
 
 </span>
@@ -340,9 +338,8 @@ text-accent
 
 
 
-
-
-<h1 className="
+<h1
+className="
 mt-6
 font-heading
 text-4xl
@@ -352,20 +349,23 @@ tracking-tight
 text-white
 sm:text-5xl
 lg:text-6xl
-">
+"
+>
 
 
 Hi, I&apos;m{' '}
 
 
-<span className="
+<span
+className="
 bg-gradient-to-r
 from-primary
 via-accent
 to-secondary
 bg-clip-text
 text-transparent
-">
+"
+>
 
 {data.name}
 
@@ -378,17 +378,16 @@ text-transparent
 
 
 
-
-
-
-<p className="
+<p
+className="
 mt-4
 font-heading
 text-lg
 font-medium
 text-white/90
 sm:text-xl
-">
+"
+>
 
 {
 Array.isArray(data.roles)
@@ -404,17 +403,16 @@ data.roles
 
 
 
-
-
-
-<p className="
+<p
+className="
 mx-auto
 mt-5
 max-w-xl
 leading-relaxed
 text-gray-200
 lg:mx-0
-">
+"
+>
 
 {data.intro}
 
@@ -426,17 +424,16 @@ lg:mx-0
 
 
 
-
-
-<div className="
+<div
+className="
 mt-8
 flex
 flex-wrap
 justify-center
 gap-3
 lg:justify-start
-">
-
+"
+>
 
 
 <a
@@ -464,10 +461,15 @@ hover:bg-primary/90
 {data.primaryButtonText}
 
 
-<ArrowRight className="size-4"/>
+<ArrowRight
+className="
+size-4
+"
+/>
 
 
 </a>
+
 
 
 
@@ -497,7 +499,11 @@ hover:bg-white/10
 >
 
 
-<Mail className="size-4"/>
+<Mail
+className="
+size-4
+"
+/>
 
 
 {data.secondaryButtonText}
@@ -514,16 +520,16 @@ hover:bg-white/10
 
 
 
-
-
-<div className="
+<div
+className="
 mt-4
 flex
 flex-wrap
 justify-center
 gap-3
 lg:justify-start
-">
+"
+>
 
 
 <a
@@ -548,7 +554,10 @@ hover:text-accent
 
 >
 
-<Eye className="size-4"/>
+<Eye
+className="
+size-4
+"/>
 
 View My CV
 
@@ -580,7 +589,10 @@ hover:text-accent
 >
 
 
-<Download className="size-4"/>
+<Download
+className="
+size-4
+"/>
 
 Download CV
 
@@ -594,16 +606,7 @@ Download CV
 
 
 
-
 </motion.div>
-
-
-
-
-
-
-
-
 
 <motion.div
 
@@ -633,11 +636,13 @@ max-w-md
 
 
 
-<div className="
+<div
+className="
 glass
 rounded-3xl
 p-3
-">
+"
+>
 
 
 <Image
@@ -669,7 +674,6 @@ object-cover
 
 
 
-
 <motion.div
 
 animate={{
@@ -685,32 +689,42 @@ ease:'easeInOut',
 className="
 glass
 absolute
--bottom-5
--left-5
+bottom-3
+left-3
 rounded-2xl
-px-4
-py-3
+px-3
+py-2
+sm:-bottom-5
+sm:-left-5
+sm:px-4
+sm:py-3
 "
 
 >
 
 
-<p className="
+<p
+className="
 font-heading
-text-2xl
+text-xl
 font-bold
 text-accent
-">
+sm:text-2xl
+"
+>
 
 {data.experienceNumber}
 
 </p>
 
 
-<p className="
+
+<p
+className="
 text-xs
 text-white
-">
+"
+>
 
 {data.experienceLabel}
 
@@ -718,6 +732,7 @@ text-white
 
 
 </motion.div>
+
 
 
 
@@ -740,32 +755,42 @@ ease:'easeInOut',
 className="
 glass
 absolute
--top-5
--right-5
+right-3
+top-3
 rounded-2xl
-px-4
-py-3
+px-3
+py-2
+sm:-right-5
+sm:-top-5
+sm:px-4
+sm:py-3
 "
 
 >
 
 
-<p className="
+<p
+className="
 font-heading
-text-2xl
+text-xl
 font-bold
 text-primary
-">
+sm:text-2xl
+"
+>
 
 {data.projectsNumber}
 
 </p>
 
 
-<p className="
+
+<p
+className="
 text-xs
 text-white
-">
+"
+>
 
 {data.projectsLabel}
 
@@ -786,10 +811,7 @@ text-white
 
 
 
-
 </div>
-
-
 
 
 

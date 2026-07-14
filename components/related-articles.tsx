@@ -1,18 +1,27 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
+import {
+  ArrowRight,
+} from 'lucide-react'
+
+
+
+// =====================================================
+// TYPES
+// =====================================================
 
 type RelatedArticle = {
 
-  id: string
+  id:string
 
-  title: string
+  title:string
 
-  slug: string
+  slug:string
 
-  featured_image?: string
+  featured_image?:string
 
-  category?: string
+  category?:string
 
 }
 
@@ -20,20 +29,26 @@ type RelatedArticle = {
 
 type Props = {
 
-  articles: RelatedArticle[]
+  articles:RelatedArticle[]
 
 }
 
 
 
+
+// =====================================================
+// COMPONENT
+// =====================================================
+
 export default function RelatedArticles({
 
   articles,
 
-}: Props) {
+}:Props){
 
 
-  if (!articles.length) {
+
+  if(!articles.length){
 
     return null
 
@@ -43,160 +58,259 @@ export default function RelatedArticles({
 
   return (
 
-    <section
-      className="
-        w-full
-      "
-    >
+    <section>
+
 
 
       {/* TITLE */}
 
-      <h2
+      <div
+
         className="
           mb-6
-          text-xl
-          font-bold
         "
+
       >
 
-        Related Articles
+        <h2
 
-      </h2>
+          className="
+            text-xl
+            font-black
+          "
+
+        >
+
+          Related Articles
+
+        </h2>
+
+
+        <div
+
+          className="
+            mt-2
+            h-1
+            w-12
+            rounded-full
+            bg-primary
+          "
+
+        />
+
+
+      </div>
 
 
 
 
-      {/* ARTICLES LIST */}
+
+
+      {/* ARTICLE CARDS */}
+
 
       <div
+
         className="
           flex
           flex-col
           gap-6
         "
+
       >
 
 
-        {articles.map((article)=>(
 
+        {
 
-          <Link
-
-            key={article.id}
-
-            href={`/blog/${article.slug}`}
-
-            className="
-              group
-              overflow-hidden
-              rounded-2xl
-              border
-              border-surface-border
-              bg-background
-              transition
-              hover:-translate-y-1
-            "
-
-          >
+          articles.map((article)=>(
 
 
 
-            {/* IMAGE */}
+            <Link
 
-            {article.featured_image && (
+              key={article.id}
 
-              <div
-                className="
-                  relative
-                  h-40
-                  w-full
-                  overflow-hidden
-                "
-              >
-
-                <Image
-
-                  src={article.featured_image}
-
-                  alt={article.title}
-
-                  fill
-
-                  className="
-                    object-cover
-                    transition
-                    duration-300
-                    group-hover:scale-105
-                  "
-
-                />
-
-              </div>
-
-            )}
+              href={`/blog/${article.slug}`}
 
 
-
-
-            {/* CONTENT */}
-
-            <div
               className="
-                p-4
+                group
+                overflow-hidden
+                rounded-2xl
+                border
+                border-surface-border
+                bg-background
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:shadow-lg
               "
+
             >
 
 
 
-              <p
+
+
+              {/* IMAGE */}
+
+
+              {
+
+                article.featured_image && (
+
+
+                  <div
+
+                    className="
+                      relative
+                      h-36
+                      w-full
+                      overflow-hidden
+                    "
+
+                  >
+
+
+                    <Image
+
+
+                      src={article.featured_image}
+
+
+                      alt={article.title}
+
+
+                      fill
+
+
+                      className="
+                        object-cover
+                        transition
+                        duration-500
+                        group-hover:scale-110
+                      "
+
+
+                    />
+
+
+                  </div>
+
+
+                )
+
+              }
+
+
+
+
+
+
+
+
+              {/* CONTENT */}
+
+
+              <div
+
                 className="
-                  text-xs
-                  font-medium
-                  uppercase
-                  text-accent
+                  p-4
                 "
+
               >
 
-                {article.category ?? 'Article'}
-
-              </p>
 
 
 
+                <span
 
-              <h3
+                  className="
+                    text-xs
+                    font-semibold
+                    uppercase
+                    tracking-wide
+                    text-primary
+                  "
 
-                className="
-                  mt-2
-                  line-clamp-3
-                  text-sm
-                  font-semibold
-                  leading-snug
-                  transition
-                  group-hover:text-accent
-                "
+                >
 
-              >
+                  {article.category ?? 'Article'}
 
-                {article.title}
-
-              </h3>
+                </span>
 
 
 
-            </div>
+
+
+                <h3
+
+                  className="
+                    mt-2
+                    line-clamp-3
+                    text-sm
+                    font-bold
+                    leading-snug
+                    transition
+                    group-hover:text-primary
+                  "
+
+                >
+
+                  {article.title}
+
+
+                </h3>
 
 
 
-          </Link>
 
 
-        ))}
+
+                <div
+
+                  className="
+                    mt-4
+                    flex
+                    items-center
+                    gap-2
+                    text-xs
+                    font-semibold
+                    text-primary
+                    opacity-0
+                    transition
+                    group-hover:opacity-100
+                  "
+
+                >
+
+                  Read Article
+
+                  <ArrowRight size={14}/>
+
+
+                </div>
+
+
+
+              </div>
+
+
+
+
+            </Link>
+
+
+
+          ))
+
+        }
 
 
 
       </div>
+
 
 
 

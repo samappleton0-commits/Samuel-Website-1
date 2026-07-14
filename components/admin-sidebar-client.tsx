@@ -16,6 +16,7 @@ import {
   X,
 
   Megaphone,
+  MessageCircle,
 
   ChevronDown,
 
@@ -177,8 +178,6 @@ const communicationLinks:MenuItem[] = [
 
 
 
-
-
 const adminCommunicationLinks:MenuItem[] = [
 
   {
@@ -192,8 +191,18 @@ const adminCommunicationLinks:MenuItem[] = [
   },
 
 
-]
+  {
 
+    name:'Comments',
+
+    href:'/admin/comments',
+
+    icon:MessageCircle,
+
+  },
+
+
+]
 
 
 

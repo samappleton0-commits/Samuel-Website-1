@@ -1,6 +1,11 @@
 // =====================================================
 // IMPORTS
 // =====================================================
+import CommentsSection from '@/components/blog/comments-section'
+
+import {
+  getApprovedComments,
+} from '@/lib/comments'
 
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -11,9 +16,10 @@ import { createClient } from '@/lib/supabase-server'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 
+import ReadingProgress from '@/components/blog/reading-progress'
+
 import ShareButtons from '@/components/share-buttons'
 import RelatedArticles from '@/components/related-articles'
-
 
 
 
@@ -27,9 +33,11 @@ export async function generateMetadata({
   params,
 
 }: {
+
   params: Promise<{
     slug:string
   }>
+
 }): Promise<Metadata> {
 
 
@@ -39,7 +47,8 @@ export async function generateMetadata({
 
 
 
-  const supabase = await createClient()
+  const supabase =
+    await createClient()
 
 
 
@@ -82,36 +91,28 @@ export async function generateMetadata({
 
   return {
 
-
     title:
-
       post.seo_title ??
       post.title,
 
 
-
     description:
-
       post.seo_description ??
       post.excerpt ??
       'Read the latest article from Samuel Appleton.',
 
 
-
     openGraph:{
 
       title:
-
         post.seo_title ??
         post.title,
 
 
       description:
-
         post.seo_description ??
         post.excerpt ??
         '',
-
 
 
       images:
@@ -130,13 +131,9 @@ export async function generateMetadata({
 
     }
 
-
   }
 
-
 }
-
-
 
 
 
@@ -153,14 +150,11 @@ export default async function BlogArticlePage({
 
 }: {
 
-  params: Promise<{
-
+  params:Promise<{
     slug:string
-
   }>
 
 }) {
-
 
 
   const {
@@ -170,23 +164,16 @@ export default async function BlogArticlePage({
 
 
 
-
-
-  // =====================================================
-  // SUPABASE CLIENT
-  // =====================================================
-
-
-  const supabase = await createClient()
+  const supabase =
+    await createClient()
 
 
 
 
 
-
-  // =====================================================
-  // FETCH CURRENT ARTICLE
-  // =====================================================
+// =====================================================
+// CURRENT ARTICLE
+// =====================================================
 
 
   const {
@@ -224,8 +211,6 @@ export default async function BlogArticlePage({
 
 
 
-
-
   if(!post){
 
     notFound()
@@ -236,11 +221,9 @@ export default async function BlogArticlePage({
 
 
 
-
-
-  // =====================================================
-  // FETCH RELATED ARTICLES
-  // =====================================================
+// =====================================================
+// RELATED ARTICLES
+// =====================================================
 
 
   const {
@@ -254,6 +237,7 @@ export default async function BlogArticlePage({
 
 
     .select(
+
       `
       id,
       title,
@@ -261,6 +245,7 @@ export default async function BlogArticlePage({
       featured_image,
       category
       `
+
     )
 
 
@@ -289,7 +274,9 @@ export default async function BlogArticlePage({
 
     relatedArticles
 
-      ?.sort((a,b)=>{
+    ?.sort(
+
+      (a,b)=>{
 
 
         if(
@@ -307,7 +294,6 @@ export default async function BlogArticlePage({
         }
 
 
-
         if(
 
           a.category !== post.category
@@ -323,23 +309,166 @@ export default async function BlogArticlePage({
         }
 
 
-
         return 0
 
 
-      })
+      }
+
+    )
 
 
-      .slice(0,3)
+    .slice(
+      0,
+      3
+    )
 
-      ??
 
-      []
+    ??
+
+    []
 
 
 
 // =====================================================
-// JSX STARTS IN PART 2
+// APPROVED COMMENTS
+// =====================================================
+
+
+const comments =
+  await getApprovedComments(
+
+    post.id
+
+  )
+
+// =====================================================
+// PREVIOUS ARTICLE
+// =====================================================
+
+
+  const {
+
+    data:previousArticle
+
+  } = await supabase
+
+
+    .from('blog_posts')
+
+
+    .select(
+
+      `
+      title,
+      slug
+      `
+
+    )
+
+
+    .eq(
+
+      'status',
+
+      'published'
+
+    )
+
+
+    .lt(
+
+      'published_at',
+
+      post.published_at
+
+    )
+
+
+    .order(
+
+      'published_at',
+
+      {
+
+        ascending:false
+
+      }
+
+    )
+
+
+    .limit(1)
+
+
+    .single()
+
+
+
+
+
+// =====================================================
+// NEXT ARTICLE
+// =====================================================
+
+
+  const {
+
+    data:nextArticle
+
+  } = await supabase
+
+
+    .from('blog_posts')
+
+
+    .select(
+
+      `
+      title,
+      slug
+      `
+
+    )
+
+
+    .eq(
+
+      'status',
+
+      'published'
+
+    )
+
+
+    .gt(
+
+      'published_at',
+
+      post.published_at
+
+    )
+
+
+    .order(
+
+      'published_at',
+
+      {
+
+        ascending:true
+
+      }
+
+    )
+
+
+    .limit(1)
+
+
+    .single()
+
+    // =====================================================
+// JSX
 // =====================================================
 
 
@@ -347,527 +476,898 @@ return (
 
 <>
 
-{/* =====================================================
-    START: SITE HEADER
-===================================================== */}
+  <ReadingProgress />
 
-<SiteHeader />
 
+  <SiteHeader />
 
-{/* =====================================================
-    START: PAGE
-===================================================== */}
 
 
-<main
-className="
-pt-28
-pb-20
-"
->
+  <main
 
-
-
-{/* =====================================================
-    START: ARTICLE HEADER
-===================================================== */}
-
-
-<section
-
-className="
-mx-auto
-max-w-5xl
-px-4
-sm:px-6
-"
-
->
-
-
-<span
-
-className="
-inline-flex
-rounded-full
-bg-accent/15
-px-4
-py-1
-text-sm
-font-medium
-text-accent
-"
-
->
-
-{post.category ?? 'Article'}
-
-</span>
-
-
-
-
-<h1
-
-className="
-mt-6
-font-heading
-text-4xl
-font-extrabold
-leading-tight
-tracking-tight
-sm:text-5xl
-lg:text-6xl
-"
-
->
-
-{post.title}
-
-</h1>
-
-
-
-
-<div
-
-className="
-mt-6
-flex
-flex-wrap
-gap-5
-text-sm
-text-muted-foreground
-"
-
->
-
-
-<span>
-
-📅
-
-{' '}
-
-{
-
-new Date(
-
-post.published_at ??
-post.created_at
-
-)
-
-.toLocaleDateString(
-
-'en-GB',
-
-{
-
-day:'numeric',
-
-month:'long',
-
-year:'numeric'
-
-}
-
-)
-
-}
-
-</span>
-
-
-
-
-<span>
-
-By {post.author_name ?? 'Samuel Appleton'}
-
-</span>
-
-
-
-</div>
-
-
-</section>
-
-
-{/* =====================================================
-    END: ARTICLE HEADER
-===================================================== */}
-
-
-
-
-
-{/* =====================================================
-    START: ARTICLE + SIDEBAR GRID
-===================================================== */}
-
-
-
-<section
-
-className="
-mx-auto
-mt-14
-flex
-max-w-7xl
-gap-12
-px-4
-sm:px-6
-"
-
->
-
-
-
-
-{/* =====================================================
-    START: MAIN ARTICLE COLUMN
-===================================================== */}
-
-
-<div>
-
-
-
-
-
-{/* FEATURE IMAGE */}
-
-{
-
-post.featured_image && (
-
-<div
-  className="
-    flex-1
-    min-w-0
-  "
->
-<Image
-
-src={post.featured_image}
-
-alt={post.title}
-
-width={900}
-
-height={500}
-
-priority
-
-className="
-h-auto
-w-full
-object-cover
-"
-
-/>
-
-</div>
-
-)
-
-}
-
-
-
-
-
-
-
-{/* ARTICLE CONTENT */}
-
-
-
-<article
-
-className="
-prose
-prose-lg
-prose-invert
-mt-12
-max-w-none
-
-prose-headings:font-heading
-prose-headings:font-bold
-
-prose-h1:text-4xl
-prose-h2:text-3xl
-prose-h3:text-2xl
-
-prose-blockquote:border-l-4
-prose-blockquote:pl-4
-prose-blockquote:italic
-
-prose-img:rounded-2xl
-
-prose-a:text-primary
-
-prose-strong:text-white
-
-"
-
-
-dangerouslySetInnerHTML={{
-
-__html:post.content
-
-}}
-
-
-/>
-
-
-
-
-<section
-
-className="
-mt-12
-"
-
->
-
-
-<h3
-
-className="
-mb-3
-text-sm
-font-semibold
-uppercase
-text-muted-foreground
-"
-
->
-
-Tags
-
-</h3>
-
-
-
-
-<div
-
-className="
-flex
-flex-wrap
-gap-2
-"
-
->
-
-
-{
-
-post.tags?.length > 0
-
-?
-
-
-post.tags.map((tag:string)=>(
-
-
-<span
-
-key={tag}
-
-className="
-rounded-full
-bg-surface
-px-4
-py-1.5
-text-sm
-"
-
->
-
-#{tag}
-
-</span>
-
-
-))
-
-
-:
-
-(
-
-
-<span
-
-className="
-text-sm
-text-muted-foreground
-"
-
->
-
-No tags
-
-</span>
-
-
-)
-
-}
-
-
-</div>
-
-
-</section>
-
-
-
-
-
-
-
-</div>
-
-
-
-<aside
-  className="
-    mt-12
-    lg:mt-0
-    lg:w-80
-    lg:shrink-0
-    lg:self-start
-    lg:sticky
-    lg:top-28
-  "
->
-  <div
     className="
-      rounded-3xl
-      border
-      border-surface-border
-      bg-card
-      p-5
-      shadow-sm
+      pt-28
+      pb-24
     "
+
   >
-    <RelatedArticles articles={sortedRelated} />
-  </div>
-</aside>
+
+
+
+    {/* =====================================================
+        HERO SECTION
+    ===================================================== */}
+
+
+    <section
+
+      className="
+        mx-auto
+        max-w-7xl
+        px-4
+        sm:px-6
+        lg:px-8
+      "
+
+    >
+
+
+
+      {/* BACK BUTTON */}
+
+      <a
+
+        href="/blog"
+
+        className="
+          inline-flex
+          items-center
+          rounded-full
+          border
+          border-surface-border
+          px-5
+          py-2
+          text-sm
+          font-medium
+          transition
+          hover:bg-surface
+        "
+
+      >
+
+        ← Back to Blog
+
+      </a>
 
 
 
 
-</section>
+
+      <div
+
+        className="
+          mt-10
+          grid
+          gap-12
+          lg:grid-cols-[1fr_420px]
+          lg:items-center
+        "
+
+      >
+
+
+
+        {/* TITLE AREA */}
+
+
+        <div>
+
+
+          <span
+
+            className="
+              inline-flex
+              rounded-full
+              bg-primary/10
+              px-4
+              py-1.5
+              text-sm
+              font-semibold
+              text-primary
+            "
+
+          >
+
+            {post.category ?? 'Article'}
+
+          </span>
 
 
 
 
 
-<section
+          <h1
 
-className="
-mx-auto
-mt-12
-max-w-7xl
-px-4
-sm:px-6
+            className="
+              mt-6
+              max-w-4xl
+              text-4xl
+              font-black
+              leading-tight
+              tracking-tight
+              sm:text-5xl
+              lg:text-6xl
+            "
 
-lg:grid
-lg:grid-cols-[minmax(0,1fr)_320px]
+          >
 
-"
+            {post.title}
 
->
-
-
-<div>
-
-
-<h3
-
-className="
-mb-3
-text-sm
-font-semibold
-uppercase
-text-muted-foreground
-"
-
->
-
-Share Article
-
-</h3>
+          </h1>
 
 
 
-<ShareButtons
 
-url={
 
-`${process.env.NEXT_PUBLIC_SITE_URL}/blog/${slug}`
+          {
+            post.excerpt && (
 
-}
+              <p
+
+                className="
+                  mt-6
+                  max-w-3xl
+                  text-lg
+                  leading-8
+                  text-muted-foreground
+                "
+
+              >
+
+                {post.excerpt}
+
+              </p>
+
+            )
+          }
+
+
+
+
+
+
+          <div
+
+            className="
+              mt-8
+              flex
+              flex-wrap
+              items-center
+              gap-6
+              text-sm
+              text-muted-foreground
+            "
+
+          >
+
+
+
+            <span>
+
+              📅
+
+              {' '}
+
+
+              {
+
+                new Date(
+
+                  post.published_at ??
+                  post.created_at
+
+                )
+
+                .toLocaleDateString(
+
+                  'en-GB',
+
+                  {
+
+                    day:'numeric',
+
+                    month:'long',
+
+                    year:'numeric'
+
+                  }
+
+                )
+
+              }
+
+
+            </span>
+
+
+
+
+
+            <span>
+
+              👤
+
+              {' '}
+
+              {
+
+                post.author_name ??
+                'Samuel Appleton'
+
+              }
+
+
+            </span>
+
+
+
+          </div>
+
+
+
+        </div>
+
+
+
+
+
+
+
+        {/* FEATURE IMAGE */}
+
+
+        {
+          post.featured_image && (
+
+
+            <div
+
+              className="
+                overflow-hidden
+                rounded-3xl
+                border
+                border-surface-border
+                shadow-xl
+              "
+
+            >
+
+
+              <Image
+
+
+                src={post.featured_image}
+
+
+                alt={post.title}
+
+
+                width={900}
+
+
+                height={650}
+
+
+                priority
+
+
+                className="
+                  h-full
+                  w-full
+                  object-cover
+                  transition-transform
+                  duration-700
+                  hover:scale-105
+                "
+
+
+              />
+
+
+            </div>
+
+
+          )
+        }
+
+
+
+
+
+      </div>
+
+
+
+    </section>
+        {/* =====================================================
+        ARTICLE CONTENT + SIDEBAR
+    ===================================================== */}
+
+
+    <section
+
+      className="
+        mx-auto
+        mt-16
+        grid
+        max-w-7xl
+        gap-12
+        px-4
+        sm:px-6
+        lg:grid-cols-[minmax(0,1fr)_340px]
+        lg:px-8
+      "
+
+    >
+
+
+
+
+      {/* =====================================================
+          MAIN ARTICLE
+      ===================================================== */}
+
+
+      <div>
+
+
+       <article
+
+  className="
+    prose
+    prose-lg
+    max-w-none
+
+    text-foreground
+
+    prose-headings:text-foreground
+    prose-headings:font-black
+    prose-headings:tracking-tight
+
+    prose-h1:text-4xl
+    prose-h2:text-3xl
+    prose-h3:text-2xl
+
+    prose-p:text-muted-foreground
+    prose-p:leading-8
+
+    prose-strong:text-foreground
+
+    prose-a:text-primary
+    prose-a:font-semibold
+
+    prose-li:text-muted-foreground
+
+    prose-blockquote:border-primary
+    prose-blockquote:bg-surface
+    prose-blockquote:text-foreground
+    prose-blockquote:px-6
+    prose-blockquote:py-4
+    prose-blockquote:rounded-xl
+
+    prose-img:rounded-3xl
+
+    prose-code:text-primary
+
+    prose-pre:bg-card
+    prose-pre:border
+    prose-pre:border-surface-border
+    prose-pre:rounded-2xl
+  "
+
+  dangerouslySetInnerHTML={{
+
+    __html:post.content
+
+  }}
 
 />
 
 
 
-<a
 
-href="/blog"
 
-className="
-mt-6
-inline-flex
-w-fit
-items-center
-rounded-full
-border
-border-surface-border
-px-5
-py-2
-text-sm
-transition
-hover:bg-surface
-"
+        {/* =====================================================
+            TAGS
+        ===================================================== */}
+
+
+        <section
+
+          className="
+            mt-14
+          "
+
+        >
+
+
+          <h3
+
+            className="
+              mb-4
+              text-sm
+              font-bold
+              uppercase
+              tracking-wider
+              text-muted-foreground
+            "
+
+          >
+
+            Tags
+
+          </h3>
+
+
+
+
+          <div
+
+            className="
+              flex
+              flex-wrap
+              gap-3
+            "
+
+          >
+
+
+            {
+              post.tags?.length > 0
+
+              ?
+
+              post.tags.map(
+
+                (tag:string)=>(
+
+
+                  <span
+
+                    key={tag}
+
+                    className="
+                      rounded-full
+                      bg-primary/10
+                      px-4
+                      py-2
+                      text-sm
+                      font-medium
+                      text-primary
+                      transition
+                      hover:scale-105
+                    "
+
+                  >
+
+                    #{tag}
+
+                  </span>
+
+
+                )
+
+              )
+
+
+              :
+
+              (
+
+                <span
+
+                  className="
+                    text-sm
+                    text-muted-foreground
+                  "
+
+                >
+
+                  No tags
+
+                </span>
+
+              )
+
+            }
+
+
+          </div>
+
+
+
+        </section>
+
+
+
+
+
+      </div>
+
+
+
+
+
+
+
+      {/* =====================================================
+          SIDEBAR
+      ===================================================== */}
+
+
+      <aside
+
+        className="
+          lg:sticky
+          lg:top-28
+          lg:self-start
+        "
+
+      >
+
+
+        <div
+
+          className="
+            rounded-3xl
+            border
+            border-surface-border
+            bg-card
+            p-6
+            shadow-sm
+          "
+
+        >
+
+
+          <RelatedArticles
+
+            articles={sortedRelated}
+
+          />
+
+
+        </div>
+
+
+      </aside>
+
+
+
+
+    </section>
+
+        {/* =====================================================
+        SHARE SECTION
+    ===================================================== */}
+
+<section
+
+  className="
+    mx-auto
+    mt-16
+    max-w-7xl
+    px-4
+    sm:px-6
+    lg:px-8
+  "
 
 >
 
-← Back to Blog
 
-</a>
+  <div
+
+    className="
+      grid
+      gap-8
+      lg:grid-cols-[280px_minmax(0,1fr)]
+      lg:items-start
+    "
+
+  >
 
 
-</div>
+
+    {/* =====================================================
+        SHARE COLUMN
+    ===================================================== */}
+
+
+    <aside>
+
+
+      <h3
+
+        className="
+          mb-4
+          text-sm
+          font-bold
+          uppercase
+          text-muted-foreground
+        "
+
+      >
+
+        Share Article
+
+      </h3>
+
+
+
+      <ShareButtons
+
+        url={
+
+          `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${slug}`
+
+        }
+
+      />
+
+
+
+      <a
+
+        href="/blog"
+
+        className="
+          mt-6
+          inline-flex
+          rounded-full
+          border
+          border-surface-border
+          px-5
+          py-2
+          text-sm
+          transition
+          hover:bg-surface
+        "
+
+      >
+
+        ← Back to Blog
+
+      </a>
+
+
+    </aside>
+
+
+
+
+
+
+
+    {/* =====================================================
+        COMMENTS COLUMN
+    ===================================================== */}
+
+
+    <div>
+
+
+      <CommentsSection
+
+        postId={post.id}
+
+        initialComments={comments}
+
+      />
+
+
+    </div>
+
+
+
+  </div>
+
 
 
 </section>
 
-
-
-</main>
-
-
-
-
-<SiteFooter />
+    {/* =====================================================
+        PREVIOUS / NEXT ARTICLE
+    ===================================================== */}
 
 
 
+    <section
 
+      className="
+        mx-auto
+        mt-12
+        max-w-7xl
+        px-4
+        sm:px-6
+        lg:px-8
+      "
+
+    >
+
+
+
+      <div
+
+        className="
+          grid
+          gap-6
+          md:grid-cols-2
+        "
+
+      >
+
+
+
+
+        {/* PREVIOUS */}
+
+
+        {
+          previousArticle && (
+
+
+            <a
+
+              href={`/blog/${previousArticle.slug}`}
+
+              className="
+                group
+                rounded-3xl
+                border
+                border-surface-border
+                bg-card
+                p-6
+                transition
+                hover:-translate-y-1
+                hover:shadow-lg
+              "
+
+            >
+
+
+              <p
+
+                className="
+                  text-sm
+                  text-muted-foreground
+                "
+
+              >
+
+                ← Previous Article
+
+              </p>
+
+
+
+              <h3
+
+                className="
+                  mt-3
+                  text-xl
+                  font-bold
+                  transition
+                  group-hover:text-primary
+                "
+
+              >
+
+                {previousArticle.title}
+
+              </h3>
+
+
+            </a>
+
+
+          )
+        }
+
+
+
+
+
+
+
+        {/* NEXT */}
+
+
+
+        {
+          nextArticle && (
+
+
+            <a
+
+              href={`/blog/${nextArticle.slug}`}
+
+              className="
+                group
+                rounded-3xl
+                border
+                border-surface-border
+                bg-card
+                p-6
+                text-right
+                transition
+                hover:-translate-y-1
+                hover:shadow-lg
+              "
+
+            >
+
+
+              <p
+
+                className="
+                  text-sm
+                  text-muted-foreground
+                "
+
+              >
+
+                Next Article →
+
+              </p>
+
+
+
+              <h3
+
+                className="
+                  mt-3
+                  text-xl
+                  font-bold
+                  transition
+                  group-hover:text-primary
+                "
+
+              >
+
+                {nextArticle.title}
+
+              </h3>
+
+
+
+            </a>
+
+
+          )
+        }
+
+
+
+
+
+      </div>
+
+
+
+    </section>
+        {/* =====================================================
+        END OF ARTICLE PAGE
+    ===================================================== */}
+
+
+  </main>
+
+
+  <SiteFooter />
 
 
 </>
 
 )
-
 
 }
