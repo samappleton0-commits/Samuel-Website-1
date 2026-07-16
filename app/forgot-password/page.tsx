@@ -2,10 +2,17 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Loader2, ShieldCheck } from 'lucide-react'
+
+import {
+  Loader2,
+  ShieldCheck,
+  Mail
+} from 'lucide-react'
+
 
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase-browser'
+
 
 
 export default function ForgotPasswordPage() {
@@ -14,21 +21,26 @@ export default function ForgotPasswordPage() {
   const supabase = createClient()
 
 
-  const [email, setEmail] = useState('')
 
-  const [error, setError] = useState('')
+  const [email,setEmail] = useState('')
 
-  const [message, setMessage] = useState('')
+  const [error,setError] = useState('')
 
-  const [loading, setLoading] = useState(false)
+  const [message,setMessage] = useState('')
+
+  const [loading,setLoading] = useState(false)
+
+
 
 
 
   async function handleReset(
-    e: React.FormEvent<HTMLFormElement>
-  ) {
+    e:React.FormEvent<HTMLFormElement>
+  ){
+
 
     e.preventDefault()
+
 
 
     setLoading(true)
@@ -39,17 +51,28 @@ export default function ForgotPasswordPage() {
 
 
 
-    const { error } = await supabase.auth.resetPasswordForEmail(
+
+    const {
+      error
+
+    } = await supabase.auth.resetPasswordForEmail(
+
       email,
+
       {
         redirectTo:
-          `${window.location.origin}/reset-password`,
+        `${window.location.origin}/reset-password`
       }
+
     )
 
 
 
-    if (error) {
+
+
+
+    if(error){
+
 
       setError(error.message)
 
@@ -57,7 +80,10 @@ export default function ForgotPasswordPage() {
 
       return
 
+
     }
+
+
 
 
 
@@ -68,256 +94,602 @@ export default function ForgotPasswordPage() {
 
     setLoading(false)
 
+
+
   }
 
 
 
 
 
-  return (
 
-    <main className="flex min-h-screen items-center justify-center bg-surface px-4">
 
+return (
 
-      <div className="w-full max-w-md">
+<main
 
+className="
+relative
+flex
+min-h-screen
+items-center
+justify-center
+overflow-hidden
+bg-gradient-to-br
+from-background
+via-surface
+to-accent/10
+px-4
+"
 
-        <div className="glass rounded-3xl p-8 shadow-xl">
+>
 
 
 
 
+{/* Background decoration */}
 
-          {/* Brand */}
 
-          <div className="mb-8 text-center">
+<div
 
+className="
+absolute
+left-10
+top-10
+h-40
+w-40
+rounded-full
+bg-accent/20
+blur-3xl
+"
 
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent text-2xl font-bold text-white shadow-lg">
+/>
 
-              SA
 
-            </div>
 
+<div
 
+className="
+absolute
+bottom-10
+right-10
+h-60
+w-60
+rounded-full
+bg-accent/10
+blur-3xl
+"
 
-            <h1 className="text-3xl font-bold">
+/>
 
-              Forgot Password
 
-            </h1>
 
 
 
-            <p className="mt-2 text-sm text-muted-foreground">
 
-              Enter your email to receive a password reset link
 
-            </p>
 
 
-          </div>
+<div
 
+className="
+relative
+w-full
+max-w-md
+"
 
+>
 
 
+<div
 
+className="
+glass
+rounded-3xl
+p-8
+shadow-2xl
+backdrop-blur-xl
+"
 
+>
 
-          <form
-            onSubmit={handleReset}
-          >
 
 
-            <div className="space-y-5">
 
 
 
 
+{/* Icon Header */}
 
-              {/* Email */}
 
-              <div>
+<div
 
+className="
+mb-8
+text-center
+"
 
-                <label
+>
 
-                  htmlFor="email"
 
-                  className="mb-2 block text-sm font-medium"
 
-                >
+<div
 
-                  Email Address
+className="
+mx-auto
+mb-5
+flex
+h-20
+w-20
+items-center
+justify-center
+rounded-3xl
+bg-accent
+text-white
+shadow-xl
+"
 
-                </label>
+>
 
 
+<ShieldCheck
 
-                <input
+className="
+h-10
+w-10
+"
 
-                  id="email"
+/>
 
-                  type="email"
 
-                  placeholder="admin@example.com"
+</div>
 
-                  value={email}
 
-                  onChange={(e)=>setEmail(e.target.value)}
 
-                  autoComplete="email"
 
-                  className="w-full rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
 
-                  required
 
-                />
 
+<h1
 
-              </div>
+className="
+text-3xl
+font-bold
+"
 
+>
 
+Forgot Password
 
+</h1>
 
 
 
 
-              {/* Error */}
 
-              {error && (
 
-                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+<p
 
-                  {error}
+className="
+mt-2
+text-sm
+text-muted-foreground
+"
 
-                </div>
+>
 
-              )}
+Enter your email to receive a password reset link
 
+</p>
 
 
 
+</div>
 
 
-              {/* Success */}
 
-              {message && (
 
-                <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-600">
 
-                  {message}
 
-                </div>
 
-              )}
 
 
+<form
 
+onSubmit={handleReset}
 
+>
 
 
+<div
 
-              {/* Button */}
+className="
+space-y-5
+"
 
-              <Button
+>
 
-                type="submit"
 
-                disabled={loading}
 
-                className="h-12 w-full rounded-xl text-base font-medium"
 
-              >
 
 
-                {loading ? (
 
-                  <span className="flex items-center justify-center gap-2">
 
-                    <Loader2 className="h-5 w-5 animate-spin"/>
+{/* Email */}
 
-                    Sending...
 
-                  </span>
 
+<div>
 
-                ) : (
 
-                  'Send Reset Link'
+<label
 
-                )}
+htmlFor="email"
 
+className="
+mb-2
+block
+text-sm
+font-medium
+"
 
-              </Button>
+>
 
+Email Address
 
+</label>
 
 
 
 
 
-              <div className="text-center">
+<div
 
+className="
+relative
+"
 
-                <Link
+>
 
-                  href="/login"
 
-                  className="text-sm font-medium text-accent hover:underline"
+<Mail
 
-                >
+className="
+absolute
+left-3
+top-1/2
+h-5
+w-5
+-translate-y-1/2
+text-muted-foreground
+"
 
-                  Back to Login
+/>
 
-                </Link>
 
 
-              </div>
 
 
+<input
 
 
-            </div>
+id="email"
 
 
-          </form>
+type="email"
 
 
+placeholder="admin@example.com"
 
 
+value={email}
 
 
+onChange={
+(e)=>setEmail(e.target.value)
+}
 
-          {/* Security Footer */}
 
-          <div className="mt-8 border-t border-surface-border pt-6">
+autoComplete="email"
 
 
-            <p className="text-center text-xs text-muted-foreground">
+required
 
 
-              <ShieldCheck className="mr-1 inline h-4 w-4"/>
+className="
+w-full
+rounded-xl
+border
+border-surface-border
+bg-surface
+py-3
+pl-11
+pr-4
+text-sm
+outline-none
+transition
+focus:border-accent
+focus:ring-2
+focus:ring-accent/20
+"
 
-              Protected by secure Supabase Authentication
+/>
 
 
-            </p>
 
+</div>
 
-          </div>
 
+</div>
 
 
 
-        </div>
 
 
-      </div>
 
 
-    </main>
 
-  )
+
+{/* Error */}
+
+
+{
+
+error &&
+
+
+<div
+
+className="
+rounded-xl
+border
+border-red-200
+bg-red-50
+px-4
+py-3
+text-sm
+text-red-600
+"
+
+>
+
+{error}
+
+</div>
+
+
+}
+
+
+
+
+
+
+
+
+
+{/* Success */}
+
+
+{
+
+message &&
+
+
+<div
+
+className="
+rounded-xl
+border
+border-green-200
+bg-green-50
+px-4
+py-3
+text-sm
+text-green-600
+"
+
+>
+
+{message}
+
+</div>
+
+
+}
+
+
+
+
+
+
+
+
+
+<Button
+
+
+type="submit"
+
+
+disabled={loading}
+
+
+className="
+h-12
+w-full
+rounded-xl
+text-base
+font-medium
+shadow-lg
+"
+
+>
+
+
+{
+
+loading
+
+?
+
+<span
+
+className="
+flex
+items-center
+justify-center
+gap-2
+"
+
+>
+
+
+<Loader2
+
+className="
+h-5
+w-5
+animate-spin
+"
+
+/>
+
+
+Sending...
+
+
+</span>
+
+
+:
+
+'Send Reset Link'
+
+
+}
+
+
+
+</Button>
+
+
+
+
+
+
+
+
+<div
+
+className="
+text-center
+"
+
+>
+
+
+<Link
+
+href="/login"
+
+className="
+text-sm
+font-medium
+text-accent
+hover:underline
+"
+
+>
+
+Back to Login
+
+</Link>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</form>
+
+
+
+
+
+
+
+
+
+{/* Security Footer */}
+
+
+<div
+
+className="
+mt-8
+border-t
+border-surface-border
+pt-6
+"
+
+>
+
+
+<p
+
+className="
+text-center
+text-xs
+text-muted-foreground
+"
+
+>
+
+
+
+<ShieldCheck
+
+className="
+mr-1
+inline
+h-4
+w-4
+"
+
+/>
+
+
+Authorized access only • Secure session enabled
+
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+</main>
+
+
+)
 
 }

@@ -3,45 +3,79 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Loader2, ShieldCheck } from 'lucide-react'
+
+import {
+  Loader2,
+  ShieldCheck,
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  Mail
+} from 'lucide-react'
+
 
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase-browser'
 
 
+
 export default function LoginPage() {
 
+
   const router = useRouter()
+
   const supabase = createClient()
 
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
 
-  const [rememberMe, setRememberMe] = useState(false)
+  const [email,setEmail] = useState('')
+  const [password,setPassword] = useState('')
 
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [showPassword,setShowPassword] = useState(false)
+
+const [robotCheck,setRobotCheck] = useState(false)
+
+const [error,setError] = useState('')
+
+const [loading,setLoading] = useState(false)
 
 
 
   async function handleLogin(
-    e: React.FormEvent<HTMLFormElement>
-  ) {
+    e:React.FormEvent<HTMLFormElement>
+  ){
 
+    
     e.preventDefault()
+
 
     setLoading(true)
     setError('')
 
+if(!robotCheck){
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+  setError(
+    'Please confirm that you are not a robot.'
+  )
+
+  setLoading(false)
+
+  return
+
+}
+
+    const {error} =
+      await supabase.auth.signInWithPassword({
+
+        email,
+
+        password
+
+      })
 
 
-    if (error) {
+
+    if(error){
 
       setError(
         'Invalid email or password. Please try again.'
@@ -50,320 +84,656 @@ export default function LoginPage() {
       setLoading(false)
 
       return
+
     }
 
 
+
     router.push('/admin')
+
     router.refresh()
+
 
   }
 
 
 
 
-  return (
 
-    <main className="flex min-h-screen items-center justify-center bg-surface px-4">
+return (
+
+<main
+className="
+relative
+flex
+min-h-screen
+items-center
+justify-center
+overflow-hidden
+bg-gradient-to-br
+from-background
+via-surface
+to-accent/10
+px-4
+"
+>
+
+
+
+{/* Background decoration */}
+
+<div
+className="
+absolute
+left-10
+top-10
+h-40
+w-40
+rounded-full
+bg-accent/20
+blur-3xl
+"
+/>
 
 
-      <div className="w-full max-w-md">
+<div
+className="
+absolute
+bottom-10
+right-10
+h-60
+w-60
+rounded-full
+bg-accent/10
+blur-3xl
+"
+/>
 
 
-        {/* Main Login Container */}
 
-        <div className="glass rounded-3xl p-8 shadow-xl">
 
 
-          {/* Brand */}
+<div
+className="
+relative
+w-full
+max-w-md
+"
+>
 
-          <div className="mb-8 text-center">
 
+<div
+className="
+glass
+rounded-3xl
+p-8
+shadow-2xl
+backdrop-blur-xl
+"
+>
 
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent text-2xl font-bold text-white shadow-lg">
 
-              SA
 
-            </div>
 
+{/* Logo */}
 
 
-            <h1 className="text-3xl font-bold">
+<div
+className="
+mb-8
+text-center
+"
+>
 
-              Admin Portal
 
-            </h1>
+<div
+className="
+mx-auto
+mb-5
+flex
+h-20
+w-20
+items-center
+justify-center
+rounded-3xl
+bg-accent
+text-white
+shadow-xl
+"
+>
 
+<ShieldCheck
+className="
+h-10
+w-10
+"
+/>
 
+</div>
 
-            <p className="mt-2 text-sm text-muted-foreground">
 
-              Welcome back, sign in to continue
 
-            </p>
 
+<h1
+className="
+text-3xl
+font-bold
+"
+>
 
-          </div>
+Admin Portal
 
+</h1>
 
 
+<p
+className="
+mt-2
+text-sm
+text-muted-foreground
+"
+>
 
+ Sign in to access your account
 
-          <form
-            onSubmit={handleLogin}
-          >
+</p>
 
+</div>
 
-            <div className="space-y-5">
 
 
 
 
 
-              {/* Email */}
 
-              <div>
 
+<form
+onSubmit={handleLogin}
+>
 
-                <label
 
-                  htmlFor="email"
+<div
+className="
+space-y-5
+"
+>
 
-                  className="mb-2 block text-sm font-medium"
 
-                >
 
-                  Email Address
 
-                </label>
+{/* Email */}
 
 
+<div>
 
-                <input
 
-                  id="email"
+<label
+className="
+mb-2
+block
+text-sm
+font-medium
+"
+>
 
-                  type="email"
+Email Address
 
-                  placeholder="admin@example.com"
+</label>
 
-                  value={email}
 
-                  onChange={(e)=>setEmail(e.target.value)}
 
-                  autoComplete="email"
+<div
+className="
+relative
+"
+>
 
-                  className="w-full rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
 
-                  required
+<Mail
+className="
+absolute
+left-3
+top-1/2
+h-5
+w-5
+-translate-y-1/2
+text-muted-foreground
+"
+/>
 
-                />
 
 
-              </div>
+<input
 
+type="email"
 
+value={email}
 
+onChange={
+e=>setEmail(e.target.value)
+}
 
+placeholder="admin@example.com"
 
+autoComplete="email"
 
+required
 
-              {/* Password */}
+className="
+w-full
+rounded-xl
+border
+border-surface-border
+bg-surface
+py-3
+pl-11
+pr-4
+text-sm
+outline-none
+transition
+focus:border-accent
+focus:ring-2
+focus:ring-accent/20
+"
 
-              <div>
+/>
 
 
-                <label
+</div>
 
-                  htmlFor="password"
 
-                  className="mb-2 block text-sm font-medium"
+</div>
 
-                >
 
-                  Password
 
-                </label>
 
 
 
-                <input
 
-                  id="password"
 
-                  type="password"
 
-                  placeholder="Enter your password"
+{/* Password */}
 
-                  value={password}
 
-                  onChange={(e)=>setPassword(e.target.value)}
+<div>
 
-                  autoComplete="current-password"
 
-                  className="w-full rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
+<label
+className="
+mb-2
+block
+text-sm
+font-medium
+"
+>
 
-                  required
+Password
 
-                />
+</label>
 
 
-              </div>
 
 
+<div
+className="
+relative
+"
+>
 
 
+<LockKeyhole
+className="
+absolute
+left-3
+top-1/2
+h-5
+w-5
+-translate-y-1/2
+text-muted-foreground
+"
+/>
 
 
 
-              {/* Remember + Forgot */}
+<input
 
-              <div className="flex items-center justify-between">
 
+type={
+showPassword
+?
+'text'
+:
+'password'
+}
 
-                <label className="flex items-center gap-2 text-sm text-muted-foreground">
 
+value={password}
 
-                  <input
 
-                    type="checkbox"
+onChange={
+e=>setPassword(e.target.value)
+}
 
-                    checked={rememberMe}
 
-                    onChange={(e)=>
-                      setRememberMe(e.target.checked)
-                    }
+placeholder="Enter your password"
 
-                    className="h-4 w-4 rounded border-surface-border accent-accent"
 
-                  />
+autoComplete="current-password"
 
 
-                  <span>
-                    Remember me
-                  </span>
+required
 
 
-                </label>
+className="
+w-full
+rounded-xl
+border
+border-surface-border
+bg-surface
+py-3
+pl-11
+pr-12
+text-sm
+outline-none
+transition
+focus:border-accent
+focus:ring-2
+focus:ring-accent/20
+"
 
+/>
 
 
 
-                <Link
 
-                  href="/forgot-password"
 
-                  className="text-sm font-medium text-accent transition hover:underline"
+<button
 
-                >
+type="button"
 
-                  Forgot Password?
+onClick={()=>
+setShowPassword(!showPassword)
+}
 
-                </Link>
+className="
+absolute
+right-3
+top-1/2
+-translate-y-1/2
+text-muted-foreground
+hover:text-foreground
+"
 
+>
 
-              </div>
 
+{
+showPassword
+?
+<EyeOff className="h-5 w-5"/>
+:
+<Eye className="h-5 w-5"/>
+}
 
 
+</button>
 
 
 
+</div>
 
-              {/* Error */}
 
-              {error && (
+</div>
 
-                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
 
-                  {error}
 
-                </div>
 
-              )}
 
 
 
 
 
+{/* Security Options */}
 
 
+<div
+className="
+flex
+items-center
+justify-between
+"
+>
 
-              {/* Button */}
 
-              <Button
+<label
 
-                type="submit"
+className="
+flex
+items-center
+gap-2
+text-sm
+text-muted-foreground
+"
 
-                disabled={loading}
+>
 
-                className="h-12 w-full rounded-xl text-base font-medium"
 
-              >
+<input
 
+type="checkbox"
 
-                {loading ? (
+checked={robotCheck}
 
-                  <span className="flex items-center justify-center gap-2">
+onChange={
+(e)=>setRobotCheck(e.target.checked)
+}
 
-                    <Loader2 className="h-5 w-5 animate-spin"/>
+className="
+h-4
+w-4
+rounded
+accent-accent
+"
 
-                    Logging in...
+/>
 
-                  </span>
 
+<span>
 
-                ) : (
+I'm not a robot
 
-                  'Login'
+</span>
 
-                )}
 
+</label>
 
-              </Button>
 
 
 
-            </div>
 
+<Link
 
-          </form>
+href="/forgot-password"
 
+className="
+text-sm
+font-medium
+text-accent
+hover:underline
+"
 
+>
 
+Forgot Password?
 
+</Link>
 
 
 
-          {/* Security Footer */}
+</div>
 
-          <div className="mt-8 border-t border-surface-border pt-6">
 
 
-            <p className="text-center text-xs text-muted-foreground">
 
 
-              <ShieldCheck className="mr-1 inline h-4 w-4"/>
 
-              Protected by secure Supabase Authentication
 
 
-            </p>
+{/* Error */}
 
+{
+error &&
 
-          </div>
+<div
+className="
+rounded-xl
+border
+border-red-200
+bg-red-50
+px-4
+py-3
+text-sm
+text-red-600
+"
+>
 
+{error}
 
+</div>
 
+}
 
-        </div>
 
 
 
-      </div>
 
 
-    </main>
 
-  )
+
+
+<Button
+
+type="submit"
+
+disabled={loading}
+
+className="
+h-12
+w-full
+rounded-xl
+text-base
+font-medium
+shadow-lg
+"
+
+>
+
+
+{
+
+loading ?
+
+<span
+className="
+flex
+items-center
+gap-2
+"
+>
+
+<Loader2
+className="
+h-5
+w-5
+animate-spin
+"
+/>
+
+Signing in...
+
+</span>
+
+
+:
+
+'Sign In'
+
+}
+
+
+</Button>
+
+
+
+
+
+
+</div>
+
+
+</form>
+
+
+
+
+
+
+
+
+
+{/* Footer */}
+
+
+<div
+className="
+mt-8
+border-t
+border-surface-border
+pt-6
+"
+>
+
+
+<p
+className="
+text-center
+text-xs
+text-muted-foreground
+"
+>
+
+
+<ShieldCheck
+className="
+mr-1
+inline
+h-4
+w-4
+"
+/>
+
+
+Authorized Access Only • Secure Session Enabled
+
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+</main>
+
+)
 
 }
