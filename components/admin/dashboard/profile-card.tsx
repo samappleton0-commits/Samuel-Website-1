@@ -1,4 +1,13 @@
+'use client'
+
+
 import Image from 'next/image'
+
+import {
+  useEffect,
+  useState,
+} from 'react'
+
 
 import {
 
@@ -9,6 +18,10 @@ import {
   Mail,
 
 } from 'lucide-react'
+
+
+
+
 
 type Props = {
 
@@ -26,316 +39,746 @@ type Props = {
 
 }
 
+
+
+
+
+
+
 export default function ProfileCard({
 
   user,
 
 }:Props){
 
-  const today =
 
-    new Date().toLocaleDateString(
 
-      'en-US',
+const [greeting,setGreeting] = useState('')
 
-      {
+const [dateTime,setDateTime] = useState('')
 
-        weekday:'long',
 
-        year:'numeric',
 
-        month:'long',
 
-        day:'numeric',
 
-      }
 
-    )
+useEffect(()=>{
 
-  return(
 
-    <div
+function updateDashboardInfo(){
 
-      className="
 
-        rounded-3xl
+const now = new Date()
 
-        border
 
-        bg-card
 
-        p-8
+// =============================
+// GREETING
+// =============================
 
-      "
 
-    >
+const hour = now.getHours()
 
-      <div
 
-        className="
 
-          flex
+if(hour < 12){
 
-          flex-col
+  setGreeting('Good Morning')
 
-          gap-6
+}
 
-          md:flex-row
+else if(hour < 18){
 
-          md:items-center
+  setGreeting('Good Afternoon')
 
-          md:justify-between
+}
 
-        "
+else if(hour < 22){
 
-      >
+  setGreeting('Good Evening')
 
-        {/* ======================================
-            LEFT
-        ====================================== */}
+}
 
-        <div
+else{
 
-          className="
+  setGreeting('Good Night')
 
-            flex
+}
 
-            items-center
 
-            gap-5
 
-          "
 
-        >
 
-          {
 
-            user.avatar_url ? (
 
-              <Image
+// =============================
+// DATE + TIME
+// =============================
 
-                src={user.avatar_url}
 
-                alt={user.name}
+const date = now.toLocaleDateString(
 
-                width={90}
+'en-US',
 
-                height={90}
+{
 
-                className="
+weekday:'long',
 
-                  rounded-full
+year:'numeric',
 
-                  object-cover
+month:'long',
 
-                  border
+day:'numeric',
 
-                "
+}
 
-              />
+)
 
-            ) : (
 
-              <div
 
-                className="
 
-                  flex
+const time = now.toLocaleTimeString(
 
-                  h-24
+'en-US',
 
-                  w-24
+{
 
-                  items-center
+hour:'numeric',
 
-                  justify-center
+minute:'2-digit',
 
-                  rounded-full
+hour12:true,
 
-                  bg-accent
+}
 
-                  text-3xl
+)
 
-                  font-bold
 
-                  text-white
 
-                "
 
-              >
+setDateTime(
 
-                {
+`${date} • ${time}`
 
-                  user.name.charAt(0)
+)
 
-                }
 
-              </div>
 
-            )
+}
 
-          }
 
-          <div>
 
-            <h1
 
-              className="
 
-                text-3xl
+updateDashboardInfo()
 
-                font-bold
 
-              "
 
-            >
+const timer = setInterval(
 
-              Welcome,
+updateDashboardInfo,
 
-              {' '}
+60000
 
-              {user.name}
+)
 
-              👋
 
-            </h1>
 
-            <p
+return ()=>clearInterval(timer)
 
-              className="
 
-                mt-2
 
-                text-muted-foreground
+},[])
 
-              "
 
-            >
 
-              Manage your portfolio from one place.
 
-            </p>
 
-          </div>
 
-        </div>
 
-        {/* ======================================
-            RIGHT
-        ====================================== */}
 
-        <div
 
-          className="
+return (
 
-            grid
 
-            gap-3
+<section
 
-            text-sm
 
-          "
+className="
 
-        >
+rounded-3xl
 
-          <div
+border
 
-            className="
+bg-card
 
-              flex
+p-6
 
-              items-center
+shadow-sm
 
-              gap-3
+"
 
-            "
 
-          >
+>
 
-            <Mail
 
-              size={18}
 
-            />
+<div
 
-            <span>
 
-              {user.email}
+className="
 
-            </span>
+flex
 
-          </div>
+flex-col
 
-          <div
+gap-8
 
-            className="
+lg:flex-row
 
-              flex
+lg:items-center
 
-              items-center
+lg:justify-between
 
-              gap-3
+"
 
-            "
 
-          >
+>
 
-            <Shield
 
-              size={18}
 
-            />
 
-            <span
 
-              className="
 
-                capitalize
+{/* ==================================
+    LEFT PROFILE SECTION
+================================== */}
 
-              "
 
-            >
 
-              {user.role}
+<div
 
-            </span>
 
-          </div>
+className="
 
-          <div
+flex
 
-            className="
+items-center
 
-              flex
+gap-5
 
-              items-center
+"
 
-              gap-3
 
-            "
+>
 
-          >
 
-            <Calendar
+<div
 
-              size={18}
+className="
 
-            />
+relative
 
-            <span>
+shrink-0
 
-              {today}
+"
 
-            </span>
+>
 
-          </div>
 
-        </div>
+{
 
-      </div>
 
-    </div>
+user.avatar_url ? (
 
-  )
+
+
+<Image
+
+
+src={user.avatar_url}
+
+
+alt={user.name}
+
+
+width={90}
+
+
+height={90}
+
+
+className="
+
+h-20
+
+w-20
+
+rounded-full
+
+border
+
+object-cover
+
+"
+
+
+/>
+
+
+
+):(
+
+
+
+<div
+
+
+className="
+
+flex
+
+h-20
+
+w-20
+
+items-center
+
+justify-center
+
+rounded-full
+
+bg-primary
+
+text-3xl
+
+font-bold
+
+text-white
+
+"
+
+
+>
+
+
+{
+
+user.name
+
+.charAt(0)
+
+.toUpperCase()
+
+}
+
+
+</div>
+
+
+
+)
+
+}
+
+
+
+
+{/* ACTIVE STATUS */}
+
+
+<span
+
+
+className="
+
+absolute
+
+bottom-1
+
+right-1
+
+h-5
+
+w-5
+
+rounded-full
+
+border-2
+
+border-card
+
+bg-green-500
+
+"
+
+
+/>
+
+
+</div>
+
+
+
+
+
+
+
+<div>
+
+
+<h1
+
+className="
+text-2xl
+font-bold
+sm:text-3xl
+"
+
+>
+
+{greeting}, {user.name} 👋
+
+</h1>
+
+
+
+<h2
+
+className="
+mt-2
+text-lg
+font-semibold
+"
+
+>
+
+Welcome back to your dashboard.
+
+</h2>
+
+
+
+
+<p
+
+className="
+mt-2
+max-w-xl
+text-sm
+text-muted-foreground
+sm:text-base
+"
+
+>
+
+Manage your website from one place.
+Control your articles, messages, projects,
+announcements, users, and website content.
+
+</p>
+
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+{/* ==================================
+    RIGHT INFORMATION SECTION
+================================== */}
+
+
+
+<div
+
+
+className="
+
+grid
+
+gap-3
+
+text-sm
+
+"
+
+
+>
+
+
+
+
+
+
+<div
+
+
+className="
+
+flex
+
+items-center
+
+gap-3
+
+rounded-xl
+
+bg-muted/40
+
+px-4
+
+py-3
+
+"
+
+
+>
+
+
+<Shield size={18}/>
+
+
+
+<div>
+
+
+<p
+
+
+className="
+
+text-xs
+
+text-muted-foreground
+
+"
+
+
+>
+
+Role
+
+</p>
+
+
+<p
+
+
+className="
+
+font-semibold
+
+capitalize
+
+"
+
+
+>
+
+{user.role}
+
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+
+
+className="
+
+flex
+
+items-center
+
+gap-3
+
+rounded-xl
+
+bg-muted/40
+
+px-4
+
+py-3
+
+"
+
+
+>
+
+
+<Mail size={18}/>
+
+
+
+<div>
+
+
+<p
+
+
+className="
+
+text-xs
+
+text-muted-foreground
+
+"
+
+
+>
+
+Email
+
+</p>
+
+
+<p
+
+
+className="
+
+font-semibold
+
+"
+
+
+>
+
+{user.email}
+
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+
+
+className="
+
+flex
+
+items-center
+
+gap-3
+
+rounded-xl
+
+bg-muted/40
+
+px-4
+
+py-3
+
+"
+
+
+>
+
+
+<Calendar size={18}/>
+
+
+
+<div>
+
+
+<p
+
+
+className="
+
+text-xs
+
+text-muted-foreground
+
+"
+
+
+>
+
+Date & Time
+
+</p>
+
+
+<p
+
+
+className="
+
+font-semibold
+
+"
+
+
+>
+
+{dateTime || 'Loading...'}
+
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+</section>
+
+
+)
+
 
 }

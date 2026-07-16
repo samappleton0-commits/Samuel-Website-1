@@ -1,165 +1,433 @@
 import { createClient } from '@/lib/supabase-server'
 
-import StatsGrid from './stats-grid'
-import QuickActions from './quick-actions'
-import RecentPosts from './recent-posts'
-import RecentContacts from './recent-contacts'
+
+import DashboardSection from './dashboard-section'
+
 import ProfileCard from './profile-card'
 
+import MessageCards from './message-cards'
+
+import ArticleCards from './article-cards'
+
+import QuickActions from './quick-actions'
+
+import RecentPosts from './recent-posts'
+
+import RecentContacts from './recent-contacts'
+
+
+import {
+
+  Mail,
+
+  FileText,
+
+  Zap,
+
+} from 'lucide-react'
+
+
+
 type Props = {
+
   user: {
-    name: string
-    email: string
-    role: string
-    avatar_url?: string | null
+
+    id:string
+
+    user_id:string
+
+    name:string
+
+    email:string
+
+    role:string
+
+    avatar_url?:string|null
+
   }
+
 }
+
+
+
+
 
 export default async function AdminDashboard({
 
   user,
 
-}: Props) {
+}:Props){
 
-  const supabase = await createClient()
 
-  /* ==========================================
-      BLOG POSTS
-  ========================================== */
+const supabase = await createClient()
 
-  const {
 
-    data: posts,
 
-  } = await supabase
+// =====================================================
+// BLOG POSTS
+// =====================================================
 
-    .from('blog_posts')
 
-    .select('*')
+const {
 
-  /* ==========================================
-      CONTACTS
-  ========================================== */
+  data:posts,
 
-  const {
+} = await supabase
 
-    data: contacts,
+.from('blog_posts')
 
-  } = await supabase
+.select('*')
 
-    .from('contacts')
+.order(
 
-    .select('*')
+'created_at',
 
-  /* ==========================================
-      USERS
-  ========================================== */
+{
 
-  const {
+ascending:false
 
-    data: users,
+}
 
-  } = await supabase
+)
 
-    .from('admin_users')
 
-    .select('*')
 
-  /* ==========================================
-      EXPERIENCE
-  ========================================== */
 
-  const {
+// =====================================================
+// CONTACTS
+// =====================================================
 
-    data: experience,
 
-  } = await supabase
+const {
 
-    .from('experience')
+ data:contacts,
 
-    .select('*')
+} = await supabase
 
-  /* ==========================================
-      EDUCATION
-  ========================================== */
+.from('contacts')
 
-  const {
+.select('*')
 
-    data: education,
+.order(
 
-  } = await supabase
+'created_at',
 
-    .from('education')
+{
 
-    .select('*')
+ascending:false
 
-  return (
+}
 
-    <div className="space-y-8">
+)
 
-      <ProfileCard
 
-        user={user}
 
-      />
 
-      <StatsGrid
+// =====================================================
+// USERS
+// =====================================================
 
-  stats={{
 
-    articles: posts?.length ?? 0,
+const {
 
-    published:
-      posts?.filter(
-        post => post.status === 'published'
-      ).length ?? 0,
+ data:users,
 
-    pending:
-      posts?.filter(
-        post => post.status === 'pending'
-      ).length ?? 0,
+} = await supabase
 
-    featured:
-      posts?.filter(
-        post => post.featured === true
-      ).length ?? 0,
+.from('admin_users')
 
-    messages:
-      contacts?.length ?? 0,
+.select('*')
 
-    users:
-      users?.length ?? 0,
 
-  }}
+
+
+
+// =====================================================
+// COMMENTS
+// =====================================================
+
+
+const {
+
+ data:comments,
+
+} = await supabase
+
+.from('comments')
+
+.select('*')
+
+
+
+
+
+// =====================================================
+// MESSAGE STATS
+// =====================================================
+
+
+const messageStats = {
+
+
+ total:
+
+ contacts?.length ?? 0,
+
+
+ unread:
+
+ contacts?.filter(
+
+ item => !item.read
+
+ ).length ?? 0,
+
+
+
+ completed:
+
+ contacts?.filter(
+
+ item => item.status === 'completed'
+
+ ).length ?? 0,
+
+
+
+ newMessages:
+
+ contacts?.filter(
+
+ item => item.status === 'new'
+
+ ).length ?? 0,
+
+
+
+ important:
+
+ contacts?.filter(
+
+ item => item.important === true
+
+ ).length ?? 0,
+
+
+}
+
+
+
+
+
+// =====================================================
+// ARTICLE STATS
+// =====================================================
+
+
+const articleStats = {
+
+
+ total:
+
+ posts?.length ?? 0,
+
+
+
+ published:
+
+ posts?.filter(
+
+ item => item.status === 'published'
+
+ ).length ?? 0,
+
+
+
+ pending:
+
+ posts?.filter(
+
+ item => item.status === 'pending'
+
+ ).length ?? 0,
+
+
+
+ featured:
+
+ posts?.filter(
+
+ item => item.featured === true
+
+ ).length ?? 0,
+
+
+
+ comments:
+
+ comments?.length ?? 0,
+
+
+}
+
+
+
+
+
+return (
+
+<div
+
+className="
+space-y-10
+"
+
+>
+
+
+{/* HEADER */}
+
+<ProfileCard
+
+user={user}
 
 />
 
-      <QuickActions />
 
-      <div
-        className="
-          grid
-          gap-6
-          xl:grid-cols-2
-        "
-      >
 
-        <RecentPosts
 
-          posts={posts ?? []}
 
-        />
+{/* MESSAGE SECTION */}
 
-        <RecentContacts
 
-          contacts={contacts ?? []}
+<DashboardSection
 
-        />
+title="Messages"
 
-      </div>
+description="Manage customer enquiries and communication"
 
-    </div>
+icon={<Mail size={22}/>}
 
-  )
+>
+
+
+<MessageCards
+
+stats={messageStats}
+
+/>
+
+
+</DashboardSection>
+
+
+
+
+
+
+
+{/* ARTICLE SECTION */}
+
+
+<DashboardSection
+
+title="Articles"
+
+description="Manage website blog content"
+
+icon={<FileText size={22}/>}
+
+>
+
+
+<ArticleCards
+
+mode="admin"
+
+stats={articleStats}
+
+/>
+
+
+</DashboardSection>
+
+
+
+
+
+
+
+
+{/* QUICK ACTIONS */}
+
+
+
+<DashboardSection
+
+title="Quick Actions"
+
+description="Manage website features"
+
+icon={<Zap size={22}/>}
+
+>
+
+
+<QuickActions
+
+mode="admin"
+
+/>
+
+
+</DashboardSection>
+
+
+
+
+
+
+
+
+{/* RECENT CONTENT */}
+
+
+
+<div
+
+className="
+grid
+gap-6
+xl:grid-cols-2
+"
+
+>
+
+
+<RecentContacts
+
+contacts={contacts ?? []}
+
+/>
+
+
+
+<RecentPosts
+
+posts={posts ?? []}
+
+/>
+
+
+</div>
+
+
+
+
+
+</div>
+
+)
+
 
 }

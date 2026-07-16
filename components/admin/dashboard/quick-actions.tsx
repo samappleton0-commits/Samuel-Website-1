@@ -1,329 +1,243 @@
 'use client'
 
-import Link from 'next/link'
 
-import {
+import StatCard from './stat-card'
 
-  FileText,
 
-  Plus,
 
-  Mail,
+type Props = {
 
-  User,
-
-  Briefcase,
-
-  GraduationCap,
-
-  Megaphone,
-
-  Home,
-
-  Layout,
-
-  Users,
-
-  Phone,
-
-} from 'lucide-react'
-
-type Props={
-
-  role:'admin'|'editor'
+mode?:'admin'|'editor'
 
 }
 
+
+
 export default function QuickActions({
 
-  role,
+mode='admin',
 
 }:Props){
 
-  const editorActions=[
 
-    {
 
-      title:'New Article',
+const adminActions = [
 
-      href:'/admin/blog/new',
 
-      icon:Plus,
+{
 
-      color:'bg-blue-500',
+title:'Settings',
 
-    },
+description:'Manage website configuration',
 
-    {
+href:'/admin/settings',
 
-      title:'Articles',
+icon:'Settings',
 
-      href:'/admin/blog',
+color:'bg-slate-500/10 text-slate-600',
 
-      icon:FileText,
+},
 
-      color:'bg-sky-500',
 
-    },
+{
 
-  ]
+title:'Users',
 
-  const adminActions=[
+description:'Manage system users',
 
-    ...editorActions,
+href:'/admin/users',
 
-    {
+icon:'Users',
 
-      title:'Announcements',
+color:'bg-indigo-500/10 text-indigo-600',
 
-      href:'/admin/announcements',
+},
 
-      icon:Megaphone,
 
-      color:'bg-red-500',
+{
 
-    },
+title:'Homepage',
 
-    {
+description:'Update homepage',
 
-      title:'Hero',
+href:'/admin/hero',
 
-      href:'/admin/hero',
+icon:'Globe',
 
-      icon:Home,
+color:'bg-cyan-500/10 text-cyan-600',
 
-      color:'bg-violet-500',
+},
 
-    },
 
-    {
+{
 
-      title:'About',
+title:'Announcements',
 
-      href:'/admin/about',
+description:'Manage announcements',
 
-      icon:User,
+href:'/admin/announcements',
 
-      color:'bg-orange-500',
+icon:'Megaphone',
 
-    },
+color:'bg-red-500/10 text-red-600',
 
-    {
+},
 
-      title:'Experience',
 
-      href:'/admin/experience',
+{
 
-      icon:Briefcase,
+title:'Projects',
 
-      color:'bg-indigo-500',
+description:'Manage projects',
 
-    },
+href:'/admin/projects',
 
-    {
+icon:'FolderKanban',
 
-      title:'Education',
+color:'bg-orange-500/10 text-orange-600',
 
-      href:'/admin/education',
+},
 
-      icon:GraduationCap,
 
-      color:'bg-pink-500',
+{
 
-    },
+title:'Gallery',
 
-    {
+description:'Manage images',
 
-      title:'Messages',
+href:'/admin/gallery',
 
-      href:'/admin/messages',
+icon:'Images',
 
-      icon:Mail,
+color:'bg-purple-500/10 text-purple-600',
 
-      color:'bg-emerald-500',
+},
 
-    },
 
-    {
+]
 
-      title:'Contact',
 
-      href:'/admin/contact',
 
-      icon:Phone,
 
-      color:'bg-cyan-500',
 
-    },
+const editorActions = [
 
-    {
 
-      title:'Footer',
+{
 
-      href:'/admin/footer',
+title:'Create Article',
 
-      icon:Layout,
+description:'Write new blog post',
 
-      color:'bg-slate-500',
+href:'/admin/blog/create',
 
-    },
+icon:'FilePlus',
 
-    {
+color:'bg-green-500/10 text-green-600',
 
-      title:'Users',
+},
 
-      href:'/admin/users',
 
-      icon:Users,
+{
 
-      color:'bg-amber-500',
+title:'My Articles',
 
-    },
+description:'Manage your articles',
 
-  ]
+href:'/admin/blog',
 
-  const actions=
+icon:'FileText',
 
-    role==='admin'
+color:'bg-blue-500/10 text-blue-600',
 
-      ? adminActions
+},
 
-      : editorActions
 
-  return(
+{
 
-    <section className="space-y-6">
+title:'Comments',
 
-      <div>
+description:'View comments',
 
-        <h2 className="text-2xl font-bold">
+href:'/admin/comments',
 
-          Quick Actions
+icon:'MessageCircle',
 
-        </h2>
+color:'bg-orange-500/10 text-orange-600',
 
-        <p className="text-muted-foreground">
+},
 
-          Jump directly to any section.
 
-        </p>
+{
 
-      </div>
+title:'Profile',
 
-      <div
+description:'Update account',
 
-        className="
+href:'/admin/settings/profile',
 
-          grid
+icon:'UserCog',
 
-          gap-5
+color:'bg-purple-500/10 text-purple-600',
 
-          sm:grid-cols-2
+},
 
-          lg:grid-cols-3
 
-          xl:grid-cols-5
+]
 
-        "
 
-      >
 
-        {
 
-          actions.map(action=>{
 
-            const Icon=action.icon
+const actions = mode==='admin'
 
-            return(
+? adminActions
 
-              <Link
+: editorActions
 
-                key={action.title}
 
-                href={action.href}
 
-                className="
 
-                  rounded-2xl
 
-                  border
 
-                  bg-card
+return (
 
-                  p-5
+<div
+className="
+grid
+grid-cols-2
+gap-5
+sm:grid-cols-3
+lg:grid-cols-4
+xl:grid-cols-6
+"
 
-                  transition-all
+>
 
-                  hover:-translate-y-1
 
-                  hover:shadow-lg
+{
 
-                "
+actions.map(action=>(
 
-              >
 
-                <div
+<StatCard
 
-                  className={`
+key={action.title}
 
-                    mb-5
+{...action}
 
-                    flex
+/>
 
-                    h-14
 
-                    w-14
+))
 
-                    items-center
 
-                    justify-center
+}
 
-                    rounded-2xl
 
-                    text-white
+</div>
 
-                    ${action.color}
+)
 
-                  `}
-
-                >
-
-                  <Icon
-
-                    size={28}
-
-                  />
-
-                </div>
-
-                <h3
-
-                  className="
-
-                    text-lg
-
-                    font-semibold
-
-                  "
-
-                >
-
-                  {action.title}
-
-                </h3>
-
-              </Link>
-
-            )
-
-          })
-
-        }
-
-      </div>
-
-    </section>
-
-  )
 
 }

@@ -198,7 +198,18 @@ export default function EducationManager({
 
 
   async function saveItem() {
+const {
+  data: { user },
+  error: authError,
+} = await supabase.auth.getUser()
 
+console.log("AUTH USER:", user)
+console.log("AUTH ERROR:", authError)
+
+if (!user) {
+  alert("No authenticated user found.")
+  return
+}
 
     if (!editing) return
 
