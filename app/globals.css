@@ -162,3 +162,20 @@
   padding-left: 1rem;
   font-style: italic;
 }
+
+/* Hide sidebar scrollbar */
+
+.scrollbar-hide::-webkit-scrollbar {
+
+display:none;
+
+}
+
+
+.scrollbar-hide {
+
+-ms-overflow-style:none;
+
+scrollbar-width:none;
+
+}

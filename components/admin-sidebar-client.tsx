@@ -16,25 +16,18 @@ import {
   X,
 
   Megaphone,
+
   MessageCircle,
 
   ChevronDown,
 
-  FolderKanban,
-
-  Sparkles,
-
-  UserRound,
-
   FileText,
 
-  Phone,
-
-  PanelBottom,
-
-  Images,
-
   Settings,
+
+  Home,
+
+  UserRound,
 
 } from 'lucide-react'
 
@@ -45,7 +38,8 @@ import LogoutButton from '@/components/logout-button'
 
 
 
-type Role = 'admin' | 'editor'
+
+type Role = 'admin' | 'editor' | 'user'
 
 
 
@@ -57,11 +51,11 @@ type Props = {
 
   profile: {
 
-    name:string
+    name: string
 
-    email:string
+    email: string
 
-    avatar_url:string
+    avatar_url: string | null
 
   }
 
@@ -71,15 +65,13 @@ type Props = {
 
 
 
-
-
 type MenuItem = {
 
-  name:string
+  name: string
 
-  href:string
+  href: string
 
-  icon:any
+  icon: any
 
 }
 
@@ -89,61 +81,22 @@ type MenuItem = {
 
 
 
-// =================================
-// CONTENT SECTION
-// ADMIN ONLY
-// =================================
+// =====================================================
+// CONTENT
+// =====================================================
 
 
-const contentLinks:MenuItem[] = [
-
-
-  {
-    name:'Hero',
-    href:'/admin/hero',
-    icon:Sparkles,
-  },
+const contentLinks: MenuItem[] = [
 
 
   {
-    name:'About',
-    href:'/admin/about',
-    icon:UserRound,
-  },
 
+    name: 'Homepage Manager',
 
-  {
-    name:'Resume',
-    href:'/admin/resume',
-    icon:FileText,
-  },
+    href: '/admin/homepage',
 
+    icon: Home,
 
-  {
-    name:'Contact',
-    href:'/admin/contact',
-    icon:Phone,
-  },
-
-
-  {
-    name:'Footer',
-    href:'/admin/footer',
-    icon:PanelBottom,
-  },
-
-
-  {
-    name:'Gallery',
-    href:'/admin/gallery',
-    icon:Images,
-  },
-
-
-  {
-    name:'Projects',
-    href:'/admin/projects',
-    icon:FolderKanban,
   },
 
 
@@ -154,50 +107,23 @@ const contentLinks:MenuItem[] = [
 
 
 
-// =================================
+
+
+// =====================================================
 // COMMUNICATION
-// ADMIN + EDITOR
-// =================================
+// =====================================================
 
 
-const communicationLinks:MenuItem[] = [
-
-  {
-
-    name:'Blog',
-
-    href:'/admin/blog',
-
-    icon:FileText,
-
-  },
-
-
-]
-
-
-
-
-const adminCommunicationLinks:MenuItem[] = [
-
-  {
-
-    name:'Announcements',
-
-    href:'/admin/announcements',
-
-    icon:Megaphone,
-
-  },
+const communicationLinks: MenuItem[] = [
 
 
   {
 
-    name:'Comments',
+    name: 'Blog',
 
-    href:'/admin/comments',
+    href: '/admin/blog',
 
-    icon:MessageCircle,
+    icon: FileText,
 
   },
 
@@ -209,21 +135,66 @@ const adminCommunicationLinks:MenuItem[] = [
 
 
 
-// =================================
+const adminCommunicationLinks: MenuItem[] = [
+
+
+  {
+
+    name: 'Announcements',
+
+    href: '/admin/announcements',
+
+    icon: Megaphone,
+
+  },
+
+
+  {
+
+    name: 'Comments',
+
+    href: '/admin/comments',
+
+    icon: MessageCircle,
+
+  },
+
+
+]
+
+
+
+
+
+
+
+
+// =====================================================
 // MANAGEMENT
-// ADMIN + EDITOR
-// =================================
+// =====================================================
 
 
-const managementLinks:MenuItem[] = [
+const managementLinks: MenuItem[] = [
+
 
   {
 
-    name:'Settings',
+    name: 'Settings',
 
-    href:'/admin/settings',
+    href: '/admin/settings',
 
-    icon:Settings,
+    icon: Settings,
+
+  },
+
+
+  {
+
+    name: 'Security',
+
+    href: '/admin/settings/security',
+
+    icon: Settings,
 
   },
 
@@ -235,25 +206,30 @@ const managementLinks:MenuItem[] = [
 
 
 
-// =================================
-// ADMIN ONLY MANAGEMENT
-// =================================
 
 
-const adminManagementLinks:MenuItem[] = [
+const adminManagementLinks: MenuItem[] = [
+
 
   {
 
-    name:'Users',
+    name: 'Users',
 
-    href:'/admin/users',
+    href: '/admin/users',
 
-    icon:UserRound,
+    icon: UserRound,
 
   },
 
 
 ]
+
+
+
+
+
+
+
 
 export default function AdminSidebarClient({
 
@@ -261,7 +237,7 @@ export default function AdminSidebarClient({
 
   profile,
 
-}:Props){
+}: Props) {
 
 
 
@@ -269,25 +245,42 @@ export default function AdminSidebarClient({
 
 
 
-  const [open,setOpen] = useState(false)
+  const [open, setOpen] = useState(false)
 
+const [contentOpen,setContentOpen] = useState(false)
 
-  const [contentOpen,setContentOpen] = useState(true)
+const [communicationOpen,setCommunicationOpen] = useState(false)
 
-
-  const [communicationOpen,setCommunicationOpen] = useState(true)
-
-
-  const [managementOpen,setManagementOpen] = useState(true)
+const [managementOpen,setManagementOpen] = useState(false)
 
 
 
 
 
-  function renderLinks(items:MenuItem[]){
+
+  const initials = profile.name
+
+    .split(' ')
+
+    .filter(Boolean)
+
+    .slice(0, 2)
+
+    .map(word => word[0])
+
+    .join('')
+
+    .toUpperCase()
 
 
-    return items.map((link)=>{
+
+
+
+
+  function renderLinks(items: MenuItem[]) {
+
+
+    return items.map((link) => {
 
 
       const Icon = link.icon
@@ -298,19 +291,27 @@ export default function AdminSidebarClient({
 
 
 
+
       return (
+
 
         <Link
 
-          key={link.name}
+
+          key={link.href}
+
 
           href={link.href}
 
-          onClick={()=>setOpen(false)}
+
+          onClick={() => setOpen(false)}
+
 
           className={`
 
             flex
+
+            min-w-0
 
             items-center
 
@@ -330,29 +331,38 @@ export default function AdminSidebarClient({
             ${
               active
 
-              ?
+              ? 'bg-primary text-primary-foreground'
 
-              'bg-accent text-white'
-
-              :
-
-              'hover:bg-surface'
+              : 'hover:bg-muted'
 
             }
 
-
           `}
+
 
         >
 
 
-          <Icon size={20}/>
+          <Icon
+
+            size={19}
+
+            className="shrink-0"
+
+          />
 
 
-          {link.name}
+
+          <span className="truncate">
+
+            {link.name}
+
+          </span>
+
 
 
         </Link>
+
 
       )
 
@@ -363,34 +373,58 @@ export default function AdminSidebarClient({
   }
 
 
-
-
-
-
   return (
 
     <>
 
 
-      {/* MOBILE HEADER */}
+      {/* =====================================
+          MOBILE HEADER
+      ====================================== */}
+
 
       <div
 
         className="
+
           flex
+
           items-center
+
           justify-between
-          rounded-3xl
-          glass
-          p-4
-          mb-4
+
+          rounded-2xl
+
+          border
+
+          bg-background
+
+          px-4
+
+          py-3
+
+          shadow-sm
+
           lg:hidden
+
         "
 
       >
 
 
-        <h2 className="font-bold text-lg">
+        <h2
+
+          className="
+
+            truncate
+
+            text-lg
+
+            font-bold
+
+          "
+
+        >
 
           Admin Panel
 
@@ -399,22 +433,42 @@ export default function AdminSidebarClient({
 
 
 
+
         <button
 
-          onClick={()=>setOpen(true)}
+
+          onClick={() => setOpen(true)}
+
 
           className="
+
+            flex
+
+            shrink-0
+
+            items-center
+
+            justify-center
+
             rounded-xl
+
+            border
+
             p-2
-            hover:bg-surface
+
+            hover:bg-muted
+
           "
+
 
         >
 
-          <Menu size={25}/>
+
+          <Menu size={22}/>
 
 
         </button>
+
 
 
       </div>
@@ -425,7 +479,12 @@ export default function AdminSidebarClient({
 
 
 
-      {/* MOBILE OVERLAY */}
+
+
+      {/* =====================================
+          MOBILE OVERLAY
+      ====================================== */}
+
 
 
       {
@@ -434,15 +493,26 @@ export default function AdminSidebarClient({
 
           <div
 
-            onClick={()=>setOpen(false)}
+
+            onClick={() => setOpen(false)}
+
 
             className="
+
               fixed
+
               inset-0
+
               z-40
+
               bg-black/50
+
+              backdrop-blur-sm
+
               lg:hidden
+
             "
+
 
           />
 
@@ -457,7 +527,12 @@ export default function AdminSidebarClient({
 
 
 
-      {/* SIDEBAR CONTAINER */}
+
+
+      {/* =====================================
+          SIDEBAR
+      ====================================== */}
+
 
 
       <aside
@@ -465,50 +540,52 @@ export default function AdminSidebarClient({
 
         className={`
 
-          flex
-
-          flex-col
-
-          rounded-3xl
-
-          p-6
-
-          bg-background
-
-          border
-
-          border-surface-border
-
-
           fixed
 
-          top-0
-
           left-0
+
+          top-0
 
           z-50
 
 
-          h-screen
+          flex
 
-          w-72
+          h-dvh
+
+
+          w-[85vw]
+
+          max-w-[320px]
+
+
+          flex-col
+
+
+          border-r
+
+          bg-background
+
+
+          p-5
+
 
 
           transition-transform
 
           duration-300
 
+          ease-in-out
+
+
 
           ${
+
             open
 
-            ?
+            ? 'translate-x-0'
 
-            'translate-x-0'
-
-            :
-
-            '-translate-x-full'
+            : '-translate-x-full'
 
           }
 
@@ -516,11 +593,17 @@ export default function AdminSidebarClient({
 
           lg:static
 
-          lg:h-screen
+          lg:h-[calc(100vh-40px)]
 
-          lg:w-auto
+          lg:w-full
+
+          lg:max-w-none
 
           lg:translate-x-0
+
+          lg:rounded-3xl
+
+          lg:border
 
 
         `}
@@ -533,31 +616,49 @@ export default function AdminSidebarClient({
 
 
 
-        {/* MOBILE CLOSE BUTTON */}
+
+        {/* =====================================
+            MOBILE CLOSE BUTTON
+        ====================================== */}
+
 
 
         <div
 
           className="
-            flex
-            justify-end
+
             mb-4
+
+            flex
+
+            justify-end
+
             lg:hidden
+
           "
 
         >
 
+
           <button
 
-            onClick={()=>setOpen(false)}
+
+            onClick={() => setOpen(false)}
+
 
             className="
+
               rounded-xl
+
               p-2
-              hover:bg-surface
+
+              hover:bg-muted
+
             "
 
+
           >
+
 
             <X size={22}/>
 
@@ -567,73 +668,195 @@ export default function AdminSidebarClient({
 
         </div>
 
-                {/* PROFILE */}
+
+
+
+
+
+
+
+
+        {/* =====================================
+            PROFILE
+        ====================================== */}
+
 
 
         <div
 
+
           className="
+
             mb-6
-            text-center
+
             shrink-0
+
+            text-center
+
           "
+
 
         >
 
 
-          <Image
 
-            src={profile.avatar_url}
 
-            alt={profile.name}
 
-            width={90}
+          {
 
-            height={90}
+            profile.avatar_url ? (
+
+
+
+              <Image
+
+
+                src={profile.avatar_url}
+
+
+                alt={profile.name}
+
+
+                width={80}
+
+
+                height={80}
+
+
+                className="
+
+                  mx-auto
+
+                  h-20
+
+                  w-20
+
+                  rounded-full
+
+                  border
+
+                  object-cover
+
+                "
+
+
+              />
+
+
+
+            ) : (
+
+
+
+              <div
+
+
+                className="
+
+                  mx-auto
+
+                  flex
+
+                  h-20
+
+                  w-20
+
+                  items-center
+
+                  justify-center
+
+                  rounded-full
+
+                  bg-primary
+
+                  text-xl
+
+                  font-bold
+
+                  text-primary-foreground
+
+                "
+
+
+              >
+
+
+                {initials}
+
+
+              </div>
+
+
+
+            )
+
+
+          }
+
+
+
+
+
+
+
+          <h2
+
 
             className="
-              mx-auto
-              rounded-full
-              border
-              border-surface-border
-              object-cover
+
+              mt-4
+
+              truncate
+
+              text-lg
+
+              font-bold
+
             "
 
-          />
 
+          >
 
-
-
-          <h2 className="mt-4 text-xl font-bold">
 
             {profile.name}
+
 
           </h2>
 
 
 
 
+
+
+
+
           <p
 
+
             className="
-              mt-1
+
               text-sm
+
               text-muted-foreground
+
             "
 
+
           >
+
 
             {
 
               role === 'admin'
 
-              ?
+              ? 'Administrator'
 
-              'Administrator'
+              : role === 'editor'
 
-              :
+              ? 'Editor'
 
-              'Editor'
+              : 'User'
+
 
             }
 
@@ -641,25 +864,73 @@ export default function AdminSidebarClient({
           </p>
 
 
+
+
+
+
+
+          <p
+
+
+            className="
+
+              mt-1
+
+              truncate
+
+              text-xs
+
+              text-muted-foreground
+
+            "
+
+
+          >
+
+
+            {profile.email}
+
+
+          </p>
+
+
+
+
+
         </div>
 
 
 
-
+        {/* =====================================
+            NAVIGATION
+        ====================================== */}
 
 
 
         <nav
 
+
           className="
+
             flex-1
+
+            min-h-0
+
+            space-y-5
+
             overflow-y-auto
-            hide-scrollbar
-            space-y-6
+
+            overflow-x-hidden
+
+            scrollbar-hide
+
             pr-1
+
           "
 
+
         >
+
 
 
 
@@ -676,8 +947,7 @@ export default function AdminSidebarClient({
             href="/admin"
 
 
-            onClick={()=>setOpen(false)}
-
+            onClick={() => setOpen(false)}
 
 
             className={`
@@ -702,15 +972,13 @@ export default function AdminSidebarClient({
 
 
               ${
+
                 pathname === '/admin'
 
-                ?
+                ? 'bg-primary text-primary-foreground'
 
-                'bg-accent text-white'
+                : 'hover:bg-muted'
 
-                :
-
-                'hover:bg-surface'
 
               }
 
@@ -721,10 +989,23 @@ export default function AdminSidebarClient({
           >
 
 
-            <LayoutDashboard size={20}/>
+
+            <LayoutDashboard
+
+              size={19}
+
+              className="shrink-0"
+
+            />
 
 
-            Dashboard
+
+            <span>
+
+              Dashboard
+
+            </span>
+
 
 
           </Link>
@@ -737,38 +1018,52 @@ export default function AdminSidebarClient({
 
 
 
-          {/* CONTENT */}
+          {/* =====================================
+              CONTENT
+          ====================================== */}
 
-          
+
+
           {
 
             role === 'admin' && (
 
 
-              <div>
 
+              <div>
 
 
                 <button
 
 
-                  onClick={()=>setContentOpen(!contentOpen)}
+                  onClick={() => setContentOpen(!contentOpen)}
 
 
                   className="
+
                     flex
+
                     w-full
+
                     items-center
+
                     justify-between
+
                     px-4
+
                     text-xs
+
                     font-semibold
+
                     uppercase
+
                     text-muted-foreground
+
                   "
 
 
                 >
+
 
 
                   Content
@@ -778,26 +1073,27 @@ export default function AdminSidebarClient({
 
                   <ChevronDown
 
+
                     size={16}
+
 
                     className={
 
                       contentOpen
 
-                      ?
+                      ? 'rotate-180 transition'
 
-                      'rotate-180 transition'
-
-                      :
-
-                      'transition'
+                      : 'transition'
 
                     }
+
 
                   />
 
 
                 </button>
+
+
 
 
 
@@ -810,25 +1106,29 @@ export default function AdminSidebarClient({
 
                     <div
 
+
                       className="
+
                         mt-2
+
                         space-y-2
+
                       "
+
 
                     >
 
 
-                      {
 
-                        renderLinks(contentLinks)
+                      {renderLinks(contentLinks)}
 
-                      }
 
 
                     </div>
 
 
                   )
+
 
                 }
 
@@ -839,8 +1139,21 @@ export default function AdminSidebarClient({
 
             )
 
+
           }
-                    {/* COMMUNICATION */}
+
+
+
+
+
+
+
+
+
+          {/* =====================================
+              COMMUNICATION
+          ====================================== */}
+
 
 
           <div>
@@ -849,48 +1162,62 @@ export default function AdminSidebarClient({
             <button
 
 
-              onClick={()=>setCommunicationOpen(!communicationOpen)}
+              onClick={() => setCommunicationOpen(!communicationOpen)}
 
 
               className="
+
                 flex
+
                 w-full
+
                 items-center
+
                 justify-between
+
                 px-4
+
                 text-xs
+
                 font-semibold
+
                 uppercase
+
                 text-muted-foreground
+
               "
 
 
             >
 
 
+
               Communication
+
+
+
 
 
 
               <ChevronDown
 
+
                 size={16}
+
 
                 className={
 
                   communicationOpen
 
-                  ?
+                  ? 'rotate-180 transition'
 
-                  'rotate-180 transition'
-
-                  :
-
-                  'transition'
+                  : 'transition'
 
                 }
 
+
               />
+
 
 
             </button>
@@ -899,46 +1226,51 @@ export default function AdminSidebarClient({
 
 
 
-            {
 
+
+
+
+            {
 
               communicationOpen && (
 
 
+
                 <div
 
+
                   className="
+
                     mt-2
+
                     space-y-2
+
                   "
+
 
                 >
 
 
 
-                  {/* BLOG */}
 
-                  {
-
-                    renderLinks(communicationLinks)
-
-                  }
+                  {renderLinks(communicationLinks)}
 
 
 
 
-                  {/* ANNOUNCEMENTS ADMIN ONLY */}
 
 
                   {
 
-                    role === 'admin' && (
 
-                      renderLinks(adminCommunicationLinks)
+                    role === 'admin' &&
 
-                    )
+                    renderLinks(adminCommunicationLinks)
+
 
                   }
+
+
 
 
 
@@ -960,136 +1292,142 @@ export default function AdminSidebarClient({
 
 
 
-          {/* MANAGEMENT */}
+
+
+          {/* =====================================
+              MANAGEMENT
+          ====================================== */}
 
 
 
-          {
+          <div>
 
 
-            <div>
+            <button
 
 
-              <button
+              onClick={() => setManagementOpen(!managementOpen)}
 
 
-                onClick={()=>setManagementOpen(!managementOpen)}
+              className="
+
+                flex
+
+                w-full
+
+                items-center
+
+                justify-between
+
+                px-4
+
+                text-xs
+
+                font-semibold
+
+                uppercase
+
+                text-muted-foreground
+
+              "
 
 
-                className="
-                  flex
-                  w-full
-                  items-center
-                  justify-between
-                  px-4
-                  text-xs
-                  font-semibold
-                  uppercase
-                  text-muted-foreground
-                "
+            >
 
 
-              >
 
-
-                Management
+              Management
 
 
 
 
 
-                <ChevronDown
 
-                  size={16}
+              <ChevronDown
 
-                  className={
 
-                    managementOpen
+                size={16}
 
-                    ?
 
-                    'rotate-180 transition'
+                className={
 
-                    :
+                  managementOpen
 
-                    'transition'
+                  ? 'rotate-180 transition'
+
+                  : 'transition'
+
+                }
+
+
+              />
+
+
+
+            </button>
+
+
+
+
+
+
+
+
+            {
+
+              managementOpen && (
+
+
+
+                <div
+
+
+                  className="
+
+                    mt-2
+
+                    space-y-2
+
+                  "
+
+
+                >
+
+
+
+                  {renderLinks(managementLinks)}
+
+
+
+
+
+
+                  {
+
+
+                    role === 'admin' &&
+
+                    renderLinks(adminManagementLinks)
+
 
                   }
 
-                />
-
-
-              </button>
 
 
 
 
-
-              {
-
-
-                managementOpen && (
+                </div>
 
 
-                  <div
+              )
 
-                    className="
-                      mt-2
-                      space-y-2
-                    "
 
-                  >
+            }
 
 
 
+          </div>
 
-                    {/* SETTINGS ADMIN + EDITOR */}
-
-
-
-                    {
-
-                      renderLinks(managementLinks)
-
-                    }
-
-
-
-
-
-
-
-                    {/* USERS ADMIN ONLY */}
-
-
-
-                    {
-
-                      role === 'admin' && (
-
-                        renderLinks(adminManagementLinks)
-
-                      )
-
-                    }
-
-
-
-
-                  </div>
-
-
-                )
-
-
-              }
-
-
-
-            </div>
-
-
-          }
 
 
 
@@ -1097,22 +1435,27 @@ export default function AdminSidebarClient({
 
         </nav>
 
-
-
-
-
-
-
-        {/* LOGOUT */}
+        {/* =====================================
+            LOGOUT
+        ====================================== */}
 
 
 
         <div
 
+
           className="
-            mt-6
+
+            mt-5
+
             shrink-0
+
+            border-t
+
+            pt-5
+
           "
+
 
         >
 
@@ -1127,6 +1470,7 @@ export default function AdminSidebarClient({
 
 
       </aside>
+
 
 
 

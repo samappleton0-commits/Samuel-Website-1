@@ -10,13 +10,9 @@ import {
 
 
 import {
-
   Shield,
-
   Calendar,
-
   Mail,
-
 } from 'lucide-react'
 
 
@@ -25,15 +21,15 @@ import {
 
 type Props = {
 
-  user:{
+  user: {
 
-    name:string
+    name: string
 
-    email:string
+    email: string
 
-    role:string
+    role: string
 
-    avatar_url?:string | null
+    avatar_url?: string | null
 
   }
 
@@ -44,445 +40,451 @@ type Props = {
 
 
 
-
 export default function ProfileCard({
 
   user,
 
-}:Props){
+}: Props) {
 
 
 
-const [greeting,setGreeting] = useState('')
+  const [greeting, setGreeting] = useState('')
 
-const [dateTime,setDateTime] = useState('')
 
+  const [dateTime, setDateTime] = useState('')
 
 
 
 
 
-useEffect(()=>{
 
+  useEffect(() => {
 
-function updateDashboardInfo(){
 
+    function updateDashboardInfo() {
 
-const now = new Date()
 
+      const now = new Date()
 
 
-// =============================
-// GREETING
-// =============================
+      const hour = now.getHours()
 
 
-const hour = now.getHours()
 
+      if (hour < 12) {
 
+        setGreeting('Good Morning')
 
-if(hour < 12){
+      }
 
-  setGreeting('Good Morning')
+      else if (hour < 18) {
 
-}
+        setGreeting('Good Afternoon')
 
-else if(hour < 18){
+      }
 
-  setGreeting('Good Afternoon')
+      else if (hour < 22) {
 
-}
+        setGreeting('Good Evening')
 
-else if(hour < 22){
+      }
 
-  setGreeting('Good Evening')
+      else {
 
-}
+        setGreeting('Good Night')
 
-else{
+      }
 
-  setGreeting('Good Night')
 
-}
 
 
 
+      const date = now.toLocaleDateString(
 
+        'en-US',
 
+        {
 
+          weekday: 'long',
 
-// =============================
-// DATE + TIME
-// =============================
+          year: 'numeric',
 
+          month: 'long',
 
-const date = now.toLocaleDateString(
+          day: 'numeric',
 
-'en-US',
+        }
 
-{
+      )
 
-weekday:'long',
 
-year:'numeric',
 
-month:'long',
 
-day:'numeric',
 
-}
+      const time = now.toLocaleTimeString(
 
-)
+        'en-US',
 
+        {
 
+          hour: 'numeric',
 
+          minute: '2-digit',
 
-const time = now.toLocaleTimeString(
+          hour12: true,
 
-'en-US',
+        }
 
-{
+      )
 
-hour:'numeric',
 
-minute:'2-digit',
 
-hour12:true,
 
-}
 
-)
+      setDateTime(
 
+        `${date} • ${time}`
 
+      )
 
 
-setDateTime(
+    }
 
-`${date} • ${time}`
 
-)
 
 
 
-}
+    updateDashboardInfo()
 
 
+    const timer = setInterval(
 
+      updateDashboardInfo,
 
+      60000
 
-updateDashboardInfo()
+    )
 
 
 
-const timer = setInterval(
+    return () => clearInterval(timer)
 
-updateDashboardInfo,
 
-60000
 
-)
+  }, [])
 
 
 
-return ()=>clearInterval(timer)
 
 
 
-},[])
 
 
 
+  const initials = user.name
 
+    .split(' ')
 
+    .filter(Boolean)
 
+    .slice(0,2)
 
+    .map(word => word[0])
 
+    .join('')
 
-return (
+    .toUpperCase()
 
 
-<section
 
 
-className="
 
-rounded-3xl
 
-border
 
-bg-card
+  return (
 
-p-6
 
-shadow-sm
+    <section
 
-"
 
+      className="
 
+        w-full
+
+        rounded-3xl
+
+        border
+
+        bg-card
+
+        p-5
+
+        shadow-sm
+
+        sm:p-6
+
+      "
+
+
+    >
+
+
+
+
+
+      <div
+
+
+        className="
+
+          flex
+
+          flex-col
+
+          gap-6
+
+          xl:flex-row
+
+          xl:items-center
+
+          xl:justify-between
+
+        "
+
+
+      >
+
+
+
+
+
+
+
+        {/* ==========================
+            PROFILE INFORMATION
+        =========================== */}
+
+
+
+        <div
+
+
+          className="
+
+            flex
+
+            min-w-0
+
+            items-center
+
+            gap-5
+
+          "
+
+
+        >
+
+
+
+
+
+          <div
+
+
+            className="
+
+              relative
+
+              shrink-0
+
+            "
+
+
+          >
+
+
+
+            {
+
+              user.avatar_url ? (
+
+
+
+                <Image
+
+
+                  src={user.avatar_url}
+
+
+                  alt={user.name}
+
+
+                  width={90}
+
+
+                  height={90}
+
+
+                  className="
+
+                    h-20
+
+                    w-20
+
+                    rounded-full
+
+                    border
+
+                    object-cover
+
+                  "
+
+
+                />
+
+
+
+              ) : (
+
+
+
+                <div
+
+
+                  className="
+
+                    flex
+
+                    h-20
+
+                    w-20
+
+                    items-center
+
+                    justify-center
+
+                    rounded-full
+
+                    bg-primary
+
+                    text-3xl
+
+                    font-bold
+
+                    text-white
+
+                  "
+
+
+                >
+
+
+                  {initials}
+
+
+                </div>
+
+
+
+              )
+
+            }
+
+
+
+
+
+
+            <span
+
+
+              className="
+
+                absolute
+
+                bottom-1
+
+                right-1
+
+                h-5
+
+                w-5
+
+                rounded-full
+
+                border-2
+
+                border-card
+
+                bg-green-500
+
+              "
+
+
+            />
+
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+          <div
+
+
+            className="
+
+              min-w-0
+
+            "
+
+
+          >
+
+
+
+           <h1
+  className="
+    truncate
+    text-xl
+    font-bold
+    sm:text-2xl
+  "
 >
-
-
-
-<div
-
-
-className="
-
-flex
-
-flex-col
-
-gap-8
-
-lg:flex-row
-
-lg:items-center
-
-lg:justify-between
-
-"
-
-
->
-
-
-
-
-
-
-{/* ==================================
-    LEFT PROFILE SECTION
-================================== */}
-
-
-
-<div
-
-
-className="
-
-flex
-
-items-center
-
-gap-5
-
-"
-
-
->
-
-
-<div
-
-className="
-
-relative
-
-shrink-0
-
-"
-
->
-
-
-{
-
-
-user.avatar_url ? (
-
-
-
-<Image
-
-
-src={user.avatar_url}
-
-
-alt={user.name}
-
-
-width={90}
-
-
-height={90}
-
-
-className="
-
-h-20
-
-w-20
-
-rounded-full
-
-border
-
-object-cover
-
-"
-
-
-/>
-
-
-
-):(
-
-
-
-<div
-
-
-className="
-
-flex
-
-h-20
-
-w-20
-
-items-center
-
-justify-center
-
-rounded-full
-
-bg-primary
-
-text-3xl
-
-font-bold
-
-text-white
-
-"
-
-
->
-
-
-{
-
-user.name
-
-.charAt(0)
-
-.toUpperCase()
-
-}
-
-
-</div>
-
-
-
-)
-
-}
-
-
-
-
-{/* ACTIVE STATUS */}
-
-
-<span
-
-
-className="
-
-absolute
-
-bottom-1
-
-right-1
-
-h-5
-
-w-5
-
-rounded-full
-
-border-2
-
-border-card
-
-bg-green-500
-
-"
-
-
-/>
-
-
-</div>
-
-
-
-
-
-
-
-<div>
-
-
-<h1
-
-className="
-text-2xl
-font-bold
-sm:text-3xl
-"
-
->
-
-{greeting}, {user.name} 👋
-
+  {greeting}, {user.name} 👋
 </h1>
 
 
 
-<h2
-
-className="
-mt-2
-text-lg
-font-semibold
-"
-
->
-
-Welcome back to your dashboard.
-
-</h2>
 
 
+            <p
 
 
-<p
+              className="
 
-className="
-mt-2
-max-w-xl
-text-sm
-text-muted-foreground
-sm:text-base
-"
+                mt-2
 
->
+                text-sm
 
-Manage your website from one place.
-Control your articles, messages, projects,
-announcements, users, and website content.
+                font-semibold
 
-</p>
+              "
 
 
+            >
 
-</div>
 
-</div>
+              Welcome back to your dashboard.
+
+
+            </p>
 
 
 
@@ -490,295 +492,251 @@ announcements, users, and website content.
 
 
 
-{/* ==================================
-    RIGHT INFORMATION SECTION
-================================== */}
+            <p
+
+
+              className="
+
+                mt-2
+
+                max-w-xl
+
+                text-sm
+
+                text-muted-foreground
+
+              "
+
+
+            >
+
+
+              Manage your website from one place.
+              Control your articles, messages,
+              projects, announcements, users,
+              and website content.
+
+
+            </p>
 
 
 
-<div
+
+          </div>
 
 
-className="
-
-grid
-
-gap-3
-
-text-sm
-
-"
 
 
->
+
+        </div>
 
 
 
 
 
 
-<div
 
 
-className="
 
-flex
+        {/* ==========================
+            INFORMATION CARDS
+        =========================== */}
 
-items-center
 
-gap-3
 
-rounded-xl
+       <div
 
-bg-muted/40
-
-px-4
-
-py-3
-
-"
-
+  className="
+    grid
+    w-full
+    max-w-sm
+    gap-3
+  "
 
 >
 
 
-<Shield size={18}/>
 
 
 
-<div>
 
+          <InfoCard
 
-<p
+            icon={<Mail size={18}/>}
 
+            label="Email"
 
-className="
+            value={user.email}
 
-text-xs
+          />
 
-text-muted-foreground
 
-"
 
 
->
+          <InfoCard
 
-Role
+            icon={<Shield size={18}/>}
 
-</p>
+            label="Role"
 
+            value={user.role}
 
-<p
+          />
 
 
-className="
 
-font-semibold
 
-capitalize
+          <InfoCard
 
-"
+            icon={<Calendar size={18}/>}
 
+            label="Date & Time"
 
->
+            value={dateTime || 'Loading...'}
 
-{user.role}
+          />
 
 
-</p>
 
 
-</div>
 
+        </div>
 
-</div>
 
 
 
 
 
+      </div>
 
 
 
 
-<div
 
 
-className="
+    </section>
 
-flex
 
-items-center
+  )
 
-gap-3
 
-rounded-xl
+}
 
-bg-muted/40
 
-px-4
 
-py-3
 
-"
 
 
->
 
 
-<Mail size={18}/>
 
+function InfoCard({
 
+  icon,
 
-<div>
+  label,
 
+  value,
 
-<p
+}: {
 
+  icon: React.ReactNode
 
-className="
+  label:string
 
-text-xs
+  value:string
 
-text-muted-foreground
+}) {
 
-"
 
+  return (
 
->
 
-Email
+    <div
 
-</p>
 
+      className="
 
-<p
+        flex
 
+        items-center
 
-className="
+        gap-3
 
-font-semibold
+        rounded-xl
 
-"
+        bg-muted/40
 
+        px-4
 
->
+        py-3
 
-{user.email}
+      "
 
 
-</p>
+    >
 
 
-</div>
 
+      {icon}
 
-</div>
 
 
+      <div className="min-w-0">
 
 
+        <p
 
 
+          className="
 
+            text-xs
 
+            text-muted-foreground
 
-<div
+          "
 
 
-className="
+        >
 
-flex
+          {label}
 
-items-center
+        </p>
 
-gap-3
 
-rounded-xl
 
-bg-muted/40
 
-px-4
+        <p
 
-py-3
 
-"
+          className="
 
+            truncate
 
->
+            text-sm
 
+            font-semibold
 
-<Calendar size={18}/>
+          "
 
 
+        >
 
-<div>
+          {value}
 
+        </p>
 
-<p
 
 
-className="
+      </div>
 
-text-xs
 
-text-muted-foreground
 
-"
 
+    </div>
 
->
 
-Date & Time
-
-</p>
-
-
-<p
-
-
-className="
-
-font-semibold
-
-"
-
-
->
-
-{dateTime || 'Loading...'}
-
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-</section>
-
-
-)
+  )
 
 
 }

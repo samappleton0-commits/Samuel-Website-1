@@ -1,95 +1,160 @@
 'use client'
 
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { UserPlus, Loader2 } from 'lucide-react'
+import {
+  UserPlus,
+  Loader2,
+} from 'lucide-react'
 
-import { createEditorUser } from '@/app/admin/users/actions'
+
+import {
+  createUser,
+} from '@/app/admin/users/actions'
+
+
+
+
 
 
 export default function AddUserForm(){
 
 
-  const router = useRouter()
-
-
-  const [name,setName] = useState('')
-
-  const [email,setEmail] = useState('')
-
-  const [password,setPassword] = useState('')
-
-
-  const [loading,setLoading] = useState(false)
-
-  const [message,setMessage] = useState('')
+const router = useRouter()
 
 
 
-async function createEditor(
-  e: React.FormEvent
-) {
+const [name,setName] = useState('')
 
-  e.preventDefault()
+const [email,setEmail] = useState('')
 
-  if (password.length < 6) {
+const [role,setRole] = useState('editor')
 
-    setMessage(
-      'Password must be at least 6 characters.'
-    )
 
-    return
+const [loading,setLoading] = useState(false)
 
-  }
 
-  try {
+const [message,setMessage] = useState('')
 
-    setLoading(true)
 
-    setMessage('')
+const [temporaryPassword,setTemporaryPassword] = useState('')
 
-    await createEditorUser({
 
-      name,
 
-      email,
 
-      password,
 
-    })
 
-    setMessage(
-      'Editor created successfully.'
-    )
 
-    setName('')
 
-    setEmail('')
+async function handleCreateUser(
+e:React.FormEvent
+){
 
-    setPassword('')
 
-    router.refresh()
+e.preventDefault()
 
-  }
 
-  catch (error: any) {
 
-    console.error(
-      error
-    )
+setMessage('')
 
-    setMessage(
-      error.message ||
-      'Unable to create editor.'
-    )
+setTemporaryPassword('')
 
-  }
 
-  finally {
 
-    setLoading(false)
 
-  }
+
+try{
+
+
+setLoading(true)
+
+
+
+
+
+const result = await createUser({
+
+name,
+
+email,
+
+role,
+
+})
+
+
+
+
+
+setMessage(
+'User created successfully.'
+)
+
+
+
+setTemporaryPassword(
+
+result.temporaryPassword
+
+)
+
+
+
+
+
+setName('')
+
+setEmail('')
+
+setRole('editor')
+
+
+
+
+
+router.refresh()
+
+
+
+}
+
+catch(error:any){
+
+
+
+console.error(
+
+'CREATE USER ERROR:',
+
+error
+
+)
+
+
+
+setMessage(
+
+error.message ||
+
+'Unable to create user.'
+
+)
+
+
+
+}
+
+
+finally{
+
+
+setLoading(false)
+
+
+}
+
+
 
 }
 
@@ -97,183 +162,425 @@ async function createEditor(
 
 
 
-  return (
 
-    <form
 
-      onSubmit={createEditor}
 
-      className="
-        space-y-5
-        rounded-2xl
-        border
-        bg-card
-        p-6
-      "
 
-    >
+return (
 
 
-      <h2 className="
-        flex
-        items-center
-        gap-2
-        text-xl
-        font-bold
-      ">
 
-        <UserPlus size={22}/>
+<form
 
-        Add Editor
+onSubmit={handleCreateUser}
 
-      </h2>
+className="
+space-y-5
+rounded-2xl
+border
+bg-card
+p-6
+"
 
+>
 
 
 
-      <input
 
-        placeholder="Full name"
 
-        value={name}
+<h2
 
-        onChange={
-          e=>setName(e.target.value)
-        }
+className="
+flex
+items-center
+gap-2
+text-xl
+font-bold
+"
 
-        className="
-          w-full
-          rounded-xl
-          border
-          px-4
-          py-3
-        "
+>
 
-        required
 
-      />
+<UserPlus size={22}/>
 
 
+Add User
 
 
+</h2>
 
-      <input
 
-        type="email"
 
-        placeholder="Email address"
 
-        value={email}
 
-        onChange={
-          e=>setEmail(e.target.value)
-        }
 
-        className="
-          w-full
-          rounded-xl
-          border
-          px-4
-          py-3
-        "
 
-        required
 
-      />
 
+{/* NAME */}
 
 
+<div>
 
 
+<label className="text-sm font-medium">
 
-     <input
+Full Name
 
-  type="password"
+</label>
 
-  minLength={6}
 
-  placeholder="Temporary password (minimum 6 characters)"
 
-        value={password}
+<input
 
-        onChange={
-          e=>setPassword(e.target.value)
-        }
 
-        className="
-          w-full
-          rounded-xl
-          border
-          px-4
-          py-3
-        "
+value={name}
 
-        required
 
-      />
+onChange={(e)=>
 
+setName(
+e.target.value
+)
 
+}
 
 
+placeholder="Full name"
 
-      {
-        message && (
 
-          <p className="text-sm">
+className="
+mt-2
+w-full
+rounded-xl
+border
+px-4
+py-3
+"
 
-            {message}
 
-          </p>
+required
 
-        )
-      }
 
+/>
 
 
+</div>
 
-      <button
 
-        disabled={loading}
 
-        className="
-          flex
-          items-center
-          justify-center
-          gap-2
-          rounded-xl
-          bg-accent
-          px-5
-          py-3
-          text-white
-          disabled:opacity-50
-        "
 
-      >
 
-        {
-          loading
-          ?
-          <>
 
-          <Loader2
-            className="animate-spin"
-            size={18}
-          />
 
-          Creating...
 
-          </>
-          :
-          'Create Editor'
-        }
 
+{/* EMAIL */}
 
-      </button>
 
 
+<div>
 
-    </form>
 
-  )
+<label className="text-sm font-medium">
+
+Email Address
+
+</label>
+
+
+
+<input
+
+
+type="email"
+
+
+value={email}
+
+
+onChange={(e)=>
+
+setEmail(
+e.target.value
+)
+
+}
+
+
+placeholder="email@example.com"
+
+
+className="
+mt-2
+w-full
+rounded-xl
+border
+px-4
+py-3
+"
+
+
+required
+
+
+/>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* ROLE */}
+
+
+
+<div>
+
+
+<label className="text-sm font-medium">
+
+User Role
+
+</label>
+
+
+
+<select
+
+
+value={role}
+
+
+onChange={(e)=>
+
+setRole(
+e.target.value
+)
+
+}
+
+
+className="
+mt-2
+w-full
+rounded-xl
+border
+px-4
+py-3
+"
+
+>
+
+
+<option value="editor">
+
+Editor
+
+</option>
+
+
+
+<option value="user">
+
+User
+
+</option>
+
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* MESSAGE */}
+
+
+
+{
+
+message && (
+
+
+<div
+
+className="
+space-y-3
+rounded-xl
+border
+p-4
+"
+
+>
+
+
+<p className="text-sm">
+
+{message}
+
+</p>
+
+
+
+
+
+{
+
+temporaryPassword && (
+
+
+<div>
+
+
+<p className="font-semibold">
+
+Temporary Password
+
+</p>
+
+
+
+<p
+
+className="
+mt-1
+rounded-lg
+bg-muted
+p-3
+font-mono
+"
+
+>
+
+{temporaryPassword}
+
+</p>
+
+
+<p
+
+className="
+mt-2
+text-xs
+text-muted-foreground
+"
+
+>
+
+Give this password to the user.
+They should change it after login.
+
+</p>
+
+
+</div>
+
+
+)
+
+
+}
+
+
+
+</div>
+
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+<button
+
+
+disabled={loading}
+
+
+className="
+flex
+items-center
+justify-center
+gap-2
+rounded-xl
+bg-accent
+px-5
+py-3
+text-white
+disabled:opacity-50
+"
+
+>
+
+
+
+{
+
+loading
+
+?
+
+
+<>
+
+<Loader2
+
+size={18}
+
+className="animate-spin"
+
+/>
+
+
+Creating...
+
+
+</>
+
+
+:
+
+
+'Create User'
+
+
+}
+
+
+
+</button>
+
+
+
+
+
+
+</form>
+
+
+)
+
 
 }

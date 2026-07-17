@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 
 
+
 type Props = {
 
   title:string
@@ -12,6 +13,11 @@ type Props = {
   children:ReactNode
 
 }
+
+
+
+
+
 
 
 export default function DashboardSection({
@@ -27,125 +33,241 @@ export default function DashboardSection({
 }:Props){
 
 
-  return (
 
-    <section
-
-      className="
-        space-y-5
-      "
-
-    >
-
-      {/* HEADER */}
-
-      <div
-
-        className="
-          flex
-          items-center
-          justify-between
-        "
-
-      >
-
-        <div
-
-          className="
-            flex
-            items-center
-            gap-3
-          "
-
-        >
-
-          {
-
-            icon && (
-
-              <div
-
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-primary/10
-                  text-primary
-                "
-
-              >
-
-                {icon}
-
-              </div>
-
-            )
-
-          }
+return (
 
 
-          <div>
+<section
 
-            <h2
+className="
 
-              className="
-                text-2xl
-                font-bold
-              "
+w-full
 
-            >
+space-y-5
 
-              {title}
+"
 
-            </h2>
+>
 
 
-            {
-
-              description && (
-
-                <p
-
-                  className="
-                    mt-1
-                    text-sm
-                    text-muted-foreground
-                  "
-
-                >
-
-                  {description}
-
-                </p>
-
-              )
-
-            }
-
-          </div>
 
 
-        </div>
+
+{/* HEADER */}
 
 
-      </div>
+
+<div
+
+className="
+
+flex
+
+flex-col
+
+gap-4
+
+sm:flex-row
+
+sm:items-center
+
+sm:justify-between
+
+"
+
+>
 
 
-      {/* CONTENT */}
 
 
-      <div>
 
-        {children}
+<div
 
-      </div>
+className="
+
+flex
+
+min-w-0
+
+items-center
+
+gap-3
+
+"
+
+>
 
 
-    </section>
 
-  )
+
+
+{
+
+icon && (
+
+
+<div
+
+className="
+
+flex
+
+h-11
+
+w-11
+
+shrink-0
+
+items-center
+
+justify-center
+
+rounded-2xl
+
+bg-primary/10
+
+text-primary
+
+"
+
+>
+
+{icon}
+
+</div>
+
+
+)
+
+}
+
+
+
+
+
+
+
+<div
+
+className="
+
+min-w-0
+
+"
+
+>
+
+
+<h2
+
+className="
+
+truncate
+
+text-xl
+
+font-bold
+
+sm:text-2xl
+
+"
+
+>
+
+{title}
+
+</h2>
+
+
+
+
+
+
+
+{
+
+description && (
+
+
+<p
+
+className="
+
+mt-1
+
+text-sm
+
+text-muted-foreground
+
+"
+
+>
+
+{description}
+
+</p>
+
+
+)
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* CONTENT */}
+
+
+<div
+
+className="
+
+w-full
+
+min-w-0
+
+"
+
+>
+
+{children}
+
+</div>
+
+
+
+
+
+
+</section>
+
+
+)
+
 
 }

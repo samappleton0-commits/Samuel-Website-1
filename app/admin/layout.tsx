@@ -1,5 +1,6 @@
 /* =========================================================
-   ADMIN LAYOUT START
+   ADMIN LAYOUT
+   app/admin/layout.tsx
 ========================================================= */
 
 
@@ -8,8 +9,6 @@ import { redirect } from 'next/navigation'
 import AdminSidebar from '@/components/admin-sidebar'
 
 import { createClient } from '@/lib/supabase-server'
-
-import { getUserRole } from '@/lib/get-user-role'
 
 
 
@@ -27,206 +26,230 @@ export default async function AdminLayout({
 
 
 
-// =========================================================
-// CHECK LOGIN USER
-// =========================================================
 
 
-const supabase = await createClient()
+  // =====================================================
+  // AUTH CHECK
+  // =====================================================
+
+
+  const supabase = await createClient()
 
 
 
-const {
+  const {
 
-  data:{
-    user
+    data: {
+
+      user,
+
+    },
+
+  } = await supabase.auth.getUser()
+
+
+
+
+
+  if (!user) {
+
+    redirect('/login')
+
   }
 
-} = await supabase.auth.getUser()
+
+
+
+
+  return (
+
+
+    <div
+
+      className="
+
+        min-h-screen
+
+        overflow-x-hidden
+
+        bg-background
+
+      "
+
+    >
+
+
+
+      <div
+
+        className="
+
+          flex
+
+          min-h-screen
+
+          w-full
+
+        "
+
+      >
+
+
+
+
+        {/* =============================================
+            DESKTOP SIDEBAR
+        ============================================== */}
+
+
+        <aside
+
+          className="
+
+            hidden
+
+            lg:flex
+
+            lg:w-72
+
+            lg:shrink-0
+
+            lg:p-5
+
+          "
+
+        >
+
+
+          <AdminSidebar />
+
+
+        </aside>
 
 
 
 
 
-if(!user){
 
-  redirect('/login')
+
+        {/* =============================================
+            MAIN CONTENT
+        ============================================== */}
+
+
+        <main
+
+          className="
+
+            flex-1
+
+            min-w-0
+
+            bg-background
+
+          "
+
+        >
+
+
+
+          {/* ==========================================
+              MOBILE SIDEBAR / HEADER
+          =========================================== */}
+
+
+          <div
+
+            className="
+
+              sticky
+
+              top-0
+
+              z-30
+
+              block
+
+              px-4
+
+              pt-4
+
+              lg:hidden
+
+            "
+
+          >
+
+
+            <AdminSidebar />
+
+
+          </div>
+
+
+
+
+
+
+
+          {/* ==========================================
+              PAGE CONTENT
+          =========================================== */}
+
+
+          <section
+
+            className="
+
+              w-full
+
+              px-4
+
+              pb-10
+
+              pt-6
+
+
+              sm:px-6
+
+
+              md:px-8
+
+
+              lg:px-8
+
+
+              xl:px-10
+
+            "
+
+          >
+
+
+            {children}
+
+
+          </section>
+
+
+
+
+
+        </main>
+
+
+
+
+
+      </div>
+
+
+
+
+
+    </div>
+
+
+  )
 
 }
-
-
-
-
-
-
-
-// =========================================================
-// GET USER ROLE
-// =========================================================
-
-
-const userRole = await getUserRole()
-
-
-
-
-
-if(!userRole){
-
-  redirect('/login')
-
-}
-
-
-
-
-
-
-
-const role = userRole.role
-
-
-
-
-
-
-
-// =========================================================
-// CURRENT PATH PROTECTION
-// =========================================================
-
-
-// NOTE:
-// Page-level protection will be added next.
-// This keeps the layout clean.
-
-
-
-
-
-
-// =========================================================
-// ADMIN LAYOUT UI
-// =========================================================
-
-
-
-return (
-
-
-<main className="min-h-screen">
-
-
-
-
-
-
-{/* =====================================================
-    DESKTOP SIDEBAR
-===================================================== */}
-
-
-<aside
-
-className="
-hidden
-lg:fixed
-lg:left-0
-lg:top-0
-lg:block
-lg:h-screen
-lg:w-[280px]
-lg:p-6
-"
-
->
-
-
-<AdminSidebar />
-
-
-</aside>
-
-
-
-
-
-
-
-
-
-{/* =====================================================
-    MOBILE NAVBAR
-===================================================== */}
-
-
-
-<div
-
-
-className="
-sticky
-top-0
-z-50
-bg-background
-lg:hidden
-"
-
-
->
-
-
-<AdminSidebar />
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* =====================================================
-    PAGE CONTENT
-===================================================== */}
-
-
-
-<section
-
-
-className="
-px-4
-py-16
-sm:px-6
-lg:ml-[280px]
-"
-
-
->
-
-
-{children}
-
-
-</section>
-
-
-
-
-
-</main>
-
-
-)
-
-
-}
-
-
-/* =========================================================
-   ADMIN LAYOUT END
-========================================================= */

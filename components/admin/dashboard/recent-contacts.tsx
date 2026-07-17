@@ -3,11 +3,14 @@
 
 import Link from 'next/link'
 
+
 import {
   Calendar,
   ArrowRight,
   Mail,
 } from 'lucide-react'
+
+
 
 
 
@@ -31,11 +34,17 @@ type Contact = {
 
 
 
+
+
 type Props = {
 
-  contacts?: Contact[] | null
+  contacts?:Contact[] | null
 
 }
+
+
+
+
 
 
 
@@ -47,409 +56,395 @@ export default function RecentContacts({
 
 
 
-  const recentMessages = Array.isArray(contacts)
 
-    ? contacts
 
-        .slice()
+const recentMessages = Array.isArray(contacts)
 
-        .sort(
+?
 
-          (a,b)=>
+contacts
 
-          new Date(b.created_at).getTime()
+.slice()
 
-          -
+.sort(
 
-          new Date(a.created_at).getTime()
+(a,b)=>
 
-        )
+new Date(b.created_at).getTime()
 
-        .slice(0,5)
+-
 
-    : []
+new Date(a.created_at).getTime()
 
+)
 
+.slice(0,4)
 
+:
 
+[]
 
-  return (
 
-    <section
 
-      className="
 
-        h-fit
 
-        self-start
 
-        rounded-3xl
 
-        border
 
-        bg-card
+return (
 
-        p-5
 
-      "
+<section
 
-    >
+className="
 
+w-full
 
-      {/* HEADER */}
+min-w-0
 
-      <div
+rounded-3xl
 
-        className="
+border
 
-          mb-5
+bg-card
 
-          flex
+p-4
 
-          items-center
+sm:p-5
 
-          justify-between
+"
 
-        "
+>
 
-      >
 
 
-        <div>
+{/* HEADER */}
 
-          <h2
 
-            className="
 
-              text-xl
+<div
 
-              font-bold
+className="
 
-            "
+mb-5
 
-          >
+flex
 
-            Recent Messages
+flex-col
 
-          </h2>
+gap-3
 
+sm:flex-row
 
-          <p
+sm:items-center
 
-            className="
+sm:justify-between
 
-              mt-1
+"
 
-              text-sm
+>
 
-              text-muted-foreground
 
-            "
 
-          >
+<div className="min-w-0">
 
-            Latest contact submissions
 
-          </p>
+<h2
 
+className="
 
-        </div>
+truncate
 
+text-xl
 
+font-bold
 
-        <Link
+"
 
-          href="/admin/messages"
+>
 
-          className="
+Recent Messages
 
-            text-sm
+</h2>
 
-            font-medium
 
-            text-primary
 
-            hover:underline
+<p
 
-          "
+className="
 
-        >
+text-sm
 
-          View All
+text-muted-foreground
 
-        </Link>
+"
 
+>
 
-      </div>
+Latest contact submissions
 
+</p>
 
 
+</div>
 
 
-      {
 
-        recentMessages.length === 0 ? (
 
 
-          <div
 
-            className="
+<Link
 
-              rounded-xl
+href="/admin/messages"
 
-              border
+className="
 
-              py-8
+w-fit
 
-              text-center
+text-sm
 
-              text-sm
+font-medium
 
-              text-muted-foreground
+text-primary
 
-            "
+hover:underline
 
-          >
+"
 
-            No messages yet.
+>
 
-          </div>
+View All
 
+</Link>
 
-        ) : (
 
 
-          <div
 
-            className="
 
-              space-y-3
+</div>
 
-            "
 
-          >
 
 
 
-            {
 
-              recentMessages.map((contact)=>(
 
 
-                <Link
 
+{
 
-                  key={contact.id}
+recentMessages.length === 0 ? (
 
 
-                  href={`/admin/messages/${contact.id}`}
+<div
 
+className="
 
-                  className="
+rounded-xl
 
-                    group
+border
 
-                    block
+py-8
 
-                    rounded-2xl
+text-center
 
-                    border
+text-sm
 
-                    p-4
+text-muted-foreground
 
-                    transition
+"
 
-                    hover:bg-muted/50
+>
 
-                    hover:shadow-sm
+No messages yet.
 
-                  "
+</div>
 
 
-                >
+)
 
+:
 
+(
 
-                  {/* USER */}
 
+<div
 
-                  <div
+className="
 
-                    className="
+space-y-3
 
-                      flex
+"
 
-                      items-start
+>
 
-                      justify-between
 
-                      gap-3
+{
 
-                    "
+recentMessages.map(contact=>(
 
-                  >
 
+<Link
 
+key={contact.id}
 
-                    <div
+href={`/admin/messages/${contact.id}`}
 
-                      className="
+className="
 
-                        flex
+group
 
-                        min-w-0
+block
 
-                        items-center
+rounded-2xl
 
-                        gap-3
+border
 
-                      "
+p-4
 
-                    >
+transition
 
+hover:bg-muted/50
 
+hover:shadow-sm
 
-                      <div
+"
 
-                        className="
+>
 
-                          flex
 
-                          h-10
 
-                          w-10
 
-                          shrink-0
 
-                          items-center
 
-                          justify-center
 
-                          rounded-full
+<div
 
-                          bg-primary/10
+className="
 
-                          font-bold
+flex
 
-                          text-primary
+items-start
 
-                        "
+justify-between
 
-                      >
+gap-3
 
-                        {
+"
 
-                          contact.name
+>
 
-                          ?.charAt(0)
 
-                          ?.toUpperCase()
 
-                        }
+<div
 
+className="
 
-                      </div>
+flex
 
+min-w-0
 
+items-center
 
+gap-3
 
-                      <div className="min-w-0">
+"
 
+>
 
-                        <h3
 
-                          className="
+<div
 
-                            truncate
+className="
 
-                            font-semibold
+flex
 
-                          "
+h-10
 
-                        >
+w-10
 
-                          {contact.name}
+shrink-0
 
-                        </h3>
+items-center
 
+justify-center
 
+rounded-full
 
-                        <p
+bg-primary/10
 
-                          className="
+font-bold
 
-                            flex
+text-primary
 
-                            items-center
+"
 
-                            gap-1
+>
 
-                            truncate
+{contact.name?.charAt(0).toUpperCase()}
 
-                            text-xs
+</div>
 
-                            text-muted-foreground
 
-                          "
 
-                        >
 
-                          <Mail size={12}/>
 
-                          {contact.email}
+<div className="min-w-0">
 
-                        </p>
 
+<h3
 
-                      </div>
+className="
 
+truncate
 
-                    </div>
+font-semibold
 
+"
 
+>
 
+{contact.name}
 
+</h3>
 
-                    {
 
-                      !contact.read && (
 
+<p
 
-                        <span
+className="
 
-                          className="
+flex
 
-                            rounded-full
+items-center
 
-                            bg-green-500
+gap-1
 
-                            px-2.5
+truncate
 
-                            py-1
+text-xs
 
-                            text-xs
+text-muted-foreground
 
-                            font-medium
+"
 
-                            text-white
+>
 
-                          "
 
-                        >
+<Mail size={12}/>
 
-                          New
+{contact.email}
 
-                        </span>
 
+</p>
 
-                      )
 
+</div>
 
-                    }
 
 
 
-                  </div>
+</div>
 
 
 
@@ -457,178 +452,238 @@ export default function RecentContacts({
 
 
 
-                  {
+{
 
-                    contact.subject && (
+!contact.read && (
 
 
-                      <p
+<span
 
-                        className="
+className="
 
-                          mt-3
+shrink-0
 
-                          truncate
+rounded-full
 
-                          text-sm
+bg-green-500
 
-                          font-semibold
+px-2
 
-                        "
+py-1
 
-                      >
+text-xs
 
-                        {contact.subject}
+font-medium
 
-                      </p>
+text-white
 
+"
 
-                    )
+>
 
+New
 
-                  }
+</span>
 
 
+)
 
 
+}
 
 
 
-                  <p
+</div>
 
-                    className="
 
-                      mt-2
 
-                      line-clamp-2
 
-                      text-sm
 
-                      text-muted-foreground
 
-                    "
 
-                  >
 
-                    {contact.message}
 
-                  </p>
+{
 
+contact.subject && (
 
 
+<p
 
+className="
 
+mt-3
 
+truncate
 
-                  <div
+text-sm
 
-                    className="
+font-semibold
 
-                      mt-3
+"
 
-                      flex
+>
 
-                      items-center
+{contact.subject}
 
-                      justify-between
+</p>
 
-                    "
 
-                  >
+)
 
 
+}
 
-                    <div
 
-                      className="
 
-                        flex
 
-                        items-center
 
-                        gap-2
 
-                        text-xs
 
-                        text-muted-foreground
 
-                      "
+<p
 
-                    >
+className="
 
-                      <Calendar size={13}/>
+mt-2
 
+line-clamp-2
 
-                      {
+text-sm
 
-                        new Date(contact.created_at)
+text-muted-foreground
 
-                        .toLocaleDateString(
+"
 
-                          'en-US',
+>
 
-                          {
+{contact.message}
 
-                            month:'short',
+</p>
 
-                            day:'numeric'
 
-                          }
 
-                        )
 
-                      }
 
 
-                    </div>
 
 
+<div
 
+className="
 
+mt-3
 
-                    <ArrowRight
+flex
 
-                      size={16}
+items-center
 
-                      className="
+justify-between
 
-                        opacity-0
+"
 
-                        transition
+>
 
-                        group-hover:translate-x-1
 
-                        group-hover:opacity-100
 
-                      "
+<div
 
-                    />
+className="
 
+flex
 
-                  </div>
+items-center
 
+gap-2
 
+text-xs
 
-                </Link>
+text-muted-foreground
 
+"
 
-              ))
+>
 
-            }
 
+<Calendar size={13}/>
 
 
-          </div>
+{
 
+new Date(contact.created_at)
 
-        )
+.toLocaleDateString(
 
-      }
+'en-US',
 
+{
 
+month:'short',
 
-    </section>
+day:'numeric'
 
-  )
+}
+
+)
+
+}
+
+
+</div>
+
+
+
+
+
+<ArrowRight
+
+size={16}
+
+className="
+
+opacity-0
+
+transition
+
+group-hover:translate-x-1
+
+group-hover:opacity-100
+
+"
+
+/>
+
+
+
+</div>
+
+
+
+
+
+</Link>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+)
+
+
+}
+
+
+
+</section>
+
+
+)
 
 }

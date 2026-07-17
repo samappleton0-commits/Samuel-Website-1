@@ -5,19 +5,28 @@ import StatCard from './stat-card'
 
 
 
+
+
 type Props = {
 
-mode?:'admin'|'editor'
+  mode?:'admin'|'editor'
 
 }
 
 
 
+
+
+
+
 export default function QuickActions({
 
-mode='admin',
+  mode='admin',
 
 }:Props){
+
+
+
 
 
 
@@ -39,6 +48,7 @@ color:'bg-slate-500/10 text-slate-600',
 },
 
 
+
 {
 
 title:'Users',
@@ -54,13 +64,14 @@ color:'bg-indigo-500/10 text-indigo-600',
 },
 
 
+
 {
 
-title:'Homepage',
+title:'Manage Website',
 
-description:'Update homepage',
+description:'Edit website contents',
 
-href:'/admin/hero',
+href:'/admin/homepage',
 
 icon:'Globe',
 
@@ -69,49 +80,21 @@ color:'bg-cyan-500/10 text-cyan-600',
 },
 
 
-{
-
-title:'Announcements',
-
-description:'Manage announcements',
-
-href:'/admin/announcements',
-
-icon:'Megaphone',
-
-color:'bg-red-500/10 text-red-600',
-
-},
-
 
 {
 
-title:'Projects',
+title:'Comments',
 
-description:'Manage projects',
+description:'Review visitor comments',
 
-href:'/admin/projects',
+href:'/admin/comments',
 
-icon:'FolderKanban',
+icon:'MessageCircle',
 
 color:'bg-orange-500/10 text-orange-600',
 
 },
 
-
-{
-
-title:'Gallery',
-
-description:'Manage images',
-
-href:'/admin/gallery',
-
-icon:'Images',
-
-color:'bg-purple-500/10 text-purple-600',
-
-},
 
 
 ]
@@ -120,7 +103,11 @@ color:'bg-purple-500/10 text-purple-600',
 
 
 
+
+
+
 const editorActions = [
+
 
 
 {
@@ -138,6 +125,8 @@ color:'bg-green-500/10 text-green-600',
 },
 
 
+
+
 {
 
 title:'My Articles',
@@ -151,6 +140,8 @@ icon:'FileText',
 color:'bg-blue-500/10 text-blue-600',
 
 },
+
+
 
 
 {
@@ -168,6 +159,8 @@ color:'bg-orange-500/10 text-orange-600',
 },
 
 
+
+
 {
 
 title:'Profile',
@@ -183,17 +176,25 @@ color:'bg-purple-500/10 text-purple-600',
 },
 
 
+
 ]
 
 
 
 
 
-const actions = mode==='admin'
 
-? adminActions
 
-: editorActions
+const actions = mode === 'admin'
+
+?
+
+adminActions
+
+:
+
+editorActions
+
 
 
 
@@ -202,14 +203,21 @@ const actions = mode==='admin'
 
 return (
 
+
 <div
+
 className="
+
 grid
-grid-cols-2
+
+grid-cols-1
+
 gap-5
-sm:grid-cols-3
-lg:grid-cols-4
-xl:grid-cols-6
+
+sm:grid-cols-2
+
+xl:grid-cols-4
+
 "
 
 >
@@ -235,7 +243,9 @@ key={action.title}
 }
 
 
+
 </div>
+
 
 )
 

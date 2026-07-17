@@ -1,184 +1,172 @@
-'use server'
-
-// ======================================================
-// GET CURRENT USER ROLE + PROFILE
-// lib/get-user-role.ts
-// ======================================================
-
-import { unstable_noStore as noStore } from 'next/cache'
-
 import { createClient } from '@/lib/supabase-server'
-
-
 
 
 
 export async function getUserRole(){
 
 
-  // Prevent Next.js from caching user profile data
-  noStore()
+try{
 
 
+const supabase = await createClient()
 
-  const supabase = await createClient()
 
 
 
 
+// Get logged in user
 
-  // ======================================================
-  // GET AUTH USER
-  // ======================================================
+const {
 
+data:{
+user
 
-  const {
+},
 
-    data:{
-      user
+error:userError
 
-    },
+}=await supabase.auth.getUser()
 
-    error:userError
 
-  } = await supabase.auth.getUser()
 
 
 
 
+if(
+userError ||
+!user
 
-  if(userError || !user){
+){
 
+return null
 
-    console.error(
+}
 
-      'Authentication error:',
 
-      userError
 
-    )
 
 
-    return null
 
 
-  }
+// Get profile from admin_users
 
 
+const {
 
+data:profile,
 
+error:profileError
 
+}=await supabase
 
+.from('admin_users')
 
-  // ======================================================
-  // GET ADMIN PROFILE
-  // ======================================================
+.select(`
 
+id,
 
-  const {
+user_id,
 
-    data:adminUser,
+name,
 
-    error
+email,
 
-  } = await supabase
+role,
 
+avatar_url,
 
-    .from('admin_users')
+must_change_password,
 
+created_at
 
-    .select(`
+`)
 
-      id,
+.eq(
 
-      user_id,
+'user_id',
 
-      role,
+user.id
 
-      name,
+)
 
-      email,
+.single()
 
-      avatar_url
 
-    `)
 
 
-    .eq(
 
-      'user_id',
 
-      user.id
+if(profileError){
 
-    )
 
+console.error(
 
-    .maybeSingle()
+'Role lookup error:',
 
+profileError.message
 
+)
 
 
+return null
 
-  if(error){
 
+}
 
-    console.error(
 
-      'Role lookup error:',
 
-      error.message
 
-    )
 
 
-    return null
 
+return {
 
-  }
 
+id:profile.id,
 
+user_id:profile.user_id,
 
+name:profile.name,
 
+email:profile.email,
 
+role:profile.role,
 
+avatar_url:profile.avatar_url,
 
+must_change_password:
 
-  if(!adminUser){
+profile.must_change_password,
 
+created_at:
 
-    console.error(
+profile.created_at
 
-      'No admin profile found for:',
 
-      user.id
+}
 
-    )
 
 
-    return null
+}
 
 
-  }
+catch(error){
 
 
 
+console.error(
 
+'GET USER ROLE ERROR:',
 
+error
 
+)
 
-  console.log(
 
-    'CURRENT ADMIN PROFILE:',
+return null
 
-    adminUser
 
-  )
-
-
-
-
-
-  return adminUser
+}
 
 
 

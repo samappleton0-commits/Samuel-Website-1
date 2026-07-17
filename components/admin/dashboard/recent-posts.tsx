@@ -3,11 +3,13 @@
 
 import Link from 'next/link'
 
+
 import {
   Calendar,
   ArrowRight,
   FileText,
 } from 'lucide-react'
+
 
 
 
@@ -31,11 +33,15 @@ type Post = {
 
 
 
+
 type Props = {
 
   posts?:Post[] | null
 
 }
+
+
+
 
 
 
@@ -50,27 +56,36 @@ export default function RecentPosts({
 
 
 
+
+
+
 const recentPosts = Array.isArray(posts)
 
-  ? posts
+?
 
-      .slice()
+posts
 
-      .sort(
+.slice()
 
-        (a,b)=>
+.sort(
 
-        new Date(b.created_at).getTime()
+(a,b)=>
 
-        -
+new Date(b.created_at).getTime()
 
-        new Date(a.created_at).getTime()
+-
 
-      )
+new Date(a.created_at).getTime()
 
-      .slice(0,5)
+)
 
-  : []
+.slice(0,4)
+
+:
+
+[]
+
+
 
 
 
@@ -81,44 +96,78 @@ const recentPosts = Array.isArray(posts)
 
 return (
 
+
 <section
 
+
 className="
-h-fit
-self-start
+
+w-full
+
+min-w-0
+
 rounded-3xl
+
 border
+
 bg-card
-p-5
+
+p-4
+
+sm:p-5
+
 "
 
 >
+
+
+
+
 
 
 
 {/* HEADER */}
 
 
+
 <div
 
+
 className="
+
 mb-5
+
 flex
-items-center
-justify-between
+
+flex-col
+
+gap-3
+
+sm:flex-row
+
+sm:items-center
+
+sm:justify-between
+
 "
 
 >
 
 
-<div>
+
+<div className="min-w-0">
 
 
 <h2
 
 className="
+
+truncate
+
 text-xl
+
 font-bold
+
 "
 
 >
@@ -132,9 +181,11 @@ Recent Articles
 <p
 
 className="
-mt-1
+
 text-sm
+
 text-muted-foreground
+
 "
 
 >
@@ -144,7 +195,10 @@ Latest blog posts
 </p>
 
 
+
 </div>
+
+
 
 
 
@@ -155,10 +209,17 @@ Latest blog posts
 href="/admin/blog"
 
 className="
+
+w-fit
+
 text-sm
+
 font-medium
+
 text-primary
+
 hover:underline
+
 "
 
 >
@@ -166,6 +227,8 @@ hover:underline
 View All
 
 </Link>
+
+
 
 
 
@@ -187,12 +250,19 @@ recentPosts.length === 0 ? (
 <div
 
 className="
+
 rounded-xl
+
 border
+
 py-8
+
 text-center
+
 text-sm
+
 text-muted-foreground
+
 "
 
 >
@@ -202,14 +272,19 @@ No articles found.
 </div>
 
 
-):(
+)
 
+:
+
+(
 
 
 <div
 
 className="
+
 space-y-3
+
 "
 
 >
@@ -217,8 +292,7 @@ space-y-3
 
 {
 
-recentPosts.map((post)=>(
-
+recentPosts.map(post=>(
 
 
 <Link
@@ -230,44 +304,61 @@ key={post.id}
 href={`/admin/blog/edit/${post.id}`}
 
 
-
 className="
+
 group
+
 block
+
 rounded-2xl
+
 border
+
 p-4
+
 transition
+
 hover:bg-muted/50
+
 hover:shadow-sm
+
 "
 
 >
 
 
 
-{/* TITLE ROW */}
-
-
 <div
 
 className="
+
 flex
+
 items-start
+
 justify-between
+
 gap-3
+
 "
 
 >
 
 
+
+
 <div
 
 className="
+
 flex
+
 min-w-0
+
 items-center
+
 gap-3
+
 "
 
 >
@@ -277,15 +368,25 @@ gap-3
 <div
 
 className="
+
 flex
+
 h-10
+
 w-10
+
 shrink-0
+
 items-center
+
 justify-center
+
 rounded-full
+
 bg-primary/10
+
 text-primary
+
 "
 
 >
@@ -298,14 +399,19 @@ text-primary
 
 
 
+
+
 <div className="min-w-0">
 
 
 <h3
 
 className="
+
 truncate
+
 font-semibold
+
 "
 
 >
@@ -316,12 +422,19 @@ font-semibold
 
 
 
+
 <p
 
 className="
+
 mt-1
+
+truncate
+
 text-xs
+
 text-muted-foreground
+
 "
 
 >
@@ -331,10 +444,15 @@ text-muted-foreground
 </p>
 
 
+
 </div>
 
 
+
+
 </div>
+
+
 
 
 
@@ -344,11 +462,14 @@ text-muted-foreground
 
 <span
 
+
 className={`
+
+shrink-0
 
 rounded-full
 
-px-2.5
+px-2
 
 py-1
 
@@ -358,8 +479,6 @@ font-medium
 
 capitalize
 
-shrink-0
-
 ${
 
 post.status === 'published'
@@ -368,20 +487,15 @@ post.status === 'published'
 
 'bg-green-500 text-white'
 
-
 :
-
 
 post.status === 'pending'
 
 ?
 
-
 'bg-yellow-500 text-white'
 
-
 :
-
 
 'bg-muted text-muted-foreground'
 
@@ -389,11 +503,17 @@ post.status === 'pending'
 
 `}
 
+
 >
+
 
 {post.status}
 
+
 </span>
+
+
+
 
 
 
@@ -406,30 +526,42 @@ post.status === 'pending'
 
 
 
-{/* FOOTER */}
 
 
 
 <div
 
 className="
+
 mt-3
+
 flex
+
 items-center
+
 justify-between
+
 "
 
 >
 
 
+
+
 <div
 
 className="
+
 flex
+
 items-center
+
 gap-2
+
 text-xs
+
 text-muted-foreground
+
 "
 
 >
@@ -465,18 +597,27 @@ day:'numeric'
 
 
 
+
+
 <ArrowRight
 
 size={16}
 
 className="
+
 opacity-0
+
 transition
+
 group-hover:translate-x-1
+
 group-hover:opacity-100
+
 "
 
 />
+
+
 
 
 
@@ -490,19 +631,21 @@ group-hover:opacity-100
 </Link>
 
 
-
 ))
 
+
 }
+
 
 
 </div>
 
 
-
 )
 
+
 }
+
 
 
 
@@ -510,5 +653,6 @@ group-hover:opacity-100
 
 
 )
+
 
 }

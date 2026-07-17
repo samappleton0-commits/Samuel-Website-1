@@ -1,20 +1,18 @@
 import { createClient } from '@/lib/supabase-server'
 
+import Link from 'next/link'
 
 import DashboardSection from './dashboard-section'
 
 import ProfileCard from './profile-card'
 
-import MessageCards from './message-cards'
-
-import ArticleCards from './article-cards'
+import OverviewMetrics from './overview-metrics'
 
 import QuickActions from './quick-actions'
 
 import RecentPosts from './recent-posts'
 
 import RecentContacts from './recent-contacts'
-
 
 import {
 
@@ -24,7 +22,13 @@ import {
 
   Zap,
 
+  Globe,
+
+  MessageCircle,
+
 } from 'lucide-react'
+
+
 
 
 
@@ -52,382 +56,540 @@ type Props = {
 
 
 
+
+
 export default async function AdminDashboard({
 
   user,
 
-}:Props){
+}: Props) {
 
 
-const supabase = await createClient()
 
+  const supabase = await createClient()
 
 
-// =====================================================
-// BLOG POSTS
-// =====================================================
 
 
-const {
 
-  data:posts,
 
-} = await supabase
+  // =====================================================
+  // BLOG POSTS
+  // =====================================================
 
-.from('blog_posts')
 
-.select('*')
+  const {
 
-.order(
+    data:posts,
 
-'created_at',
+  } = await supabase
 
-{
+    .from('blog_posts')
 
-ascending:false
+    .select('*')
 
-}
+    .order(
 
-)
+      'created_at',
 
+      {
 
+        ascending:false
 
+      }
 
-// =====================================================
-// CONTACTS
-// =====================================================
+    )
 
 
-const {
 
- data:contacts,
 
-} = await supabase
 
-.from('contacts')
 
-.select('*')
 
-.order(
+  // =====================================================
+  // CONTACTS
+  // =====================================================
 
-'created_at',
 
-{
+  const {
 
-ascending:false
+    data:contacts,
 
-}
+  } = await supabase
 
-)
+    .from('contacts')
 
+    .select('*')
 
+    .order(
 
+      'created_at',
 
-// =====================================================
-// USERS
-// =====================================================
+      {
 
+        ascending:false
 
-const {
+      }
 
- data:users,
+    )
 
-} = await supabase
 
-.from('admin_users')
 
-.select('*')
 
 
 
 
+  // =====================================================
+  // COMMENTS
+  // =====================================================
 
-// =====================================================
-// COMMENTS
-// =====================================================
 
+  const {
 
-const {
+    data:comments,
 
- data:comments,
+  } = await supabase
 
-} = await supabase
+    .from('comments')
 
-.from('comments')
+    .select('*')
 
-.select('*')
 
 
 
 
 
-// =====================================================
-// MESSAGE STATS
-// =====================================================
 
 
-const messageStats = {
+  // =====================================================
+  // OVERVIEW METRICS
+  // =====================================================
 
 
- total:
+  const overviewStats = {
 
- contacts?.length ?? 0,
 
+    totalMessages:
 
- unread:
+      contacts?.length ?? 0,
 
- contacts?.filter(
 
- item => !item.read
 
- ).length ?? 0,
+    unreadMessages:
 
+      contacts?.filter(
 
+        item => !item.read
 
- completed:
+      ).length ?? 0,
 
- contacts?.filter(
 
- item => item.status === 'completed'
 
- ).length ?? 0,
 
+    publishedArticles:
 
+      posts?.filter(
 
- newMessages:
+        item => item.status === 'published'
 
- contacts?.filter(
+      ).length ?? 0,
 
- item => item.status === 'new'
 
- ).length ?? 0,
 
 
+    pendingArticles:
 
- important:
+      posts?.filter(
 
- contacts?.filter(
+        item => item.status === 'pending'
 
- item => item.important === true
+      ).length ?? 0,
 
- ).length ?? 0,
 
 
-}
+  }
 
 
 
 
 
-// =====================================================
-// ARTICLE STATS
-// =====================================================
 
 
-const articleStats = {
+  // =====================================================
+  // ARTICLE STATS
+  // =====================================================
 
 
- total:
+  const articleStats = {
 
- posts?.length ?? 0,
 
+    total:
 
+      posts?.length ?? 0,
 
- published:
 
- posts?.filter(
 
- item => item.status === 'published'
+    published:
 
- ).length ?? 0,
+      posts?.filter(
 
+        item => item.status === 'published'
 
+      ).length ?? 0,
 
- pending:
 
- posts?.filter(
 
- item => item.status === 'pending'
+    pending:
 
- ).length ?? 0,
+      posts?.filter(
 
+        item => item.status === 'pending'
 
+      ).length ?? 0,
 
- featured:
 
- posts?.filter(
 
- item => item.featured === true
+    featured:
 
- ).length ?? 0,
+      posts?.filter(
 
+        item => item.featured === true
 
+      ).length ?? 0,
 
- comments:
 
- comments?.length ?? 0,
 
+    comments:
 
-}
+      comments?.length ?? 0,
 
 
+  }
 
 
 
-return (
 
-<div
+
+
+
+
+
+  return (
+
+
+    <div
+
+
+      className="
+
+        w-full
+
+        min-w-0
+
+        space-y-10
+
+      "
+
+
+    >
+
+
+
+
+
+
+
+
+      {/* =====================================================
+          PROFILE HEADER
+      ===================================================== */}
+
+
+      <ProfileCard
+
+        user={user}
+
+      />
+
+
+
+
+
+
+
+
+
+      {/* =====================================================
+          WEBSITE NAVIGATION
+      ===================================================== */}
+
+
+
+      <div
+
+
+        className="
+
+          flex
+
+          flex-wrap
+
+          justify-end
+
+          gap-3
+
+        "
+
+
+      >
+
+
+<Link
+
+href="/"
 
 className="
-space-y-10
+flex
+items-center
+gap-2
+rounded-xl
+border
+px-4
+py-2
+text-sm
+transition
+hover:bg-surface
 "
 
 >
 
+<Globe size={18}/>
 
-{/* HEADER */}
+Portfolio Page
 
-<ProfileCard
+</Link>
 
-user={user}
 
-/>
 
 
 
 
 
-{/* MESSAGE SECTION */}
 
+        <Link
 
-<DashboardSection
 
-title="Messages"
+          href="/blog"
 
-description="Manage customer enquiries and communication"
 
-icon={<Mail size={22}/>}
+          className="
 
->
+            flex
 
+            items-center
 
-<MessageCards
+            gap-2
 
-stats={messageStats}
+            rounded-xl
 
-/>
+            border
 
+            px-4
 
-</DashboardSection>
+            py-2
 
+            text-sm
 
+            transition
 
+            hover:bg-surface
 
+          "
 
 
+        >
 
-{/* ARTICLE SECTION */}
 
+          <FileText size={18}/>
 
-<DashboardSection
 
-title="Articles"
+          Blog Page
 
-description="Manage website blog content"
 
-icon={<FileText size={22}/>}
+        </Link>
 
->
 
 
-<ArticleCards
 
-mode="admin"
 
-stats={articleStats}
+      </div>
 
-/>
 
 
-</DashboardSection>
 
 
 
 
 
 
+      {/* =====================================================
+          OVERVIEW METRICS
+      ===================================================== */}
 
 
-{/* QUICK ACTIONS */}
 
+      <DashboardSection
 
 
-<DashboardSection
+        title="Overview Metrics"
 
-title="Quick Actions"
 
-description="Manage website features"
+        description="Website and communication summary"
 
-icon={<Zap size={22}/>}
 
->
+        icon={<Mail size={22}/>}
 
 
-<QuickActions
+      >
 
-mode="admin"
 
-/>
+        <OverviewMetrics
 
 
-</DashboardSection>
+          stats={overviewStats}
 
 
+        />
 
 
+      </DashboardSection>
 
 
 
 
-{/* RECENT CONTENT */}
 
 
 
-<div
 
-className="
-grid
-gap-6
-xl:grid-cols-2
-"
 
->
+      {/* =====================================================
+          QUICK ACTIONS
+      ===================================================== */}
 
 
-<RecentContacts
 
-contacts={contacts ?? []}
+      <DashboardSection
 
-/>
 
+        title="Quick Actions"
 
 
-<RecentPosts
+        description="Manage important website features"
 
-posts={posts ?? []}
 
-/>
+        icon={<Zap size={22}/>}
 
 
-</div>
+      >
 
 
+        <QuickActions
 
 
+          mode="admin"
 
-</div>
 
-)
+        />
+
+
+      </DashboardSection>
+
+
+
+
+
+
+
+
+
+      {/* =====================================================
+          OVERVIEW PANELS
+      ===================================================== */}
+
+
+
+      <DashboardSection
+
+
+        title="Overview Panels"
+
+
+        description="Recent website activity"
+
+
+        icon={<MessageCircle size={22}/>}
+
+
+      >
+
+
+
+        <div
+
+
+          className="
+
+            grid
+
+            gap-6
+
+            xl:grid-cols-2
+
+          "
+
+
+        >
+
+
+
+          <RecentContacts
+
+
+            contacts={contacts ?? []}
+
+
+          />
+
+
+
+
+
+          <RecentPosts
+
+
+            posts={posts ?? []}
+
+
+          />
+
+
+
+        </div>
+
+
+
+      </DashboardSection>
+
+
+
+
+
+
+
+    </div>
+
+
+  )
 
 
 }

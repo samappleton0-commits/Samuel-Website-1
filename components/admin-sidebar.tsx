@@ -1,7 +1,8 @@
-// ======================================================
-// ADMIN SIDEBAR SERVER COMPONENT
-// components/admin-sidebar.tsx
-// ======================================================
+/* ======================================================
+   ADMIN SIDEBAR SERVER COMPONENT
+   components/admin-sidebar.tsx
+====================================================== */
+
 
 import { unstable_noStore as noStore } from 'next/cache'
 
@@ -13,12 +14,15 @@ import AdminSidebarClient from './admin-sidebar-client'
 
 
 
+
 export default async function AdminSidebar(){
 
 
-  // Prevent sidebar profile caching
+
+  // Prevent user information caching
 
   noStore()
+
 
 
 
@@ -30,12 +34,17 @@ export default async function AdminSidebar(){
 
 
 
+
   return (
+
+
 
     <AdminSidebarClient
 
 
+
       role={
+
 
         user?.role === 'admin'
 
@@ -43,14 +52,19 @@ export default async function AdminSidebar(){
 
         : 'editor'
 
+
       }
+
+
 
 
 
       profile={{
 
 
+
         name:
+
 
           user?.name ??
 
@@ -59,7 +73,10 @@ export default async function AdminSidebar(){
 
 
 
+
+
         email:
+
 
           user?.email ??
 
@@ -68,11 +85,11 @@ export default async function AdminSidebar(){
 
 
 
-        avatar_url:
 
-          user?.avatar_url ??
 
-          '/profileme.png',
+       avatar_url:
+
+  user?.avatar_url ?? null,
 
 
 
@@ -81,6 +98,8 @@ export default async function AdminSidebar(){
 
 
     />
+
+
 
   )
 

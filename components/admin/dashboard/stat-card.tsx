@@ -26,11 +26,13 @@ import {
 
 
 
+
+
 type Props = {
 
   title:string
 
-  value?:number | string
+  value?:number|string
 
   description:string
 
@@ -46,7 +48,12 @@ type Props = {
 
 
 
+
+
+
+
 const icons:any = {
+
 
 FileText,
 
@@ -80,7 +87,14 @@ FilePlus,
 
 UserCog,
 
+
 }
+
+
+
+
+
+
 
 
 
@@ -97,14 +111,22 @@ href,
 
 icon,
 
-color="bg-primary/10 text-primary",
+color='bg-primary/10 text-primary',
 
 disabled=false,
 
 }:Props){
 
 
+
+
+
+
 const Icon = icons[icon] || FileText
+
+
+
+
 
 
 
@@ -113,17 +135,22 @@ const content=(
 
 <div
 
+
 className={`
 
 group
 
+relative
+
 flex
 
-h-[180px]
+min-h-[170px]
 
 w-full
 
 flex-col
+
+overflow-hidden
 
 rounded-2xl
 
@@ -136,8 +163,6 @@ p-5
 transition-all
 
 duration-300
-
-overflow-hidden
 
 
 
@@ -157,11 +182,23 @@ disabled
 
 `}
 
+
 >
 
 
 
+
+
+
+
+
+
+{/* ICON */}
+
+
+
 <div
+
 
 className={`
 
@@ -170,6 +207,8 @@ flex
 h-11
 
 w-11
+
+shrink-0
 
 items-center
 
@@ -180,6 +219,7 @@ rounded-xl
 ${color}
 
 `}
+
 
 >
 
@@ -193,20 +233,49 @@ ${color}
 
 
 
-<div className="mt-5">
+
+
+
+
+{/* CONTENT */}
+
+
+
+<div
+
+className="
+
+mt-5
+
+min-w-0
+
+"
+
+>
+
 
 
 {
 
-value !== undefined &&
+value !== undefined && (
 
-(
 
-<p className="text-3xl font-bold">
+<p
+
+className="
+
+text-3xl
+
+font-bold
+
+"
+
+>
 
 {value}
 
 </p>
+
 
 )
 
@@ -215,11 +284,32 @@ value !== undefined &&
 
 
 
-<h3 className="mt-2 truncate text-base font-semibold">
+
+
+
+
+<h3
+
+className="
+
+mt-2
+
+line-clamp-2
+
+text-base
+
+font-semibold
+
+"
+
+>
 
 {title}
 
 </h3>
+
+
+
 
 
 </div>
@@ -228,11 +318,24 @@ value !== undefined &&
 
 
 
+
+
+
+
+{/* DESCRIPTION */}
+
+
+
 <p
+
 
 className="
 
 mt-auto
+
+pr-6
+
+pt-4
 
 line-clamp-2
 
@@ -241,6 +344,7 @@ text-sm
 text-muted-foreground
 
 "
+
 
 >
 
@@ -252,15 +356,21 @@ text-muted-foreground
 
 
 
+
+
+
+
+
 {
 
-!disabled &&
+!disabled && (
 
-(
 
 <ArrowRight
 
+
 size={18}
+
 
 className="
 
@@ -272,7 +382,9 @@ right-5
 
 opacity-0
 
-transition
+transition-all
+
+group-hover:translate-x-1
 
 group-hover:opacity-100
 
@@ -280,16 +392,28 @@ group-hover:opacity-100
 
 />
 
+
 )
 
+
 }
+
+
+
 
 
 
 </div>
 
 
+
 )
+
+
+
+
+
+
 
 
 
@@ -301,19 +425,31 @@ return content
 
 
 
+
+
+
+
 return (
+
 
 <Link
 
 href={href}
 
-className="block h-full"
+className="
+
+block
+
+h-full
+
+"
 
 >
 
 {content}
 
 </Link>
+
 
 )
 

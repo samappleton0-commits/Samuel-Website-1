@@ -7,12 +7,13 @@ import { getUserRole } from './get-user-role'
 
 
 // ======================================================
-// REQUIRE ADMIN ACCESS
-// ADMIN ONLY
+// GENERIC ROLE CHECK
 // ======================================================
 
 
-export async function requireAdmin(){
+export async function requireRole(
+  allowedRoles:string[]
+){
 
 
 
@@ -25,9 +26,7 @@ const user = await getUserRole()
 
 if(!user){
 
-
-redirect('/login')
-
+  redirect('/login')
 
 }
 
@@ -37,11 +36,11 @@ redirect('/login')
 
 
 
-if(user.role !== 'admin'){
+if(
+  !allowedRoles.includes(user.role)
+){
 
-
-redirect('/admin')
-
+  redirect('/admin')
 
 }
 
@@ -52,6 +51,31 @@ redirect('/admin')
 
 return user
 
+
+}
+
+
+
+
+
+
+
+
+
+// ======================================================
+// REQUIRE ADMIN ACCESS
+// ADMIN ONLY
+// ======================================================
+
+
+export async function requireAdmin(){
+
+
+return requireRole([
+
+  'admin'
+
+])
 
 
 }
@@ -73,50 +97,13 @@ return user
 export async function requireStaff(){
 
 
+return requireRole([
 
-const user = await getUserRole()
+  'admin',
 
+  'editor'
 
-
-
-
-
-if(!user){
-
-
-redirect('/login')
-
-
-}
-
-
-
-
-
-
-
-if(
-
-user.role !== 'admin' &&
-
-user.role !== 'editor'
-
-){
-
-
-redirect('/admin')
-
-
-}
-
-
-
-
-
-
-
-return user
-
+])
 
 
 }
@@ -130,7 +117,8 @@ return user
 
 
 // ======================================================
-// REQUIRE EDITOR OR ADMIN
+// REQUIRE EDITOR ACCESS
+// EDITOR + ADMIN
 // BLOG ACCESS
 // ======================================================
 
@@ -138,7 +126,13 @@ return user
 export async function requireEditor(){
 
 
-return requireStaff()
+return requireRole([
+
+  'admin',
+
+  'editor'
+
+])
 
 
 }
