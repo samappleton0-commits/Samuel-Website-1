@@ -38,66 +38,23 @@ export default async function AdminSidebar(){
   return (
 
 
+<AdminSidebarClient
 
-    <AdminSidebarClient
+  role={
+    user?.role === 'admin'
+    ? 'admin'
+    : user?.role === 'editor'
+    ? 'editor'
+    : 'user'
+  }
 
+  profile={{
+    name:user?.name ?? 'User',
+    email:user?.email ?? '',
+    avatar_url:user?.avatar_url ?? null,
+  }}
 
-
-      role={
-
-
-        user?.role === 'admin'
-
-        ? 'admin'
-
-        : 'editor'
-
-
-      }
-
-
-
-
-
-      profile={{
-
-
-
-        name:
-
-
-          user?.name ??
-
-          'User',
-
-
-
-
-
-
-        email:
-
-
-          user?.email ??
-
-          '',
-
-
-
-
-
-
-       avatar_url:
-
-  user?.avatar_url ?? null,
-
-
-
-      }}
-
-
-
-    />
+/>
 
 
 

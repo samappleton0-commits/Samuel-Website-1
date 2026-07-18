@@ -109,14 +109,12 @@ color:'bg-orange-500/10 text-orange-600',
 const editorActions = [
 
 
-
 {
-
 title:'Create Article',
 
 description:'Write new blog post',
 
-href:'/admin/blog/create',
+href:'/admin/blog/new',
 
 icon:'FilePlus',
 
@@ -142,10 +140,7 @@ color:'bg-blue-500/10 text-blue-600',
 },
 
 
-
-
 {
-
 title:'Comments',
 
 description:'View comments',
@@ -156,18 +151,19 @@ icon:'MessageCircle',
 
 color:'bg-orange-500/10 text-orange-600',
 
+disabled:false,
+
 },
 
 
 
 
 {
+title:'My Profile',
 
-title:'Profile',
+description:'Manage your account settings',
 
-description:'Update account',
-
-href:'/admin/settings/profile',
+href:'/admin/settings',
 
 icon:'UserCog',
 

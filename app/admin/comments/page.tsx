@@ -1,5 +1,5 @@
 // =========================================================
-// ADMIN COMMENTS PAGE
+// COMMENTS MANAGEMENT PAGE
 // app/admin/comments/page.tsx
 // =========================================================
 
@@ -26,7 +26,6 @@ import { createClient } from '@/lib/supabase-server'
 import { getUserRole } from '@/lib/get-user-role'
 
 import CommentActions from '@/components/admin/comment-actions'
-
 
 
 
@@ -60,6 +59,8 @@ type Comment = {
 
     slug:string
 
+    user_id:string
+
   }
 
 }
@@ -80,22 +81,17 @@ export default async function AdminCommentsPage(){
 
 
   // =====================================================
-  // ADMIN ONLY PROTECTION
+  // USER ROLE CHECK
   // =====================================================
 
 
-  const userRole =
-    await getUserRole()
+  const userRole = await getUserRole()
 
 
 
-  if(
+  if(!userRole){
 
-    userRole?.role !== 'admin'
-
-  ){
-
-    redirect('/admin')
+    redirect('/login')
 
   }
 
@@ -103,371 +99,452 @@ export default async function AdminCommentsPage(){
 
 
 
-
-
-  // =====================================================
-  // SUPABASE
-  // =====================================================
-
-
-  const supabase =
-    await createClient()
+  const supabase = await createClient()
 
 
 
+// =====================================================
+// FETCH COMMENTS
+// =====================================================
+
+
+let data:any[] = []
+
+let error:any = null
 
 
 
-
-  // =====================================================
-  // FETCH COMMENTS
-  // =====================================================
-
-
-  const {
-
-    data
-
-  } = await supabase
+// =====================================================
+// ADMIN
+// GET ALL COMMENTS
+// =====================================================
 
 
-    .from('comments')
+if(userRole.role === 'admin'){
 
 
-    .select(
+const result = await supabase
 
-      `
+.from('comments')
 
-      id,
+.select(`
+id,
+name,
+email,
+content,
+status,
+created_at,
+post_id,
 
-      name,
+blog_posts(
+title,
+slug,
+user_id
+)
 
-      email,
+`)
 
-      content,
-
-      status,
-
-      created_at,
-
-      post_id,
-
-
-      blog_posts(
-
-        title,
-
-        slug
-
-      )
-
-
-      `
-
-    )
-
-
-    .order(
-
-      'created_at',
-
-      {
-
-        ascending:false
-
-      }
-
-    )
-
-
-console.log(
-  'ADMIN COMMENTS:',
-  data
+.order(
+'created_at',
+{
+ascending:false
+}
 )
 
 
+data = result.data ?? []
+
+error = result.error
+
+
+}
+
+
+
+
+
+
+
+// =====================================================
+// EDITOR / USER
+// ONLY THEIR ARTICLES
+// =====================================================
+
+
+else{
+
+
+// Get their articles first
+
+
+const {
+
+data:articles,
+
+error:articleError
+
+}=await supabase
+
+.from('blog_posts')
+
+.select('id')
+
+.eq(
+'user_id',
+userRole.user_id
+)
+
+
+
+if(articleError){
+
+console.error(
+'ARTICLE LOOKUP ERROR:',
+articleError
+)
+
+}
+
+else{
+
+
+const articleIds =
+articles?.map(
+article=>article.id
+) ?? []
+
+
+
+
+
+if(articleIds.length){
+
+
+const result = await supabase
+
+.from('comments')
+
+.select(`
+id,
+name,
+email,
+content,
+status,
+created_at,
+post_id,
+
+blog_posts(
+title,
+slug,
+user_id
+)
+
+`)
+
+.in(
+'post_id',
+articleIds
+)
+
+.order(
+'created_at',
+{
+ascending:false
+}
+)
+
+
+
+data = result.data ?? []
+
+error = result.error
+
+
+
+}
+
+
+
+}
+
+
+
+}
+
+
+
+  if(error){
+
+    console.error(
+
+      'COMMENTS FETCH ERROR:',
+
+      error
+
+    )
+
+  }
+
+
+
+
+
   const comments =
-    (data ?? []) as unknown as Comment[]
 
-
-
-
-
-
+  (data ?? []) as unknown as Comment[]
 
   // =====================================================
-  // STATS
-  // =====================================================
+// STATS
+// =====================================================
 
 
-  const pendingComments =
+const pendingComments = comments.filter(
 
-    comments.filter(
+  comment =>
 
-      comment =>
+  comment.status === 'pending'
 
-      comment.status === 'pending'
+)
 
-    )
 
 
+const approvedComments = comments.filter(
 
+  comment =>
 
-  const approvedComments =
+  comment.status === 'approved'
 
-    comments.filter(
+)
 
-      comment =>
 
-      comment.status === 'approved'
 
-    )
 
 
 
 
 
+return (
 
+<div
 
+className="
+mx-auto
+max-w-6xl
+"
 
-  return (
+>
 
-    <div
 
-      className="
-        mx-auto
-        max-w-6xl
-      "
 
-    >
 
 
 
 
 
+{/* =====================================================
+    HEADER
+===================================================== */}
 
-      {/* HEADER */}
 
 
-      <div
+<div
 
-        className="
-          mb-10
-        "
+className="
+mb-10
+"
 
-      >
+>
 
-        <h1
 
-          className="
-            text-4xl
-            font-black
-          "
+<h1
 
-        >
+className="
+text-4xl
+font-black
+"
 
-          Comments
+>
 
-        </h1>
+Comments
 
+</h1>
 
-        <p
 
-          className="
-            mt-2
-            text-muted-foreground
-          "
 
-        >
 
-          Review and manage blog comments.
+<p
 
-        </p>
+className="
+mt-2
+text-muted-foreground
+"
 
+>
 
-      </div>
+{
 
+userRole.role === 'admin'
 
+?
 
+'Review and manage all blog comments.'
 
+:
 
+'Review comments on your articles.'
 
+}
 
+</p>
 
 
-      {/* STATS */}
 
+</div>
 
-      <div
 
-        className="
-          mb-10
-          grid
-          gap-5
-          md:grid-cols-3
-        "
 
-      >
 
 
 
 
-        <div
 
-          className="
-            rounded-3xl
-            border
-            border-surface-border
-            bg-card
-            p-6
-          "
 
-        >
 
-          <Clock size={24}/>
 
 
-          <p
 
-            className="
-              mt-4
-              text-sm
-              text-muted-foreground
-            "
+{/* =====================================================
+    STATS
+===================================================== */}
 
-          >
 
-            Pending
 
-          </p>
+<div
 
+className="
+mb-10
+grid
+gap-5
+md:grid-cols-3
+"
 
-          <h2
+>
 
-            className="
-              text-3xl
-              font-black
-            "
 
-          >
 
-            {pendingComments.length}
 
-          </h2>
 
 
-        </div>
 
+<div
 
+className="
+rounded-3xl
+border
+border-surface-border
+bg-card
+p-6
+"
 
+>
 
 
+<Clock size={24}/>
 
 
 
-        <div
+<p
 
-          className="
-            rounded-3xl
-            border
-            border-surface-border
-            bg-card
-            p-6
-          "
+className="
+mt-4
+text-sm
+text-muted-foreground
+"
 
-        >
+>
 
-          <CheckCircle size={24}/>
+Pending
 
+</p>
 
-          <p
 
-            className="
-              mt-4
-              text-sm
-              text-muted-foreground
-            "
 
-          >
+<h2
 
-            Approved
+className="
+text-3xl
+font-black
+"
 
-          </p>
+>
 
+{pendingComments.length}
 
-          <h2
+</h2>
 
-            className="
-              text-3xl
-              font-black
-            "
 
-          >
 
-            {approvedComments.length}
+</div>
 
-          </h2>
 
 
-        </div>
 
 
 
 
 
 
+<div
 
-        <div
+className="
+rounded-3xl
+border
+border-surface-border
+bg-card
+p-6
+"
 
-          className="
-            rounded-3xl
-            border
-            border-surface-border
-            bg-card
-            p-6
-          "
+>
 
-        >
 
-          <MessageCircle size={24}/>
+<CheckCircle size={24}/>
 
 
-          <p
 
-            className="
-              mt-4
-              text-sm
-              text-muted-foreground
-            "
+<p
 
-          >
+className="
+mt-4
+text-sm
+text-muted-foreground
+"
 
-            Total
+>
 
-          </p>
+Approved
 
+</p>
 
-          <h2
 
-            className="
-              text-3xl
-              font-black
-            "
 
-          >
+<h2
 
-            {comments.length}
+className="
+text-3xl
+font-black
+"
 
-          </h2>
+>
 
+{approvedComments.length}
 
-        </div>
+</h2>
 
 
 
+</div>
 
 
-      </div>
 
 
 
@@ -475,277 +552,252 @@ console.log(
 
 
 
+<div
 
+className="
+rounded-3xl
+border
+border-surface-border
+bg-card
+p-6
+"
 
-      {/* COMMENTS */}
+>
 
 
-      <div
+<MessageCircle size={24}/>
 
-        className="
-          space-y-6
-        "
 
-      >
 
+<p
 
+className="
+mt-4
+text-sm
+text-muted-foreground
+"
 
-      {
+>
 
-        comments.length === 0
+Total
 
-        ?
+</p>
 
 
-        (
 
-          <div
+<h2
 
-            className="
-              rounded-3xl
-              border
-              border-surface-border
-              bg-card
-              p-10
-              text-center
-            "
+className="
+text-3xl
+font-black
+"
 
-          >
+>
 
-            <MessageCircle
+{comments.length}
 
-              className="
-                mx-auto
-                mb-3
-              "
+</h2>
 
-            />
 
 
-            <p>
+</div>
 
-              No comments found.
 
-            </p>
 
 
-          </div>
 
-        )
 
 
-        :
+</div>
 
 
 
-        comments.map((comment)=>(
 
 
-          <article
 
-            key={comment.id}
+{/* =====================================================
+    COMMENTS LIST
+===================================================== */}
 
-            className="
-              rounded-3xl
-              border
-              border-surface-border
-              bg-card
-              p-6
-            "
 
-          >
 
+<div
 
+className="
+space-y-6
+"
 
+>
 
 
-            {/* USER */}
 
 
-            <div
 
-              className="
-                flex
-                items-start
-                justify-between
-                gap-5
-              "
+{
 
-            >
+comments.length === 0 ? (
 
 
 
-              <div>
+<div
 
+className="
+rounded-3xl
+border
+border-surface-border
+bg-card
+p-10
+text-center
+"
 
-                <h3
+>
 
-                  className="
-                    font-bold
-                  "
 
-                >
+<MessageCircle
 
-                  {comment.name}
+className="
+mx-auto
+mb-3
+"
 
-                </h3>
+/>
 
 
 
-                {
+<p>
 
-                  comment.email && (
+No comments found.
 
-                    <p
+</p>
 
-                      className="
-                        text-sm
-                        text-muted-foreground
-                      "
 
-                    >
 
-                      {comment.email}
+</div>
 
-                    </p>
 
-                  )
 
-                }
+)
 
+:
 
-              </div>
 
 
+comments.map((comment)=>(
 
 
 
+<article
 
-              <span
+key={comment.id}
 
-                className="
-                  rounded-full
-                  bg-surface
-                  px-4
-                  py-1
-                  text-xs
-                  font-semibold
-                  uppercase
-                "
+className="
+rounded-3xl
+border
+border-surface-border
+bg-card
+p-6
+"
 
-              >
+>
 
-                {comment.status}
 
-              </span>
 
 
 
-            </div>
 
 
+{/* USER */}
 
 
 
+<div
 
+className="
+flex
+items-start
+justify-between
+gap-5
+"
 
+>
 
 
-            {/* ARTICLE */}
 
+<div>
 
-            {
 
-              comment.blog_posts && (
+<h3
 
-                <div
+className="
+font-bold
+"
 
-                  className="
-                    mt-5
-                    rounded-2xl
-                    bg-surface
-                    p-4
-                  "
+>
 
-                >
+{comment.name}
 
+</h3>
 
-                  <p
 
-                    className="
-                      text-xs
-                      uppercase
-                      text-muted-foreground
-                    "
 
-                  >
 
-                    Article
 
-                  </p>
+{
 
+comment.email && (
 
 
-                  <div
+<p
 
-                    className="
-                      mt-2
-                      flex
-                      items-center
-                      justify-between
-                      gap-3
-                    "
+className="
+text-sm
+text-muted-foreground
+"
 
-                  >
+>
 
-                    <p
+{comment.email}
 
-                      className="
-                        font-semibold
-                      "
+</p>
 
-                    >
 
-                      {comment.blog_posts.title}
+)
 
-                    </p>
+}
 
 
 
+</div>
 
-                    <Link
 
-                      href={`/blog/${comment.blog_posts.slug}`}
 
-                      target="_blank"
 
-                      className="
-                        inline-flex
-                        items-center
-                        gap-1
-                        text-sm
-                        text-primary
-                      "
 
-                    >
 
-                      View
 
-                      <ExternalLink size={14}/>
+<span
 
+className="
+rounded-full
+bg-surface
+px-4
+py-1
+text-xs
+font-semibold
+uppercase
+"
 
-                    </Link>
+>
 
+{comment.status}
 
+</span>
 
-                  </div>
 
 
-                </div>
+</div>
 
-              )
 
-            }
 
 
 
@@ -753,110 +805,247 @@ console.log(
 
 
 
+{/* ARTICLE */}
 
 
-            {/* COMMENT CONTENT */}
 
+{
 
-            <p
+comment.blog_posts && (
 
-              className="
-                mt-5
-                leading-7
-                text-muted-foreground
-              "
 
-            >
 
-              {comment.content}
+<div
 
-            </p>
+className="
+mt-5
+rounded-2xl
+bg-surface
+p-4
+"
 
+>
 
 
 
+<p
 
+className="
+text-xs
+uppercase
+text-muted-foreground
+"
 
+>
 
-            {/* DATE */}
+Article
 
+</p>
 
-            <p
 
-              className="
-                mt-4
-                text-xs
-                text-muted-foreground
-              "
 
-            >
 
-              {
 
-                new Date(
+<div
 
-                  comment.created_at
+className="
+mt-2
+flex
+items-center
+justify-between
+gap-3
+"
 
-                )
+>
 
-                .toLocaleDateString(
 
-                  'en-GB',
 
-                  {
+<p
 
-                    day:'numeric',
+className="
+font-semibold
+"
 
-                    month:'long',
+>
 
-                    year:'numeric'
+{comment.blog_posts.title}
 
-                  }
+</p>
 
-                )
 
-              }
 
 
-            </p>
 
+<Link
 
 
+href={`/blog/${comment.blog_posts.slug}`}
 
 
+target="_blank"
 
 
-            {/* ACTIONS */}
+className="
+inline-flex
+items-center
+gap-1
+text-sm
+text-primary
+"
 
 
-            <CommentActions
+>
 
-              commentId={comment.id}
 
-            />
+View
 
 
+<ExternalLink size={14}/>
 
 
+</Link>
 
-          </article>
 
 
-        ))
+</div>
 
-      }
 
 
 
-      </div>
+</div>
 
 
 
+)
 
+}
 
-    </div>
 
-  )
+
+
+
+
+
+
+
+{/* COMMENT MESSAGE */}
+
+
+
+<p
+
+className="
+mt-5
+leading-7
+text-muted-foreground
+"
+
+>
+
+{comment.content}
+
+</p>
+
+
+
+
+
+
+
+
+
+{/* DATE */}
+
+
+
+<p
+
+className="
+mt-4
+text-xs
+text-muted-foreground
+"
+
+>
+
+
+{
+
+new Intl.DateTimeFormat(
+
+'en-US',
+
+{
+
+day:'numeric',
+
+month:'long',
+
+year:'numeric',
+
+timeZone:'UTC'
+
+}
+
+).format(
+
+new Date(comment.created_at)
+
+)
+
+}
+
+
+</p>
+
+
+
+
+
+
+
+
+
+{/* ACTIONS */}
+
+
+<CommentActions
+
+commentId={comment.id}
+
+role={userRole.role}
+
+/>
+
+
+
+
+
+
+
+</article>
+
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+</div>
+
+)
 
 
 }

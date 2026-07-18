@@ -1,30 +1,47 @@
-import { NextResponse } from 'next/server'
-
-import { createComment } from '@/lib/comments'
-
-
-
 // =====================================================
 // CREATE COMMENT API
+// app/api/comment/route.ts
 // =====================================================
+
+
+import { NextResponse } from 'next/server'
+
+import {
+  createComment,
+} from '@/lib/comments'
+
+
+
+
+
+// =====================================================
+// POST CREATE COMMENT / REPLY
+// =====================================================
+
 
 export async function POST(
 
-  request: Request
+  request:Request
 
-) {
+){
 
 
   try {
 
 
-    const body = await request.json()
+    const body =
+
+      await request.json()
+
+
 
 
 
     const {
 
       postId,
+
+      parentId,
 
       name,
 
@@ -33,7 +50,6 @@ export async function POST(
       content
 
     } = body
-
 
 
 
@@ -77,29 +93,38 @@ export async function POST(
 
 
 
-
-
     // =====================================================
-    // SAVE COMMENT
+    // SAVE COMMENT / REPLY
     // =====================================================
 
 
-    await createComment({
+    const comment =
 
-      postId,
+      await createComment({
 
-      name,
+        postId,
 
-      email,
+        parentId:
 
-      content
+          parentId || null,
 
-    })
+        name,
+
+        email,
+
+        content
+
+      })
 
 
 
 
 
+
+
+    // =====================================================
+    // RESPONSE
+    // =====================================================
 
 
     return NextResponse.json(
@@ -108,8 +133,20 @@ export async function POST(
 
         success:true,
 
+        comment,
+
         message:
-        'Comment submitted successfully'
+
+          parentId
+
+          ?
+
+          'Reply submitted successfully'
+
+          :
+
+          'Comment submitted successfully'
+
 
       },
 
@@ -127,25 +164,19 @@ export async function POST(
 
   }
 
- catch(error){
+  catch(error){
 
 
 
     console.error(
 
-      'Comment API Error:',
+      'COMMENT API ERROR:',
 
-      JSON.stringify(
-
-        error,
-
-        null,
-
-        2
-
-      )
+      error
 
     )
+
+
 
 
 
@@ -154,7 +185,9 @@ export async function POST(
       {
 
         error:
+
         'Unable to submit comment'
+
 
       },
 

@@ -1,6 +1,8 @@
 /* =====================================================
-   EDITOR ARTICLE LIST START
+   EDITOR ARTICLE LIST
+   components/admin/dashboard/editor-article-list.tsx
 ===================================================== */
+
 
 'use client'
 
@@ -53,23 +55,64 @@ const [search,setSearch] = useState('')
 
 
 
+
+/* =====================================================
+   SEARCH FILTER
+===================================================== */
+
+
 const filteredArticles = articles.filter(article=>{
 
 
-return (
-
-article.title
-
-.toLowerCase()
-
-.includes(
-
-search.toLowerCase()
-
-)
+  const keyword = search.toLowerCase().trim()
 
 
-)
+
+  if(!keyword){
+
+    return true
+
+  }
+
+
+
+  return (
+
+
+    article.title
+
+    .toLowerCase()
+
+    .includes(keyword)
+
+
+
+    ||
+
+
+
+    article.status
+
+    .toLowerCase()
+
+    .includes(keyword)
+
+
+
+    ||
+
+
+
+    new Date(article.created_at)
+
+    .toLocaleDateString()
+
+    .toLowerCase()
+
+    .includes(keyword)
+
+
+  )
 
 
 })
@@ -78,26 +121,36 @@ search.toLowerCase()
 
 
 
+
+
 return (
 
-<div className="space-y-6">
 
+<div
 
+className="
+space-y-6
+"
+
+>
 
 
 
 {/* =====================================================
-    SEARCH
+    SEARCH BOX
 ===================================================== */}
 
 
+
 <div
+
 className="
 rounded-2xl
 border
 bg-card
 p-6
 "
+
 >
 
 
@@ -121,7 +174,7 @@ e.target.value
 }
 
 
-placeholder="Search articles..."
+placeholder="Search by title, status or date..."
 
 
 className="
@@ -132,6 +185,7 @@ bg-background
 px-4
 py-3
 outline-none
+transition
 focus:ring-2
 focus:ring-accent
 "
@@ -140,7 +194,26 @@ focus:ring-accent
 />
 
 
+
+
+<p
+
+className="
+mt-3
+text-sm
+text-muted-foreground
+"
+
+>
+
+Showing {filteredArticles.length} of {articles.length} articles
+
+</p>
+
+
+
 </div>
+
 
 
 
@@ -153,7 +226,14 @@ focus:ring-accent
 
 
 
-<div className="space-y-5">
+<div
+
+className="
+space-y-5
+"
+
+>
+
 
 
 
@@ -162,7 +242,9 @@ focus:ring-accent
 filteredArticles.length === 0 ? (
 
 
+
 <div
+
 className="
 rounded-2xl
 border
@@ -170,11 +252,13 @@ p-10
 text-center
 text-muted-foreground
 "
+
 >
 
 No matching articles found.
 
 </div>
+
 
 
 )
@@ -184,37 +268,52 @@ No matching articles found.
 filteredArticles.map(article=>(
 
 
+
 <div
 
+
 key={article.id}
+
 
 className="
 overflow-hidden
 rounded-2xl
 border
 bg-card
+transition
+hover:shadow-md
 "
 
 >
 
 
+
 <div
+
 className="
 flex
 flex-col
 md:flex-row
 "
+
 >
 
 
 
 
+{/* IMAGE */}
+
+
+
 <div
+
 className="
 h-48
-md:w-64
+shrink-0
 bg-muted
+md:w-64
 "
+
 >
 
 
@@ -222,11 +321,16 @@ bg-muted
 
 article.featured_image ? (
 
+
+
 <img
+
 
 src={article.featured_image}
 
+
 alt={article.title}
+
 
 className="
 h-full
@@ -234,7 +338,9 @@ w-full
 object-cover
 "
 
+
 />
+
 
 
 )
@@ -243,21 +349,28 @@ object-cover
 
 (
 
+
 <div
+
 className="
 flex
 h-full
 items-center
 justify-center
+text-sm
 text-muted-foreground
 "
+
 >
 
 No Image
 
 </div>
 
+
+
 )
+
 
 }
 
@@ -270,19 +383,30 @@ No Image
 
 
 
+
+
+{/* CONTENT */}
+
+
+
 <div
+
 className="
-p-6
 flex-1
+p-6
 "
+
 >
 
 
+
 <h3
+
 className="
 text-xl
 font-bold
 "
+
 >
 
 {article.title}
@@ -292,19 +416,42 @@ font-bold
 
 
 
+
+
 <p
+
 className="
 mt-2
 text-sm
 text-muted-foreground
 "
+
 >
 
 {
+
 new Date(
+
 article.created_at
+
 )
-.toLocaleDateString()
+
+.toLocaleDateString(
+
+'en-US',
+
+{
+
+day:'numeric',
+
+month:'long',
+
+year:'numeric'
+
+}
+
+)
+
 }
 
 </p>
@@ -312,16 +459,24 @@ article.created_at
 
 
 
+
+
+
 <span
+
+
 className="
 mt-4
-inline-block
+inline-flex
 rounded-full
 bg-muted
 px-3
 py-1
 text-xs
+font-semibold
+capitalize
 "
+
 >
 
 {article.status}
@@ -331,37 +486,65 @@ text-xs
 
 
 
-<div className="mt-5">
+
+
+
+
+<div
+
+className="
+mt-5
+"
+
+>
 
 
 <Link
 
+
 href={`/admin/blog/${article.id}`}
 
+
 className="
+inline-flex
 rounded-xl
 border
 px-4
 py-2
 text-sm
+font-medium
+transition
+hover:bg-muted
 "
 
 >
 
+
 Edit Article
+
 
 </Link>
 
 
-</div>
-
-
 
 </div>
 
 
 
+
+
+
 </div>
+
+
+
+
+
+
+</div>
+
+
+
 
 
 </div>
@@ -370,21 +553,25 @@ Edit Article
 
 ))
 
+
 }
 
 
-</div>
 
 
 
 </div>
+
+
+
+
+
+
+
+</div>
+
 
 )
 
 
 }
-
-
-/* =====================================================
-   EDITOR ARTICLE LIST END
-===================================================== */

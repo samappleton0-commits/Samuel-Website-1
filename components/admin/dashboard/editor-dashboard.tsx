@@ -21,6 +21,7 @@ import {
 type Props = {
   user: {
     id: string
+    user_id: string
     name: string
     email: string
     role: string
@@ -54,9 +55,9 @@ export default async function EditorDashboard({
     `)
 
     .eq(
-      'user_id',
-      user.id
-    )
+  'user_id',
+  user.user_id
+)
 
     .order(
       'created_at',

@@ -2,172 +2,215 @@ import { createClient } from '@/lib/supabase-server'
 
 
 
-export async function getUserRole(){
+export async function getUserRole() {
 
 
-try{
+  try {
 
 
-const supabase = await createClient()
+    const supabase = await createClient()
 
 
 
+    /*
+    =====================================================
+    GET AUTHENTICATED USER
+    =====================================================
+    */
 
 
-// Get logged in user
+    const {
 
-const {
+      data: {
+        user
 
-data:{
-user
+      },
 
-},
+      error: userError
 
-error:userError
+    } = await supabase.auth.getUser()
 
-}=await supabase.auth.getUser()
 
 
 
 
+    if (
 
+      userError ||
 
-if(
-userError ||
-!user
+      !user
 
-){
+    ) {
 
-return null
+      return null
 
-}
+    }
 
 
 
 
 
+    /*
+    =====================================================
+    GET USER PROFILE
+    =====================================================
+    */
 
 
-// Get profile from admin_users
+    const {
 
+      data: profile,
 
-const {
+      error: profileError
 
-data:profile,
+    } = await supabase
 
-error:profileError
+      .from('admin_users')
 
-}=await supabase
+      .select(`
 
-.from('admin_users')
+        id,
 
-.select(`
+        user_id,
 
-id,
+        name,
 
-user_id,
+        email,
 
-name,
+        role,
 
-email,
+        avatar_url,
 
-role,
+        must_change_password,
 
-avatar_url,
+        created_at
 
-must_change_password,
+      `)
 
-created_at
+      .eq(
 
-`)
+        'user_id',
 
-.eq(
+        user.id
 
-'user_id',
+      )
 
-user.id
+      .single()
 
-)
 
-.single()
 
 
 
+    if (profileError || !profile) {
 
 
+      console.error(
 
-if(profileError){
+        'ROLE LOOKUP ERROR:',
 
+        profileError?.message
 
-console.error(
+      )
 
-'Role lookup error:',
 
-profileError.message
+      return null
 
-)
 
+    }
 
-return null
 
 
-}
 
 
+    /*
+    =====================================================
+    NORMALIZE ROLE
+    Keeps database role unchanged
+    =====================================================
+    */
 
 
+    const role =
 
+      profile.role === 'admin'
 
+      ? 'admin'
 
-return {
 
+      : profile.role === 'editor'
 
-id:profile.id,
+      ? 'editor'
 
-user_id:profile.user_id,
 
-name:profile.name,
+      : 'user'
 
-email:profile.email,
 
-role:profile.role,
 
-avatar_url:profile.avatar_url,
 
-must_change_password:
 
-profile.must_change_password,
+    /*
+    =====================================================
+    RETURN USER DATA
+    =====================================================
+    */
 
-created_at:
 
-profile.created_at
+    return {
 
 
-}
+      id: profile.id,
 
 
+      user_id: profile.user_id,
 
-}
 
+      name: profile.name,
 
-catch(error){
 
+      email: profile.email,
 
 
-console.error(
+      role,
 
-'GET USER ROLE ERROR:',
 
-error
+      avatar_url: profile.avatar_url,
 
-)
 
+      must_change_password:
 
-return null
+      profile.must_change_password,
 
 
-}
+      created_at:
 
+      profile.created_at
+
+
+    }
+
+
+
+
+
+  }
+
+
+  catch(error) {
+
+
+    console.error(
+
+      'GET USER ROLE ERROR:',
+
+      error
+
+    )
+
+
+    return null
+
+
+  }
 
 
 }

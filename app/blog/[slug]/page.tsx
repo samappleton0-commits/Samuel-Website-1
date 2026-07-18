@@ -328,9 +328,8 @@ export default async function BlogArticlePage({
     []
 
 
-
 // =====================================================
-// APPROVED COMMENTS
+// APPROVED COMMENTS WITH REPLIES
 // =====================================================
 
 
@@ -340,7 +339,7 @@ const comments =
     post.id
 
   )
-
+  
 // =====================================================
 // PREVIOUS ARTICLE
 // =====================================================
