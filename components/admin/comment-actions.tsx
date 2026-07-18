@@ -14,12 +14,11 @@ import { useRouter } from 'next/navigation'
 
 
 
-
 type Props = {
 
   commentId:string
 
-  role:'admin'|'editor'|'user'
+  role:'admin' | 'editor' | 'user'
 
 }
 

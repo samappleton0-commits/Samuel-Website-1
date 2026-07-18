@@ -3,253 +3,105 @@
    app/admin/layout.tsx
 ========================================================= */
 
-
 import { redirect } from 'next/navigation'
-
 import AdminSidebar from '@/components/admin-sidebar'
-
 import { createClient } from '@/lib/supabase-server'
 
-
-
-
-
 export default async function AdminLayout({
-
   children,
-
 }: {
-
   children: React.ReactNode
-
 }) {
-
-
-
-
-
   // =====================================================
   // AUTH CHECK
   // =====================================================
 
-
   const supabase = await createClient()
 
-
-
   const {
-
-    data: {
-
-      user,
-
-    },
-
+    data: { user },
   } = await supabase.auth.getUser()
 
-
-
-
-
   if (!user) {
-
     redirect('/login')
-
   }
 
-
-
-
-
   return (
-
-
-    <div
-
-      className="
-
-        min-h-screen
-
-        overflow-x-hidden
-
-        bg-background
-
-      "
-
-    >
-
-
-
-      <div
-
-        className="
-
-          flex
-
-          min-h-screen
-
-          w-full
-
-        "
-
-      >
-
-
-
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      <div className="flex min-h-screen w-full">
 
         {/* =============================================
             DESKTOP SIDEBAR
         ============================================== */}
 
-
         <aside
-
           className="
-
             hidden
-
             lg:flex
-
             lg:w-72
-
             lg:shrink-0
-
             lg:p-5
-
           "
-
         >
-
-
           <AdminSidebar />
-
-
         </aside>
-
-
-
-
-
-
 
         {/* =============================================
             MAIN CONTENT
         ============================================== */}
 
-
         <main
-
           className="
-
             flex-1
-
             min-w-0
-
             bg-background
-
           "
-
         >
 
-
-
           {/* ==========================================
-              MOBILE SIDEBAR / HEADER
+              MOBILE HEADER (FIXED)
           =========================================== */}
 
-
           <div
-
             className="
-
-              sticky
-
+              fixed
               top-0
-
-              z-30
-
-              block
-
+              left-0
+              right-0
+              z-40
+              bg-background
               px-4
-
               pt-4
-
+              pb-2
               lg:hidden
-
             "
-
           >
-
-
             <AdminSidebar />
-
-
           </div>
-
-
-
-
-
-
 
           {/* ==========================================
               PAGE CONTENT
           =========================================== */}
 
-
           <section
-
             className="
-
               w-full
-
               px-4
-
+              pt-28
               pb-10
-
-              pt-6
-
-
               sm:px-6
-
-
               md:px-8
-
-
               lg:px-8
-
-
+              lg:pt-8
               xl:px-10
-
             "
-
           >
-
-
             {children}
-
-
           </section>
-
-
-
-
 
         </main>
 
-
-
-
-
       </div>
-
-
-
-
-
     </div>
-
-
   )
-
 }

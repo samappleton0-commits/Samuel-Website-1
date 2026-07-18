@@ -9,15 +9,10 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import {
-
   MessageCircle,
-
   CheckCircle,
-
   Clock,
-
   ExternalLink,
-
 } from 'lucide-react'
 
 
@@ -27,6 +22,8 @@ import { getUserRole } from '@/lib/get-user-role'
 
 import CommentActions from '@/components/admin/comment-actions'
 
+import CommentReply from '@/components/admin/comment-reply'
+
 
 
 
@@ -34,6 +31,19 @@ import CommentActions from '@/components/admin/comment-actions'
 // =========================================================
 // TYPES
 // =========================================================
+
+
+type BlogPost = {
+
+  title:string
+
+  slug:string
+
+  user_id:string
+
+}
+
+
 
 
 type Comment = {
@@ -46,22 +56,23 @@ type Comment = {
 
   content:string
 
-  status:string
+  status:
+    | 'pending'
+    | 'approved'
+    | 'rejected'
+
 
   created_at:string
 
   post_id:string
 
+  parent_id:string | null
 
-  blog_posts?:{
 
-    title:string
+  blog_posts?:BlogPost | null
 
-    slug:string
 
-    user_id:string
-
-  }
+  replies?:Comment[]
 
 }
 
@@ -81,7 +92,7 @@ export default async function AdminCommentsPage(){
 
 
   // =====================================================
-  // USER ROLE CHECK
+  // CHECK USER ROLE
   // =====================================================
 
 
@@ -91,197 +102,123 @@ export default async function AdminCommentsPage(){
 
   if(!userRole){
 
+
     redirect('/login')
 
-  }
 
+  }
 
 
 
 
   const supabase = await createClient()
 
+    // =====================================================
+  // FETCH COMMENTS
+  // =====================================================
 
 
-// =====================================================
-// FETCH COMMENTS
-// =====================================================
+  const commentSelect = `
 
+    id,
 
-let data:any[] = []
+    name,
 
-let error:any = null
+    email,
 
+    content,
 
+    status,
 
-// =====================================================
-// ADMIN
-// GET ALL COMMENTS
-// =====================================================
+    created_at,
 
+    post_id,
 
-if(userRole.role === 'admin'){
+    parent_id,
 
+    blog_posts(
 
-const result = await supabase
+      title,
 
-.from('comments')
+      slug,
 
-.select(`
-id,
-name,
-email,
-content,
-status,
-created_at,
-post_id,
+      user_id
 
-blog_posts(
-title,
-slug,
-user_id
-)
+    )
 
-`)
+  `
 
-.order(
-'created_at',
-{
-ascending:false
-}
-)
 
 
-data = result.data ?? []
 
-error = result.error
+  let comments:Comment[] = []
 
 
-}
 
 
 
+  // =====================================================
+  // ADMIN
+  // SEE ALL COMMENTS
+  // =====================================================
 
 
+  if(userRole.role === 'admin'){
 
 
-// =====================================================
-// EDITOR / USER
-// ONLY THEIR ARTICLES
-// =====================================================
 
+    const {
 
-else{
-
-
-// Get their articles first
-
-
-const {
-
-data:articles,
-
-error:articleError
-
-}=await supabase
-
-.from('blog_posts')
-
-.select('id')
-
-.eq(
-'user_id',
-userRole.user_id
-)
-
-
-
-if(articleError){
-
-console.error(
-'ARTICLE LOOKUP ERROR:',
-articleError
-)
-
-}
-
-else{
-
-
-const articleIds =
-articles?.map(
-article=>article.id
-) ?? []
-
-
-
-
-
-if(articleIds.length){
-
-
-const result = await supabase
-
-.from('comments')
-
-.select(`
-id,
-name,
-email,
-content,
-status,
-created_at,
-post_id,
-
-blog_posts(
-title,
-slug,
-user_id
-)
-
-`)
-
-.in(
-'post_id',
-articleIds
-)
-
-.order(
-'created_at',
-{
-ascending:false
-}
-)
-
-
-
-data = result.data ?? []
-
-error = result.error
-
-
-
-}
-
-
-
-}
-
-
-
-}
-
-
-
-  if(error){
-
-    console.error(
-
-      'COMMENTS FETCH ERROR:',
+      data,
 
       error
 
-    )
+    } = await supabase
+
+
+      .from('comments')
+
+
+      .select(commentSelect)
+
+
+      .order(
+
+        'created_at',
+
+        {
+
+          ascending:false
+
+        }
+
+      )
+
+
+
+
+
+    if(error){
+
+
+      console.error(
+
+        'ADMIN COMMENTS ERROR:',
+
+        error
+
+      )
+
+
+    }
+
+
+
+    comments =
+
+      (data ?? []) as unknown as Comment[]
+
+
 
   }
 
@@ -289,763 +226,1114 @@ error = result.error
 
 
 
-  const comments =
 
-  (data ?? []) as unknown as Comment[]
+
+
 
   // =====================================================
-// STATS
-// =====================================================
+  // EDITOR / USER
+  // ONLY COMMENTS ON THEIR POSTS
+  // =====================================================
 
 
-const pendingComments = comments.filter(
+  else {
 
-  comment =>
 
-  comment.status === 'pending'
 
-)
+    const {
 
+      data:articles,
 
+      error:articleError
 
-const approvedComments = comments.filter(
 
-  comment =>
+    } = await supabase
 
-  comment.status === 'approved'
 
-)
+      .from('blog_posts')
 
 
+      .select('id')
 
 
+      .eq(
 
+        'user_id',
 
+        userRole.user_id
 
+      )
 
-return (
 
-<div
 
-className="
-mx-auto
-max-w-6xl
-"
 
->
 
 
+    if(articleError){
 
 
 
+      console.error(
 
+        'ARTICLE LOOKUP ERROR:',
 
+        articleError
 
-{/* =====================================================
-    HEADER
-===================================================== */}
+      )
 
 
 
-<div
+    }
 
-className="
-mb-10
-"
+    else {
 
->
 
 
-<h1
+      const articleIds =
 
-className="
-text-4xl
-font-black
-"
+        articles?.map(
 
->
+          article => article.id
 
-Comments
+        ) ?? []
 
-</h1>
 
 
 
 
-<p
 
-className="
-mt-2
-text-muted-foreground
-"
 
->
+      if(articleIds.length){
 
-{
 
-userRole.role === 'admin'
 
-?
+        const {
 
-'Review and manage all blog comments.'
+          data,
 
-:
+          error
 
-'Review comments on your articles.'
 
-}
+        } = await supabase
 
-</p>
 
+          .from('comments')
 
 
-</div>
+          .select(commentSelect)
 
 
+          .in(
 
+            'post_id',
 
+            articleIds
 
+          )
 
 
+          .order(
 
+            'created_at',
 
+            {
 
+              ascending:false
 
+            }
 
+          )
 
-{/* =====================================================
-    STATS
-===================================================== */}
 
 
 
-<div
 
-className="
-mb-10
-grid
-gap-5
-md:grid-cols-3
-"
 
->
+        if(error){
 
 
+          console.error(
 
+            'EDITOR COMMENTS ERROR:',
 
+            error
 
+          )
 
 
-<div
+        }
 
-className="
-rounded-3xl
-border
-border-surface-border
-bg-card
-p-6
-"
 
->
 
 
-<Clock size={24}/>
 
+        comments =
 
+          (data ?? []) as unknown as Comment[]
 
-<p
 
-className="
-mt-4
-text-sm
-text-muted-foreground
-"
 
->
+      }
 
-Pending
 
-</p>
 
+    }
 
 
-<h2
 
-className="
-text-3xl
-font-black
-"
+  }
 
->
 
-{pendingComments.length}
 
-</h2>
 
 
 
-</div>
 
 
 
+  // =====================================================
+  // BUILD COMMENT TREE
+  // =====================================================
 
 
+  const commentMap =
 
+    new Map<string,Comment>()
 
 
 
-<div
 
-className="
-rounded-3xl
-border
-border-surface-border
-bg-card
-p-6
-"
+  comments.forEach(comment=>{
 
->
 
+    commentMap.set(
 
-<CheckCircle size={24}/>
+      comment.id,
 
+      {
 
+        ...comment,
 
-<p
+        replies:[]
 
-className="
-mt-4
-text-sm
-text-muted-foreground
-"
+      }
 
->
+    )
 
-Approved
 
-</p>
+  })
 
 
 
-<h2
 
-className="
-text-3xl
-font-black
-"
 
->
 
-{approvedComments.length}
+  const rootComments:Comment[] = []
 
-</h2>
 
 
 
-</div>
 
 
+  comments.forEach(comment=>{
 
 
 
+    const current =
 
+      commentMap.get(
 
+        comment.id
 
+      )
 
-<div
 
-className="
-rounded-3xl
-border
-border-surface-border
-bg-card
-p-6
-"
 
->
 
 
-<MessageCircle size={24}/>
+    if(!current){
 
+      return
 
+    }
 
-<p
 
-className="
-mt-4
-text-sm
-text-muted-foreground
-"
 
->
 
-Total
 
-</p>
+    if(comment.parent_id){
 
 
 
-<h2
+      const parent =
 
-className="
-text-3xl
-font-black
-"
+        commentMap.get(
 
->
+          comment.parent_id
 
-{comments.length}
+        )
 
-</h2>
 
 
 
-</div>
 
+      if(parent){
 
 
 
+        parent.replies!.push(
 
+          current
 
+        )
 
-</div>
 
+      }
 
 
 
+    }
 
 
-{/* =====================================================
-    COMMENTS LIST
-===================================================== */}
+    else {
 
 
 
-<div
+      rootComments.push(
 
-className="
-space-y-6
-"
+        current
 
->
+      )
 
 
 
+    }
 
 
-{
 
-comments.length === 0 ? (
 
+  })
 
+    // =====================================================
+  // STATS
+  // =====================================================
 
-<div
 
-className="
-rounded-3xl
-border
-border-surface-border
-bg-card
-p-10
-text-center
-"
+  const pendingComments = comments.filter(
 
->
+    comment =>
 
+    comment.status === 'pending'
 
-<MessageCircle
+  )
 
-className="
-mx-auto
-mb-3
-"
 
-/>
 
+  const approvedComments = comments.filter(
 
+    comment =>
 
-<p>
+    comment.status === 'approved'
 
-No comments found.
+  )
 
-</p>
 
 
 
-</div>
 
 
 
-)
+  return (
 
-:
+    <div
 
+      className="
+        mx-auto
+        max-w-6xl
+      "
 
+    >
 
-comments.map((comment)=>(
 
 
 
-<article
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-key={comment.id}
 
-className="
-rounded-3xl
-border
-border-surface-border
-bg-card
-p-6
-"
+      <div
 
->
+        className="
+          mb-10
+        "
 
+      >
 
 
+        <h1
 
+          className="
+            text-4xl
+            font-black
+          "
 
+        >
 
+          Comments
 
-{/* USER */}
+        </h1>
 
 
 
-<div
 
-className="
-flex
-items-start
-justify-between
-gap-5
-"
+        <p
 
->
+          className="
+            mt-2
+            text-muted-foreground
+          "
 
+        >
 
+          {
 
-<div>
+          userRole.role === 'admin'
 
+          ?
 
-<h3
+          'Review and manage all blog comments.'
 
-className="
-font-bold
-"
+          :
 
->
+          'Review comments on your articles.'
 
-{comment.name}
+          }
 
-</h3>
 
+        </p>
 
 
+      </div>
 
 
-{
 
-comment.email && (
 
 
-<p
 
-className="
-text-sm
-text-muted-foreground
-"
 
->
 
-{comment.email}
 
-</p>
+      {/* =====================================================
+          STATS
+      ===================================================== */}
 
 
-)
+      <div
 
-}
+        className="
+          mb-10
+          grid
+          gap-5
+          md:grid-cols-3
+        "
 
+      >
 
 
-</div>
 
 
+        <div
 
+          className="
+            rounded-3xl
+            border
+            border-surface-border
+            bg-card
+            p-6
+          "
 
+        >
 
+          <Clock size={24}/>
 
 
-<span
+          <p
 
-className="
-rounded-full
-bg-surface
-px-4
-py-1
-text-xs
-font-semibold
-uppercase
-"
+            className="
+              mt-4
+              text-sm
+              text-muted-foreground
+            "
 
->
+          >
 
-{comment.status}
+            Pending
 
-</span>
+          </p>
 
 
+          <h2
 
-</div>
+            className="
+              text-3xl
+              font-black
+            "
 
+          >
 
+            {pendingComments.length}
 
+          </h2>
 
 
+        </div>
 
 
 
 
-{/* ARTICLE */}
 
 
 
-{
+        <div
 
-comment.blog_posts && (
+          className="
+            rounded-3xl
+            border
+            border-surface-border
+            bg-card
+            p-6
+          "
 
+        >
 
+          <CheckCircle size={24}/>
 
-<div
 
-className="
-mt-5
-rounded-2xl
-bg-surface
-p-4
-"
+          <p
 
->
+            className="
+              mt-4
+              text-sm
+              text-muted-foreground
+            "
 
+          >
 
+            Approved
 
-<p
+          </p>
 
-className="
-text-xs
-uppercase
-text-muted-foreground
-"
 
->
+          <h2
 
-Article
+            className="
+              text-3xl
+              font-black
+            "
 
-</p>
+          >
 
+            {approvedComments.length}
 
+          </h2>
 
 
+        </div>
 
-<div
 
-className="
-mt-2
-flex
-items-center
-justify-between
-gap-3
-"
 
->
 
 
 
-<p
 
-className="
-font-semibold
-"
+        <div
 
->
+          className="
+            rounded-3xl
+            border
+            border-surface-border
+            bg-card
+            p-6
+          "
 
-{comment.blog_posts.title}
+        >
 
-</p>
+          <MessageCircle size={24}/>
 
 
+          <p
 
+            className="
+              mt-4
+              text-sm
+              text-muted-foreground
+            "
 
+          >
 
-<Link
+            Total
 
+          </p>
 
-href={`/blog/${comment.blog_posts.slug}`}
 
+          <h2
 
-target="_blank"
+            className="
+              text-3xl
+              font-black
+            "
 
+          >
 
-className="
-inline-flex
-items-center
-gap-1
-text-sm
-text-primary
-"
+            {comments.length}
 
+          </h2>
 
->
 
+        </div>
 
-View
 
 
-<ExternalLink size={14}/>
 
+      </div>
 
-</Link>
+            {/* =====================================================
+          COMMENTS LIST
+      ===================================================== */}
 
 
 
-</div>
+      <div
 
+        className="
+          space-y-6
+        "
 
+      >
 
 
-</div>
 
+      {
 
+        rootComments.length === 0 ? (
 
-)
 
-}
 
+          <div
 
+            className="
+              rounded-3xl
+              border
+              border-surface-border
+              bg-card
+              p-10
+              text-center
+            "
 
+          >
 
 
+            <MessageCircle
 
+              className="
+                mx-auto
+                mb-3
+              "
 
+            />
 
 
-{/* COMMENT MESSAGE */}
+            <p>
 
+              No comments found.
 
+            </p>
 
-<p
 
-className="
-mt-5
-leading-7
-text-muted-foreground
-"
 
->
+          </div>
 
-{comment.content}
 
-</p>
 
+        )
 
+        :
 
 
 
+        rootComments.map(comment => (
 
 
 
+          <article
 
-{/* DATE */}
+            key={comment.id}
 
+            className="
+              rounded-3xl
+              border
+              border-surface-border
+              bg-card
+              p-6
+            "
 
+          >
 
-<p
 
-className="
-mt-4
-text-xs
-text-muted-foreground
-"
 
->
 
 
-{
+            {/* USER */}
 
-new Intl.DateTimeFormat(
 
-'en-US',
+            <div
 
-{
+              className="
+                flex
+                items-start
+                justify-between
+                gap-5
+              "
 
-day:'numeric',
+            >
 
-month:'long',
 
-year:'numeric',
+              <div>
 
-timeZone:'UTC'
 
-}
+                <h3
 
-).format(
+                  className="
+                    font-bold
+                  "
 
-new Date(comment.created_at)
+                >
 
-)
+                  {comment.name}
 
-}
+                </h3>
 
 
-</p>
 
 
+                {
 
+                comment.email && (
 
 
+                  <p
 
+                    className="
+                      text-sm
+                      text-muted-foreground
+                    "
 
+                  >
 
+                    {comment.email}
 
-{/* ACTIONS */}
+                  </p>
 
 
-<CommentActions
+                )
 
-commentId={comment.id}
+                }
 
-role={userRole.role}
 
-/>
+              </div>
 
 
 
 
+              <span
 
+                className="
+                  rounded-full
+                  bg-surface
+                  px-4
+                  py-1
+                  text-xs
+                  font-semibold
+                  uppercase
+                "
 
+              >
 
-</article>
+                {comment.status}
 
 
+              </span>
 
-))
 
 
-}
+            </div>
 
 
 
-</div>
 
 
 
 
 
 
+            {/* ARTICLE */}
 
 
-</div>
 
-)
+            {
 
+            comment.blog_posts && (
+
+
+
+              <div
+
+                className="
+                  mt-5
+                  rounded-2xl
+                  bg-surface
+                  p-4
+                "
+
+              >
+
+
+                <p
+
+                  className="
+                    text-xs
+                    uppercase
+                    text-muted-foreground
+                  "
+
+                >
+
+                  Article
+
+                </p>
+
+
+
+
+                <div
+
+                  className="
+                    mt-2
+                    flex
+                    items-center
+                    justify-between
+                    gap-3
+                  "
+
+                >
+
+
+                  <p
+
+                    className="
+                      font-semibold
+                    "
+
+                  >
+
+                    {comment.blog_posts.title}
+
+                  </p>
+
+
+
+
+                  <Link
+
+                    href={`/blog/${comment.blog_posts.slug}`}
+
+                    target="_blank"
+
+                    className="
+                      inline-flex
+                      items-center
+                      gap-1
+                      text-sm
+                      text-primary
+                    "
+
+                  >
+
+                    View
+
+                    <ExternalLink size={14}/>
+
+
+                  </Link>
+
+
+                </div>
+
+
+              </div>
+
+
+            )
+
+            }
+
+
+
+
+
+
+
+
+
+            {/* COMMENT */}
+
+
+            <p
+
+              className="
+                mt-5
+                leading-7
+                text-muted-foreground
+              "
+
+            >
+
+              {comment.content}
+
+            </p>
+
+
+
+
+
+
+
+
+            {/* DATE */}
+
+
+            <p
+
+              className="
+                mt-4
+                text-xs
+                text-muted-foreground
+              "
+
+            >
+
+              {
+
+              new Intl.DateTimeFormat(
+
+                'en-US',
+
+                {
+
+                  day:'numeric',
+
+                  month:'long',
+
+                  year:'numeric',
+
+                  timeZone:'UTC'
+
+                }
+
+              ).format(
+
+                new Date(comment.created_at)
+
+              )
+
+              }
+
+
+            </p>
+
+
+
+
+
+
+
+
+            {/* ADMIN ACTIONS */}
+
+
+            <CommentActions
+
+              commentId={comment.id}
+
+              role={
+
+                userRole.role as
+
+                'admin' |
+
+                'editor' |
+
+                'user'
+
+              }
+
+            />
+
+
+
+
+
+
+
+            {/* REPLY BOX */}
+
+
+
+            <CommentReply
+
+              commentId={comment.id}
+
+              postId={comment.post_id}
+
+            />
+
+
+
+
+
+
+
+
+
+            {/* CHILD REPLIES */}
+
+
+
+            {
+
+            comment.replies &&
+
+            comment.replies.length > 0 && (
+
+
+
+              <div
+
+                className="
+                  mt-6
+                  ml-6
+                  space-y-4
+                  border-l
+                  pl-5
+                "
+
+              >
+
+
+
+              {
+
+              comment.replies.map(reply => (
+
+
+
+                <div
+
+                  key={reply.id}
+
+                  className="
+                    rounded-2xl
+                    bg-surface
+                    p-5
+                  "
+
+                >
+
+
+                  <h4
+
+                    className="
+                      font-bold
+                    "
+
+                  >
+
+                    {reply.name}
+
+                  </h4>
+
+
+
+                  <p
+
+                    className="
+                      mt-2
+                      text-muted-foreground
+                    "
+
+                  >
+
+                    {reply.content}
+
+                  </p>
+
+
+
+                  <p
+
+                    className="
+                      mt-3
+                      text-xs
+                      text-muted-foreground
+                    "
+
+                  >
+
+                    Reply
+
+
+                  </p>
+
+
+                </div>
+
+
+
+              ))
+
+              }
+
+
+              </div>
+
+
+
+            )
+
+            }
+
+
+
+
+
+          </article>
+
+
+
+        ))
+
+
+      }
+
+
+
+      </div>
+
+
+
+    </div>
+
+  )
 
 }
