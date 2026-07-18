@@ -3,9 +3,7 @@
    components/admin/dashboard/profile-card.tsx
 ===================================================== */
 
-
 'use client'
-
 
 import Image from 'next/image'
 
@@ -13,7 +11,6 @@ import {
   useEffect,
   useState,
 } from 'react'
-
 
 import {
   Shield,
@@ -23,19 +20,17 @@ import {
 
 
 
-
-
 type Props = {
 
   user: {
 
-    name:string
+    name: string
 
-    email:string
+    email: string
 
-    role:string
+    role: string
 
-    avatar_url?:string | null
+    avatar_url?: string | null
 
   }
 
@@ -43,24 +38,16 @@ type Props = {
 
 
 
-
-
-
-
 export default function ProfileCard({
 
   user,
 
-}:Props){
-
+}: Props) {
 
 
 const [greeting,setGreeting] = useState('')
 
-
 const [dateTime,setDateTime] = useState('')
-
-
 
 
 
@@ -73,7 +60,6 @@ function updateDashboardInfo(){
 
 
 const now = new Date()
-
 
 const hour = now.getHours()
 
@@ -107,8 +93,6 @@ setGreeting('Good Night')
 
 
 
-
-
 const date = now.toLocaleDateString(
 
 'en-US',
@@ -126,10 +110,6 @@ day:'numeric'
 }
 
 )
-
-
-
-
 
 
 
@@ -151,9 +131,6 @@ hour12:true
 
 
 
-
-
-
 setDateTime(
 
 `${date} • ${time}`
@@ -166,11 +143,7 @@ setDateTime(
 
 
 
-
-
-
 updateDashboardInfo()
-
 
 
 const timer = setInterval(
@@ -182,16 +155,10 @@ updateDashboardInfo,
 )
 
 
-
 return ()=>clearInterval(timer)
 
 
-
 },[])
-
-
-
-
 
 
 
@@ -210,66 +177,35 @@ const initials = user.name
 .join('')
 
 .toUpperCase()
-
-
-
-
-
-
-
 return (
-
-
 
 <section
 
-
 className="
-
 w-full
-
 rounded-3xl
-
 border
-
 bg-card
-
-p-5
-
+p-4
 shadow-sm
-
 sm:p-6
-
 "
 
 >
-
 
 
 <div
 
-
 className="
-
 flex
-
 flex-col
-
-gap-8
-
+gap-6
 lg:flex-row
-
 lg:items-center
-
 lg:justify-between
-
 "
 
 >
-
-
-
-
 
 
 
@@ -278,50 +214,32 @@ lg:justify-between
 ========================== */}
 
 
-
 <div
 
-
 className="
-
 flex
-
 min-w-0
-
 flex-col
-
 items-center
-
-gap-5
-
+gap-3
 text-center
-
 sm:flex-row
-
+sm:gap-5
 sm:text-left
-
 "
 
 >
-
-
-
-
 
 
 
 <div
 
 className="
-
 relative
-
 shrink-0
-
 "
 
 >
-
 
 
 {
@@ -329,45 +247,27 @@ shrink-0
 user.avatar_url ? (
 
 
-
 <Image
-
 
 src={user.avatar_url}
 
-
 alt={user.name}
-
 
 width={96}
 
-
 height={96}
 
-
 className="
-
-h-24
-
-w-24
-
+h-20
+w-20
 rounded-full
-
 border
-
 object-cover
-
-sm:h-20
-
-sm:w-20
-
+sm:h-24
+sm:w-24
 "
 
-
-
-
 />
-
 
 
 )
@@ -377,46 +277,29 @@ sm:w-20
 (
 
 
-
 <div
 
-
 className="
-
 flex
-
-h-24
-
-w-24
-
+h-20
+w-20
 items-center
-
 justify-center
-
 rounded-full
-
 bg-primary
-
-text-3xl
-
+text-2xl
 font-bold
-
 text-primary-foreground
-
-sm:h-20
-
-sm:w-20
-
+sm:h-24
+sm:w-24
+sm:text-3xl
 "
 
 >
 
-
 {initials}
 
-
 </div>
-
 
 
 )
@@ -425,36 +308,21 @@ sm:w-20
 
 
 
-
-
-
 <span
 
-
 className="
-
 absolute
-
 bottom-1
-
 right-1
-
 h-5
-
 w-5
-
 rounded-full
-
 border-2
-
 border-card
-
 bg-green-500
-
 "
 
 />
-
 
 
 </div>
@@ -463,42 +331,54 @@ bg-green-500
 
 
 
-
-
-
-
 <div
 
-
 className="
-
 min-w-0
-
 "
 
 >
-
-
 
 
 <h1
 
-
 className="
-
-truncate
-
 text-xl
-
 font-bold
-
 sm:text-2xl
-
 "
 
 >
 
-{greeting}, {user.name} 👋
+<span
+
+className="
+block
+text-muted-foreground
+sm:inline
+"
+
+>
+
+{greeting},
+
+</span>
+
+
+<span
+
+className="
+block
+sm:ml-2
+sm:inline
+"
+
+>
+
+{user.name} 👋
+
+</span>
+
 
 </h1>
 
@@ -506,18 +386,12 @@ sm:text-2xl
 
 
 
-
 <p
 
-
 className="
-
 mt-2
-
 text-sm
-
 font-semibold
-
 "
 
 >
@@ -530,23 +404,14 @@ Welcome back to your dashboard.
 
 
 
-
-
 <p
 
-
 className="
-
 mt-2
-
 max-w-xl
-
 text-sm
-
 leading-6
-
 text-muted-foreground
-
 "
 
 >
@@ -561,20 +426,12 @@ from one place.
 
 
 
-
-
 </div>
 
 
 
 
-
-
 </div>
-
-
-
-
 
 
 
@@ -585,28 +442,17 @@ from one place.
 ========================== */}
 
 
-
 <div
 
-
 className="
-
 grid
-
 w-full
-
 gap-3
-
 sm:max-w-sm
-
 lg:max-w-md
-
 "
 
 >
-
-
-
 
 
 <InfoCard
@@ -618,10 +464,6 @@ label="Email"
 value={user.email}
 
 />
-
-
-
-
 
 
 
@@ -637,10 +479,6 @@ value={user.role}
 
 
 
-
-
-
-
 <InfoCard
 
 icon={<Calendar size={18}/>}
@@ -653,44 +491,21 @@ value={dateTime || 'Loading...'}
 
 
 
-
-
-
-
 </div>
 
 
 
-
-
-
-
 </div>
-
-
-
 
 
 
 </section>
 
-
-
 )
-
 
 }
 
-
-
-
-
-
-
-
-
 function InfoCard({
-
 
 icon,
 
@@ -709,62 +524,48 @@ value:string
 }){
 
 
-
 return (
 
 
-
 <div
 
-
 className="
-
 flex
-
 items-center
-
 gap-3
-
 rounded-xl
-
 bg-muted/40
-
-px-4
-
+px-3
 py-3
-
+sm:px-4
 "
 
 >
 
 
+<div className="shrink-0">
 
 {icon}
 
+</div>
+
 
 
 
 <div
 
 className="
-
 min-w-0
-
 "
 
 >
-
 
 
 <p
 
-
 className="
-
 text-xs
-
 text-muted-foreground
-
 "
 
 >
@@ -779,15 +580,10 @@ text-muted-foreground
 
 <p
 
-
 className="
-
 truncate
-
 text-sm
-
 font-semibold
-
 "
 
 >
@@ -798,19 +594,13 @@ font-semibold
 
 
 
-
-
 </div>
 
 
 
-
-
 </div>
-
 
 
 )
-
 
 }
