@@ -4,7 +4,9 @@
 // =====================================================
 
 
-import { createPublicClient } from '@/lib/supabase-public'
+import {
+  createPublicClient,
+} from '@/lib/supabase-public'
 
 
 
@@ -15,25 +17,47 @@ import { createPublicClient } from '@/lib/supabase-public'
 // =====================================================
 
 
+export type CommentStatus =
+
+  | 'pending'
+
+  | 'approved'
+
+  | 'rejected'
+
+
+
+
+
 export type Comment = {
+
 
   id:string
 
+
   post_id:string
+
 
   parent_id:string | null
 
+
   name:string
+
 
   email:string | null
 
+
   content:string
 
-  status:string
+
+  status:CommentStatus
+
 
   created_at:string
 
+
   replies?:Comment[]
+
 
 }
 
@@ -43,10 +67,40 @@ export type Comment = {
 
 
 
+// =====================================================
+// DATABASE SELECT FIELDS
+// =====================================================
+
+
+const COMMENT_FIELDS = `
+
+  id,
+
+  post_id,
+
+  parent_id,
+
+  name,
+
+  email,
+
+  content,
+
+  status,
+
+  created_at
+
+`
+
+
+
+
+
 
 
 // =====================================================
-// GET APPROVED COMMENTS WITH REPLIES
+// GET APPROVED COMMENTS
+// PUBLIC COMMENTS + REPLIES
 // =====================================================
 
 
@@ -54,10 +108,12 @@ export async function getApprovedComments(
 
   postId:string
 
-){
+):Promise<Comment[]> {
+
 
 
   const supabase =
+
     createPublicClient()
 
 
@@ -76,25 +132,11 @@ export async function getApprovedComments(
     .from('comments')
 
 
-    .select(`
+    .select(
 
-      id,
+      COMMENT_FIELDS
 
-      post_id,
-
-      parent_id,
-
-      name,
-
-      email,
-
-      content,
-
-      status,
-
-      created_at
-
-    `)
+    )
 
 
     .eq(
@@ -105,10 +147,6 @@ export async function getApprovedComments(
 
     )
 
-
-    // Show:
-    // 1. Approved main comments
-    // 2. Approved replies
 
     .eq(
 
@@ -135,6 +173,8 @@ export async function getApprovedComments(
 
 
 
+
+
   if(error){
 
 
@@ -142,12 +182,13 @@ export async function getApprovedComments(
 
       'GET COMMENTS ERROR:',
 
-      error
+      error.message
 
     )
 
 
     return []
+
 
   }
 
@@ -155,9 +196,13 @@ export async function getApprovedComments(
 
 
 
+
+
   const comments =
 
-    (data ?? []) as Comment[]
+    (data ?? []) as Comment
+
+
 
 
 
@@ -173,7 +218,9 @@ export async function getApprovedComments(
 
 
 
-  comments.forEach(comment => {
+
+
+  comments.forEach(comment=>{
 
 
     commentMap.set(
@@ -198,6 +245,7 @@ export async function getApprovedComments(
 
 
 
+
   const rootComments:Comment[] = []
 
 
@@ -205,7 +253,8 @@ export async function getApprovedComments(
 
 
 
-  comments.forEach(comment => {
+
+  comments.forEach(comment=>{
 
 
     const current =
@@ -231,7 +280,9 @@ export async function getApprovedComments(
 
 
 
+
     if(comment.parent_id){
+
 
 
       const parent =
@@ -245,10 +296,11 @@ export async function getApprovedComments(
 
 
 
+
       if(parent){
 
 
-        parent.replies?.push(
+        parent.replies!.push(
 
           current
 
@@ -256,7 +308,6 @@ export async function getApprovedComments(
 
 
       }
-
 
 
 
@@ -275,8 +326,9 @@ export async function getApprovedComments(
     }
 
 
-
   })
+
+
 
 
 
@@ -297,31 +349,22 @@ export async function getApprovedComments(
 
 
 
-
-
-
 // =====================================================
-// CREATE COMMENT / REPLY
+// CREATE COMMENT OR REPLY
 // =====================================================
 
 
 export async function createComment({
 
-
   postId,
-
 
   parentId = null,
 
-
   name,
-
 
   email,
 
-
   content,
-
 
 
 }:{
@@ -337,7 +380,11 @@ export async function createComment({
   content:string
 
 
-}){
+}):Promise<Comment>{
+
+
+
+
 
 
 
@@ -350,9 +397,197 @@ export async function createComment({
 
 
 
-  const {
 
-    data,
+  // =====================================================
+  // SANITIZE INPUT
+  // =====================================================
+
+
+  const cleanName =
+
+    name
+
+      ?.trim()
+
+      .slice(0,100)
+
+
+
+
+
+  const cleanEmail =
+
+    email
+
+      ?.trim()
+
+      .toLowerCase()
+
+      || null
+
+
+
+
+
+  const cleanContent =
+
+    content
+
+      ?.trim()
+
+      .slice(0,5000)
+
+
+
+
+
+
+
+
+
+  // =====================================================
+  // VALIDATION
+  // =====================================================
+
+
+  if(
+
+    !postId ||
+
+    !cleanName ||
+
+    !cleanContent
+
+  ){
+
+    throw new Error(
+
+      'Name and comment are required.'
+
+    )
+
+  }
+
+
+
+
+
+
+
+
+
+  // =====================================================
+  // CHECK REPLY PARENT
+  // =====================================================
+
+
+  if(parentId){
+
+
+
+    const {
+
+      data:parentComment,
+
+      error:parentError
+
+
+    } = await supabase
+
+
+      .from('comments')
+
+
+      .select('id')
+
+
+      .eq(
+
+        'id',
+
+        parentId
+
+      )
+
+
+      .single()
+
+
+
+
+
+
+    if(
+
+      parentError ||
+
+      !parentComment
+
+    ){
+
+      throw new Error(
+
+        'Original comment not found.'
+
+      )
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+
+  // =====================================================
+  // STATUS WORKFLOW
+  //
+  // New comment:
+  // pending approval
+  //
+  // Reply:
+  // approved immediately
+  //
+  // =====================================================
+
+
+  const status:CommentStatus =
+
+
+    parentId
+
+
+      ? 'approved'
+
+
+      : 'pending'
+
+
+
+
+
+
+
+
+
+
+  // =====================================================
+  // INSERT
+  //
+  // IMPORTANT:
+  // No .select()
+  // because pending comments are
+  // hidden by public SELECT RLS
+  //
+  // =====================================================
+
+
+  const {
 
     error
 
@@ -365,70 +600,25 @@ export async function createComment({
     .insert({
 
 
-
       post_id:postId,
 
 
-
-      parent_id:parentId,
-
+      parent_id:parentId || null,
 
 
-      name:name.trim(),
+      name:cleanName,
 
 
-
-      email:
-
-        email?.trim() || null,
+      email:cleanEmail,
 
 
+      content:cleanContent,
 
-      content:
-
-        content.trim(),
-
-
-
-      // Main comments wait for approval
-      // Replies appear instantly
-
-      status:
-
-        parentId
-
-        ? 'approved'
-
-        : 'pending'
-
-
-
-    })
-
-
-    .select(`
-
-      id,
-
-      post_id,
-
-      parent_id,
-
-      name,
-
-      email,
-
-      content,
 
       status,
 
-      created_at
 
-    `)
-
-
-    .single()
-
+    })
 
 
 
@@ -439,16 +629,33 @@ export async function createComment({
   if(error){
 
 
+
     console.error(
 
-      'CREATE COMMENT ERROR:',
+      'CREATE COMMENT ERROR',
 
-      error
+      {
+
+        message:error.message,
+
+        code:error.code,
+
+        details:error.details,
+
+        hint:error.hint,
+
+      }
 
     )
 
 
-    throw error
+
+
+    throw new Error(
+
+      error.message
+
+    )
 
 
   }
@@ -459,7 +666,45 @@ export async function createComment({
 
 
 
-  return data
+
+
+  // =====================================================
+  // RETURN LOCAL RESPONSE
+  //
+  // Cannot fetch pending comment
+  // because anon SELECT only sees approved.
+  //
+  // =====================================================
+
+
+  return {
+
+
+    id:'',
+
+
+    post_id:postId,
+
+
+    parent_id:parentId || null,
+
+
+    name:cleanName,
+
+
+    email:cleanEmail,
+
+
+    content:cleanContent,
+
+
+    status,
+
+
+    created_at:new Date().toISOString(),
+
+
+  }
 
 
 

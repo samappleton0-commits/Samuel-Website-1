@@ -4,11 +4,16 @@
 // =====================================================
 
 
-import { NextResponse } from 'next/server'
+import {
+  NextResponse,
+} from 'next/server'
+
 
 import {
   createComment,
 } from '@/lib/comments'
+
+
 
 
 
@@ -29,6 +34,12 @@ export async function POST(
   try {
 
 
+
+    // =====================================================
+    // READ REQUEST BODY
+    // =====================================================
+
+
     const body =
 
       await request.json()
@@ -37,19 +48,57 @@ export async function POST(
 
 
 
+
+
     const {
+
 
       postId,
 
+
       parentId,
+
 
       name,
 
+
       email,
+
 
       content
 
+
+
     } = body
+
+
+
+
+
+
+    console.log(
+
+      'COMMENT REQUEST:',
+
+      {
+
+        postId,
+
+        parentId,
+
+        name,
+
+        email,
+
+        content,
+
+      }
+
+    )
+
+
+
+
 
 
 
@@ -64,18 +113,23 @@ export async function POST(
 
       !postId ||
 
-      !name ||
+      !name?.trim() ||
 
-      !content
+      !content?.trim()
 
     ){
+
+
 
       return NextResponse.json(
 
         {
 
+          success:false,
+
           error:
-          'Name and comment are required'
+
+          'Name and comment are required.'
 
         },
 
@@ -87,14 +141,96 @@ export async function POST(
 
       )
 
+
+
     }
 
 
 
 
 
+
+
+
+
+    if(
+
+      content.trim().length < 3
+
+    ){
+
+
+      return NextResponse.json(
+
+        {
+
+          success:false,
+
+          error:
+
+          'Comment is too short.'
+
+        },
+
+        {
+
+          status:400
+
+        }
+
+      )
+
+
+    }
+
+
+
+
+
+
+
+
+
+    if(
+
+      content.trim().length > 5000
+
+    ){
+
+
+      return NextResponse.json(
+
+        {
+
+          success:false,
+
+          error:
+
+          'Comment is too long.'
+
+        },
+
+        {
+
+          status:400
+
+        }
+
+      )
+
+
+    }
+
+
+
+
+
+
+
+
+
     // =====================================================
-    // SAVE COMMENT / REPLY
+    // CREATE COMMENT
     // =====================================================
 
 
@@ -104,17 +240,26 @@ export async function POST(
 
         postId,
 
+
         parentId:
 
           parentId || null,
 
+
         name,
+
 
         email,
 
-        content
+
+        content,
+
 
       })
+
+
+
+
 
 
 
@@ -131,24 +276,36 @@ export async function POST(
 
       {
 
+
         success:true,
+
 
         comment,
 
+
+
         message:
+
 
           parentId
 
           ?
 
-          'Reply submitted successfully'
+
+          'Reply submitted successfully.'
+
+
 
           :
 
-          'Comment submitted successfully'
+
+
+          'Comment submitted and waiting for approval.'
+
 
 
       },
+
 
       {
 
@@ -156,7 +313,14 @@ export async function POST(
 
       }
 
+
+
     )
+
+
+
+
+
 
 
 
@@ -165,6 +329,8 @@ export async function POST(
   }
 
   catch(error){
+
+
 
 
 
@@ -180,24 +346,53 @@ export async function POST(
 
 
 
+
+
+
     return NextResponse.json(
 
       {
 
+
+        success:false,
+
+
         error:
 
-        'Unable to submit comment'
+
+          error instanceof Error
+
+          ?
+
+
+          error.message
+
+
+
+          :
+
+
+
+          'Unable to submit comment.'
+
 
 
       },
 
+
       {
+
 
         status:500
 
+
       }
 
+
+
     )
+
+
 
 
   }
