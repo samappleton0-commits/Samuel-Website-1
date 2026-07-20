@@ -1,17 +1,20 @@
+// =====================================================
+// COMMENTS SECTION
+// components/comments-section.tsx
+// PART 1/4
+// =====================================================
+
+
 'use client'
 
 
-
 import {
-
+  useEffect,
   useState,
-
 } from 'react'
 
 
-
 import {
-
 
   MessageCircle,
 
@@ -27,6 +30,7 @@ import {
 
   ChevronUp,
 
+  Edit3,
 
 } from 'lucide-react'
 
@@ -51,6 +55,9 @@ export type Comment = {
 
 
   parent_id:string | null
+
+
+  user_id:string | null
 
 
   name:string
@@ -86,8 +93,7 @@ export type Comment = {
 
 
 
-
-type Props = {
+type CommentsSectionProps = {
 
 
   postId:string
@@ -98,8 +104,16 @@ type Props = {
 
 }
 
+
+
+
+
+
+
+
+
 // =====================================================
-// COMPONENT
+// MAIN COMPONENT
 // =====================================================
 
 
@@ -109,65 +123,68 @@ export default function CommentsSection({
 
   initialComments,
 
+}:CommentsSectionProps){
 
-}:Props){
 
 
 
 
 
-  const [
 
-    comments,
+const [
 
-    setComments
+  comments,
 
-  ] = useState<Comment[]>(
+  setComments
 
-    initialComments
+] = useState<Comment[]>(
 
-  )
+  initialComments
 
+)
 
 
 
 
 
 
-  const [
 
-    name,
+// =====================================================
+// VISITOR STATE
+// =====================================================
 
-    setName
 
-  ] = useState('')
+const [
 
+  visitorName,
 
+  setVisitorName
 
+] = useState('')
 
 
 
-  const [
 
-    email,
+const [
 
-    setEmail
+  visitorLoaded,
 
-  ] = useState('')
+  setVisitorLoaded
 
+] = useState(false)
 
 
 
 
 
+const [
 
-  const [
+  showNameInput,
 
-    content,
+  setShowNameInput
 
-    setContent
+] = useState(true)
 
-  ] = useState('')
 
 
 
@@ -175,13 +192,13 @@ export default function CommentsSection({
 
 
 
-  const [
+const [
 
-    replyContent,
+  name,
 
-    setReplyContent
+  setName
 
-  ] = useState('')
+] = useState('')
 
 
 
@@ -189,14 +206,14 @@ export default function CommentsSection({
 
 
 
+const [
 
-  const [
+  email,
 
-    replyingTo,
+  setEmail
 
-    setReplyingTo
+] = useState('')
 
-  ] = useState<string | null>(null)
 
 
 
@@ -204,13 +221,13 @@ export default function CommentsSection({
 
 
 
-  const [
+const [
 
-    loading,
+  content,
 
-    setLoading
+  setContent
 
-  ] = useState(false)
+] = useState('')
 
 
 
@@ -218,30 +235,230 @@ export default function CommentsSection({
 
 
 
-  const [
 
-    message,
+// =====================================================
+// REPLY STATE
+// =====================================================
 
-    setMessage
 
-  ] = useState('')
+const [
 
+  replyContents,
 
+  setReplyContents
 
+] = useState<Record<string,string>>({})
 
 
 
 
-  const [
 
-    expandedReplies,
+const [
 
-    setExpandedReplies
+  replyingTo,
 
-  ] = useState<Record<string,boolean>>({})
+  setReplyingTo
 
+] = useState<string | null>(null)
 
 
+
+
+
+
+
+const [
+
+  loading,
+
+  setLoading
+
+] = useState(false)
+
+
+
+
+
+
+
+const [
+
+  message,
+
+  setMessage
+
+] = useState('')
+
+
+
+
+
+
+
+
+const [
+
+  expandedReplies,
+
+  setExpandedReplies
+
+] = useState<Record<string,boolean>>({})
+
+
+
+
+
+
+
+
+
+// =====================================================
+// LOAD VISITOR NAME
+// =====================================================
+
+
+useEffect(()=>{
+
+
+async function loadVisitor(){
+
+
+try{
+
+
+const response = await fetch(
+
+  '/api/comment/visitor'
+
+)
+
+
+
+const result = await response.json()
+
+
+
+
+
+if(result.visitor?.name){
+
+
+setVisitorName(
+
+  result.visitor.name
+
+)
+
+
+setShowNameInput(false)
+
+
+}
+
+
+
+}
+
+
+catch(error){
+
+
+console.error(
+
+  'VISITOR LOAD ERROR:',
+
+  error
+
+)
+
+
+}
+
+
+
+finally{
+
+
+setVisitorLoaded(true)
+
+
+}
+
+
+
+}
+
+
+
+loadVisitor()
+
+
+
+},[])
+
+
+
+
+
+
+
+
+
+// =====================================================
+// DISPLAY NAME
+// =====================================================
+
+
+function getDisplayName(){
+
+
+return (
+
+  visitorName ||
+
+  name.trim()
+
+)
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================================
+// UPDATE REPLY TEXT
+// =====================================================
+
+
+function updateReplyContent(
+
+  commentId:string,
+
+  value:string
+
+){
+
+
+setReplyContents(prev=>({
+
+
+  ...prev,
+
+
+  [commentId]:value
+
+
+}))
+
+
+
+}
 
 
 
@@ -263,14 +480,15 @@ async function submitComment(
 ){
 
 
+const text = parentId
 
-  const text =
+?
 
-    parentId
+replyContents[parentId] || ''
 
-    ? replyContent
+:
 
-    : content
+content
 
 
 
@@ -278,308 +496,321 @@ async function submitComment(
 
 
 
-  if(!name.trim()){
+const displayName = getDisplayName()
 
 
-    setMessage(
 
-      'Please enter your name.'
 
-    )
 
 
-    return
 
-  }
+if(!displayName){
 
 
+setMessage(
 
+  'Please enter your name.'
 
+)
 
 
+return
 
 
+}
 
-  if(!text.trim()){
 
 
-    setMessage(
 
-      'Please enter a comment.'
 
-    )
 
 
-    return
+if(!text.trim()){
 
-  }
 
+setMessage(
 
+  'Please enter a comment.'
 
+)
 
 
+return
 
 
+}
 
 
-  try{
 
 
 
-    setLoading(true)
 
-    setMessage('')
 
 
+try{
 
 
 
+setLoading(true)
 
+setMessage('')
 
-    const response =
 
-      await fetch(
 
-        '/api/comment',
 
-        {
 
 
-          method:'POST',
 
+const response = await fetch(
 
-          headers:{
+'/api/comment',
 
+{
 
-            'Content-Type':
 
-              'application/json'
+method:'POST',
 
 
-          },
+headers:{
 
 
-          body:JSON.stringify({
+'Content-Type':
 
+'application/json'
 
-            postId,
 
+},
 
-            parentId,
 
 
-            name,
+body:JSON.stringify({
 
 
-            email,
+postId,
 
 
-            content:text
+parentId,
 
 
-          })
+name:displayName,
 
 
-        }
+email,
 
 
-      )
+content:text
 
 
 
+})
 
 
+}
 
 
+)
 
 
-    const result =
 
-      await response.json()
 
 
 
 
 
+const result = await response.json()
 
 
 
 
 
+if(!response.ok){
 
-    if(!response.ok){
 
+throw new Error(
 
-      throw new Error(
+result.error ||
 
-        result.error ??
+'Unable to submit comment.'
 
-        'Unable to submit comment.'
+)
 
-      )
 
+}
 
-    }
 
 
 
 
 
 
+const newComment = result.comment as Comment
 
 
 
-    const newComment =
 
-      result.comment as Comment
 
 
 
+setVisitorName(displayName)
 
+setShowNameInput(false)
 
 
 
 
 
 
-    // =====================================================
-    // IMPORTANT
-    //
-    // Main comments are pending
-    // They should NOT appear instantly
-    //
-    // Replies are approved
-    // They can appear immediately
-    //
-    // =====================================================
 
+if(parentId){
 
 
+addReply(
 
-    if(parentId){
+parentId,
 
+newComment
 
+)
 
-      addReply(
 
-        parentId,
+setReplyContents(prev=>({
 
-        newComment
 
-      )
+...prev,
 
 
+[parentId]:''
 
-      setReplyContent('')
 
+}))
 
 
-    }
 
-    else {
+}
 
+else{
 
 
-      // Do not add pending comment
-      // to public list
+setContent('')
 
 
+}
 
-      setContent('')
 
 
 
-    }
 
 
 
 
+setReplyingTo(null)
 
 
 
 
-    setReplyingTo(null)
 
 
+setMessage(
 
+parentId
 
+?
 
+'Reply posted successfully.'
 
+:
 
+'Comment submitted and waiting for approval.'
 
-
-    setMessage(
-
-
-      parentId
-
-
-      ?
-
-
-      'Reply posted successfully.'
-
-
-
-      :
-
-
-
-      'Comment submitted. Waiting for admin approval.'
-
-
-
-    )
-
-
-
-
-
-
-
-  }
-
-  catch(error){
-
-
-
-    console.error(
-
-      error
-
-    )
-
-
-
-
-    setMessage(
-
-      error instanceof Error
-
-      ? error.message
-
-      : 'Something went wrong.'
-
-    )
-
-
-
-
-  }
-
-  finally{
-
-
-    setLoading(false)
-
-
-  }
+)
 
 
 
 }
 
 
+
+catch(error){
+
+
+console.error(
+
+'COMMENT ERROR:',
+
+error
+
+)
+
+
+
+setMessage(
+
+error instanceof Error
+
+?
+
+error.message
+
+:
+
+'Something went wrong.'
+
+)
+
+
+}
+
+
+
+finally{
+
+
+setLoading(false)
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================================
+// END OF PART 1
+// =====================================================
+
+// =====================================================
+// PART 2/4
+// COMMENT FUNCTIONS
+// =====================================================
+
+
+
+
+
+
+
+// =====================================================
+// CHANGE NAME
+// =====================================================
+
+
+function changeName(){
+
+
+setShowNameInput(true)
+
+setName('')
+
+
+}
 
 
 
@@ -596,81 +827,82 @@ async function submitComment(
 
 function addReply(
 
-  parentId:string,
+parentId:string,
 
-  reply:Comment
+reply:Comment
 
 ){
 
 
-  setComments(prev =>
+
+setComments(prev=>
+
+prev.map(comment=>{
 
 
-    prev.map(comment=>{
+if(comment.id === parentId){
 
 
-
-      if(comment.id === parentId){
-
-
-        return {
+return {
 
 
-          ...comment,
+...comment,
 
 
-          replies:[
+replies:[
+
+...(comment.replies ?? []),
+
+reply
+
+]
 
 
-            ...(comment.replies ?? []),
-
-            reply
+}
 
 
-          ]
-
-        }
-
-
-      }
+}
 
 
 
 
-      return {
+return {
 
 
-        ...comment,
+...comment,
 
 
-        replies:
+replies:
 
-          comment.replies
+comment.replies
 
-          ?
+?
 
-          addNestedReply(
+addNestedReply(
 
-            comment.replies,
+comment.replies,
 
-            parentId,
+parentId,
 
-            reply
+reply
 
-          )
+)
 
-          :
+:
 
-          []
-
-
-      }
+[]
 
 
-    })
+
+}
 
 
-  )
+
+})
+
+
+)
+
 
 
 }
@@ -683,117 +915,139 @@ function addReply(
 
 
 
+
+
+// =====================================================
+// ADD NESTED REPLY
+// =====================================================
+
+
 function addNestedReply(
 
-  comments:Comment[],
+comments:Comment[],
 
-  parentId:string,
+parentId:string,
 
-  reply:Comment
+reply:Comment
 
 ):Comment[]{
 
 
 
-  return comments.map(comment=>{
-
-
-    if(comment.id === parentId){
-
-
-      return {
-
-
-        ...comment,
-
-
-        replies:[
-
-
-          ...(comment.replies ?? []),
-
-          reply
-
-
-        ]
-
-      }
-
-
-    }
+return comments.map(comment=>{
 
 
 
-    return {
+if(comment.id === parentId){
 
 
-      ...comment,
+return {
 
 
-      replies:
-
-        comment.replies
-
-        ?
-
-        addNestedReply(
-
-          comment.replies,
-
-          parentId,
-
-          reply
-
-        )
-
-        :
-
-        []
+...comment,
 
 
-    }
+replies:[
 
+...(comment.replies ?? []),
 
+reply
 
-  })
+]
 
 
 }
 
+
+}
+
+
+
+
+
+
+return {
+
+
+...comment,
+
+
+replies:
+
+comment.replies
+
+?
+
+addNestedReply(
+
+comment.replies,
+
+parentId,
+
+reply
+
+)
+
+:
+
+[]
+
+
+
+}
+
+
+
+})
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
 // =====================================================
-// DATE FORMAT
+// FORMAT DATE
 // =====================================================
 
 
 function formatDate(
 
-  date:string
+date:string
 
 ){
 
 
-  return new Date(date)
+return new Date(date)
 
-    .toLocaleDateString(
+.toLocaleDateString(
 
-      'en-GB',
+'en-GB',
 
-      {
-
-
-        day:'numeric',
+{
 
 
-        month:'long',
+day:'numeric',
 
 
-        year:'numeric'
+month:'long',
 
 
-      }
+year:'numeric'
 
 
-    )
+}
+
+
+)
 
 
 }
@@ -815,23 +1069,24 @@ function formatDate(
 
 function toggleReplies(
 
-  id:string
+id:string
 
 ){
 
 
-  setExpandedReplies(prev => ({
+setExpandedReplies(prev=>({
 
 
-    ...prev,
+...prev,
 
 
-    [id]:
+[id]:
 
-      !prev[id]
+!prev[id]
 
 
-  }))
+}))
+
 
 
 }
@@ -863,22 +1118,16 @@ className="space-y-8"
 
 
 
+
+
 {/* =====================================================
-    HEADER
+HEADER
 ===================================================== */}
 
 
 <div
 
-className="
-
-flex
-
-items-center
-
-gap-3
-
-"
+className="flex items-center gap-3"
 
 >
 
@@ -898,13 +1147,7 @@ className="text-primary"
 
 <h2
 
-className="
-
-text-2xl
-
-font-black
-
-"
+className="text-2xl font-black"
 
 >
 
@@ -916,13 +1159,7 @@ Comments ({comments.length})
 
 <p
 
-className="
-
-text-sm
-
-text-muted-foreground
-
-"
+className="text-sm text-muted-foreground"
 
 >
 
@@ -931,7 +1168,9 @@ Join the discussion below.
 </p>
 
 
+
 </div>
+
 
 
 </div>
@@ -945,40 +1184,115 @@ Join the discussion below.
 
 
 {/* =====================================================
-    COMMENT FORM
+COMMENT FORM
 ===================================================== */}
-
 
 
 <div
 
 className="
-
 rounded-3xl
-
 border
-
 border-surface-border
-
 bg-card
-
-p-6
-
+p-4
+sm:p-6
 "
 
 >
 
 
+
+
+
+{
+
+visitorLoaded && !showNameInput && (
+
+
 <div
 
+className="mb-4 flex items-center justify-between rounded-xl bg-muted/40 p-4"
+
+>
+
+
+<div>
+
+
+<p
+
+className="text-sm text-muted-foreground"
+
+>
+
+Commenting as
+
+</p>
+
+
+<p
+
+className="font-bold"
+
+>
+
+{visitorName}
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<button
+
+onClick={changeName}
+
+className="flex items-center gap-2 text-sm text-primary"
+
+>
+
+<Edit3 size={15}/>
+
+Change name
+
+</button>
+
+
+
+
+</div>
+
+
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+{
+
+showNameInput && (
+
+
+<div
 className="
-
 grid
-
 gap-4
-
-md:grid-cols-2
-
+sm:grid-cols-2
 "
 
 >
@@ -1000,25 +1314,8 @@ setName(e.target.value)
 placeholder="Your name"
 
 
-className="
+className="rounded-xl border px-4 py-3"
 
-rounded-xl
-
-border
-
-border-surface-border
-
-bg-background
-
-px-4
-
-py-3
-
-outline-none
-
-focus:border-primary
-
-"
 
 />
 
@@ -1043,31 +1340,21 @@ setEmail(e.target.value)
 placeholder="Email (optional)"
 
 
-className="
+className="rounded-xl border px-4 py-3"
 
-rounded-xl
-
-border
-
-border-surface-border
-
-bg-background
-
-px-4
-
-py-3
-
-outline-none
-
-focus:border-primary
-
-"
 
 />
 
 
 
 </div>
+
+
+
+)
+
+}
+
 
 
 
@@ -1096,34 +1383,11 @@ rows={5}
 placeholder="Write your comment..."
 
 
-className="
+className="mt-4 w-full rounded-xl border px-4 py-3"
 
-mt-4
 
-w-full
-
-rounded-xl
-
-border
-
-border-surface-border
-
-bg-background
-
-px-4
-
-py-3
-
-outline-none
-
-focus:border-primary
-
-"
 
 />
-
-
-
 
 
 
@@ -1134,47 +1398,13 @@ focus:border-primary
 <button
 
 
-onClick={()=>
-
-
-submitComment(null)
-
-
-}
+onClick={()=>submitComment(null)}
 
 
 disabled={loading}
 
 
-className="
-
-mt-4
-
-inline-flex
-
-items-center
-
-gap-2
-
-rounded-full
-
-bg-primary
-
-px-6
-
-py-3
-
-font-semibold
-
-text-white
-
-transition
-
-hover:opacity-90
-
-disabled:opacity-50
-
-"
+className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-white disabled:opacity-50"
 
 >
 
@@ -1182,9 +1412,7 @@ disabled:opacity-50
 <Send size={16}/>
 
 
-
 {
-
 
 loading
 
@@ -1196,14 +1424,10 @@ loading
 
 'Post Comment'
 
-
 }
 
 
-
 </button>
-
-
 
 
 
@@ -1218,21 +1442,11 @@ message && (
 
 <p
 
-className="
-
-mt-3
-
-text-sm
-
-text-muted-foreground
-
-"
+className="mt-3 text-sm text-muted-foreground"
 
 >
 
-
 {message}
-
 
 </p>
 
@@ -1240,6 +1454,8 @@ text-muted-foreground
 )
 
 }
+
+
 
 
 
@@ -1252,11 +1468,9 @@ text-muted-foreground
 
 
 
-
 {/* =====================================================
-    COMMENTS LIST
+COMMENTS LIST
 ===================================================== */}
-
 
 
 <div
@@ -1268,32 +1482,14 @@ className="space-y-6"
 
 {
 
-
 comments.length === 0
-
 
 ?
 
 
-(
-
-
-
 <div
 
-className="
-
-rounded-3xl
-
-border
-
-border-dashed
-
-p-10
-
-text-center
-
-"
+className="rounded-3xl border border-dashed p-10 text-center"
 
 >
 
@@ -1302,15 +1498,7 @@ text-center
 
 size={34}
 
-className="
-
-mx-auto
-
-mb-4
-
-text-muted-foreground
-
-"
+className="mx-auto mb-4 text-muted-foreground"
 
 />
 
@@ -1328,17 +1516,10 @@ No comments yet
 
 
 
+
 <p
 
-className="
-
-mt-2
-
-text-sm
-
-text-muted-foreground
-
-"
+className="mt-2 text-sm text-muted-foreground"
 
 >
 
@@ -1351,20 +1532,13 @@ Be the first to start the conversation.
 </div>
 
 
-)
-
-
-
 :
-
 
 
 comments.map(comment=>(
 
 
-
 <CommentItem
-
 
 key={comment.id}
 
@@ -1378,10 +1552,13 @@ replyingTo={replyingTo}
 setReplyingTo={setReplyingTo}
 
 
-replyContent={replyContent}
+replyContents={replyContents}
 
 
-setReplyContent={setReplyContent}
+updateReplyContent={updateReplyContent}
+
+
+setReplyContents={setReplyContents}
 
 
 submitComment={submitComment}
@@ -1399,12 +1576,11 @@ expandedReplies={expandedReplies}
 toggleReplies={toggleReplies}
 
 
+
 />
 
 
-
 ))
-
 
 
 }
@@ -1412,6 +1588,7 @@ toggleReplies={toggleReplies}
 
 
 </div>
+
 
 
 
@@ -1426,71 +1603,114 @@ toggleReplies={toggleReplies}
 )
 
 
+
+
+
+
+
 }
 
+
+
+
+
+
+
+
+
+
+
+
 // =====================================================
-// COMMENT ITEM TYPES
+// COMMENT ITEM PROPS
 // =====================================================
 
 
 type CommentItemProps = {
 
 
-  comment:Comment
-
-
-  replyingTo:string | null
-
-
-  setReplyingTo:(
-
-    id:string | null
-
-  )=>void
+comment:Comment
 
 
 
-  replyContent:string
+replyingTo:string | null
 
 
 
-  setReplyContent:(
+setReplyingTo:(
 
-    value:string
+id:string | null
 
-  )=>void
-
-
-
-  submitComment:(
-
-    parentId:string | null
-
-  )=>Promise<void>
+)=>void
 
 
 
-  loading:boolean
+
+
+replyContents:Record<string,string>
 
 
 
-  formatDate:(
+setReplyContents:(
 
-    date:string
+value:Record<string,string>
 
-  )=>string
-
-
-
-  expandedReplies:Record<string,boolean>
+)=>void
 
 
 
-  toggleReplies:(
 
-    id:string
 
-  )=>void
+updateReplyContent:(
+
+commentId:string,
+
+value:string
+
+)=>void
+
+
+
+
+
+submitComment:(
+
+parentId:string | null
+
+)=>Promise<void>
+
+
+
+
+
+loading:boolean
+
+
+
+
+
+formatDate:(
+
+date:string
+
+)=>string
+
+
+
+
+
+expandedReplies:Record<string,boolean>
+
+
+
+
+
+toggleReplies:(
+
+id:string
+
+)=>void
+
 
 
 }
@@ -1503,35 +1723,40 @@ type CommentItemProps = {
 
 
 
-
-
+// =====================================================
+// END OF PART 3
+// =====================================================
 
 // =====================================================
-// COMMENT ITEM
+// PART 4/4
+// COMMENT ITEM + REPLY SYSTEM
 // =====================================================
+
 
 
 function CommentItem({
 
-  comment,
+comment,
 
-  replyingTo,
+replyingTo,
 
-  setReplyingTo,
+setReplyingTo,
 
-  replyContent,
+replyContents,
 
-  setReplyContent,
+setReplyContents,
 
-  submitComment,
+updateReplyContent,
 
-  loading,
+submitComment,
 
-  formatDate,
+loading,
 
-  expandedReplies,
+formatDate,
 
-  toggleReplies,
+expandedReplies,
+
+toggleReplies,
 
 
 }:CommentItemProps){
@@ -1545,42 +1770,28 @@ return (
 <article
 
 className="
-
 rounded-2xl
-
 border
-
-border-surface-border
-
 bg-card
-
-p-5
-
+p-4
+sm:p-5
+overflow-hidden
 "
 
 >
-
-
 
 
 
 <div
 
 className="
-
 flex
-
 items-start
-
-gap-4
-
+gap-3
+sm:gap-4
 "
 
 >
-
-
-
-
 
 
 
@@ -1588,54 +1799,31 @@ gap-4
 
 {/* AVATAR */}
 
-
 <div
-
 className="
-
 flex
-
-h-11
-
-w-11
-
+h-9
+w-9
+sm:h-11
+sm:w-11
 shrink-0
-
 items-center
-
 justify-center
-
 rounded-full
-
 bg-primary/10
-
 font-bold
-
 text-primary
-
 "
-
 >
 
 
 {
 
-
-comment.name?.trim()
-
+comment.name
 
 ?
 
-
-comment.name
-
-.trim()
-
-.charAt(0)
-
-.toUpperCase()
-
-
+comment.name.trim().charAt(0).toUpperCase()
 
 :
 
@@ -1647,7 +1835,6 @@ comment.name
 
 
 </div>
-
 
 
 
@@ -1669,17 +1856,7 @@ className="flex-1"
 
 <div
 
-className="
-
-flex
-
-flex-wrap
-
-items-center
-
-gap-3
-
-"
+className="flex flex-wrap items-center gap-3"
 
 >
 
@@ -1696,24 +1873,15 @@ className="font-bold"
 
 
 
-
-
 <span
 
-className="
-
-text-xs
-
-text-muted-foreground
-
-"
+className="text-xs text-muted-foreground"
 
 >
 
 {formatDate(comment.created_at)}
 
 </span>
-
 
 
 
@@ -1726,18 +1894,9 @@ text-muted-foreground
 
 
 
-
 <p
 
-className="
-
-mt-3
-
-leading-7
-
-text-muted-foreground
-
-"
+className="mt-3 leading-7 text-muted-foreground"
 
 >
 
@@ -1753,8 +1912,9 @@ text-muted-foreground
 
 
 
+
 {/* =====================================================
-    REPLY BUTTON
+REPLY BUTTON
 ===================================================== */}
 
 
@@ -1767,51 +1927,37 @@ onClick={()=>{
 
 setReplyingTo(
 
-
 replyingTo === comment.id
-
 
 ?
 
 null
 
-
 :
 
-
 comment.id
-
 
 )
 
 
 
-setReplyContent('')
+setReplyContents({
+
+...replyContents,
+
+
+[comment.id]:''
+
+
+})
+
 
 
 }}
 
 
 
-className="
-
-mt-4
-
-inline-flex
-
-items-center
-
-gap-2
-
-text-sm
-
-font-medium
-
-text-primary
-
-hover:underline
-
-"
+className="mt-4 inline-flex items-center gap-2 text-sm text-primary"
 
 >
 
@@ -1837,13 +1983,12 @@ Reply
 
 
 {/* =====================================================
-    REPLY FORM
+REPLY BOX
 ===================================================== */}
 
 
 
 {
-
 
 replyingTo === comment.id && (
 
@@ -1851,21 +1996,7 @@ replyingTo === comment.id && (
 
 <div
 
-className="
-
-mt-4
-
-rounded-xl
-
-border
-
-border-surface-border
-
-bg-muted/30
-
-p-4
-
-"
+className="mt-4 rounded-xl border bg-muted/30 p-4"
 
 >
 
@@ -1874,12 +2005,19 @@ p-4
 <textarea
 
 
-value={replyContent}
+value={
+
+replyContents[comment.id] || ''
+
+}
+
 
 
 onChange={(e)=>
 
-setReplyContent(
+updateReplyContent(
+
+comment.id,
 
 e.target.value
 
@@ -1888,38 +2026,16 @@ e.target.value
 }
 
 
-rows={3}
+rows={4}
 
 
-placeholder={
-
-`Reply to ${comment.name}...`
-
-}
+placeholder={`Reply to ${comment.name}...`}
 
 
 
-className="
+className="w-full rounded-xl border bg-background px-4 py-3"
 
-w-full
 
-rounded-xl
-
-border
-
-border-surface-border
-
-bg-background
-
-px-4
-
-py-3
-
-outline-none
-
-focus:border-primary
-
-"
 
 />
 
@@ -1929,64 +2045,29 @@ focus:border-primary
 
 
 
-
 <div
 
 className="
-
 mt-3
-
 flex
-
-flex-wrap
-
+flex-col
 gap-3
-
+sm:flex-row
 "
 
 >
 
 
-
-
-
 <button
 
 
-onClick={()=>
-
-
-submitComment(comment.id)
-
-
-}
+onClick={()=>submitComment(comment.id)}
 
 
 disabled={loading}
 
 
-
-className="
-
-inline-flex
-
-items-center
-
-gap-2
-
-rounded-full
-
-bg-primary
-
-px-5
-
-py-2
-
-text-white
-
-disabled:opacity-50
-
-"
+className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-white disabled:opacity-50"
 
 >
 
@@ -1994,9 +2075,7 @@ disabled:opacity-50
 <Send size={15}/>
 
 
-
 {
-
 
 loading
 
@@ -2008,12 +2087,11 @@ loading
 
 'Reply'
 
-
 }
 
 
-
 </button>
+
 
 
 
@@ -2032,30 +2110,22 @@ onClick={()=>{
 setReplyingTo(null)
 
 
-setReplyContent('')
+setReplyContents({
+
+...replyContents,
+
+
+[comment.id]:''
+
+
+})
 
 
 }}
 
 
 
-className="
-
-inline-flex
-
-items-center
-
-gap-2
-
-rounded-full
-
-border
-
-px-5
-
-py-2
-
-"
+className="inline-flex items-center gap-2 rounded-full border px-5 py-2"
 
 >
 
@@ -2076,8 +2146,9 @@ Cancel
 
 
 
-</div>
 
+
+</div>
 
 
 )
@@ -2095,254 +2166,226 @@ Cancel
 
 
 
+
 {/* =====================================================
-    REPLIES TOGGLE
+SHOW REPLIES BUTTON
 ===================================================== */}
 
 
 
 {
 
+comment.replies && comment.replies.length > 0 && (
+
+
+<button
+
+onClick={()=>toggleReplies(comment.id)}
+
+className="
+mt-5
+inline-flex
+items-center
+gap-2
+text-sm
+font-medium
+text-primary
+"
+
+>
+
+
+{
+
+expandedReplies[comment.id]
+
+?
+
+<>
+
+<ChevronUp size={16}/>
+
+Hide replies
+
+</>
+
+
+:
+
+<>
+
+<ChevronDown size={16}/>
+
+View {comment.replies.length} repl{comment.replies.length > 1 ? 'ies' : 'y'}
+
+</>
+
+
+}
+
+
+</button>
+
+
+)
+
+}
+
+
+
+{/* =====================================================
+REPLIES DISPLAY
+===================================================== */}
+
+
+{
+
+expandedReplies[comment.id] &&
 
 comment.replies &&
 
 comment.replies.length > 0 && (
 
 
-
-<button
-
-
-onClick={()=>
-
-
-toggleReplies(comment.id)
-
-
-}
-
-
+<div
 
 className="
-
 mt-5
-
-inline-flex
-
-items-center
-
-gap-2
-
-text-sm
-
-font-medium
-
-text-primary
-
+space-y-3
+rounded-xl
+bg-muted/30
+p-4
 "
 
 >
 
 
-{
+<p
 
+className="
+text-sm
+font-semibold
+text-muted-foreground
+"
 
-expandedReplies[comment.id]
+>
 
+Replies
 
-?
-
-
-<ChevronUp size={16}/>
-
-
-
-:
-
-
-
-<ChevronDown size={16}/>
-
-
-
-}
+</p>
 
 
 
 {
 
-
-expandedReplies[comment.id]
-
-
-?
+comment.replies.map(reply=>(
 
 
-'Hide replies'
+<div
 
+key={reply.id}
 
+className="
+rounded-xl
+border
+bg-background
+p-4
+"
 
-:
-
-
-
-`View ${comment.replies.length} repl${
-
-comment.replies.length > 1
-
-?
-
-'ies'
-
-:
-
-'y'
-
-}`
-
-
-
-}
-
-
-
-</button>
-
-
-
-)
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-{/* =====================================================
-    NESTED REPLIES
-===================================================== */}
-
-
-
-{
-
-
-expandedReplies[comment.id]
-
-
-&&
-
-
-comment.replies
-
-
-&&
-
-(
-
+>
 
 
 <div
 
 className="
-
-mt-6
-
-ml-4
-
-space-y-4
-
-border-l
-
-border-surface-border
-
-pl-5
-
-sm:ml-6
-
-sm:pl-6
-
+flex
+items-center
+gap-3
 "
 
 >
 
 
+<div
 
-{
+className="
+flex
+h-8
+w-8
+items-center
+justify-center
+rounded-full
+bg-primary/10
+font-bold
+text-primary
+"
 
+>
 
-comment.replies.map(reply=>(
+{reply.name.charAt(0).toUpperCase()}
 
-
-
-<CommentItem
-
-
-key={reply.id}
-
-
-comment={reply}
-
-
-replyingTo={replyingTo}
-
-
-setReplyingTo={setReplyingTo}
+</div>
 
 
-replyContent={replyContent}
+
+<div>
+
+<p className="font-semibold">
+
+{reply.name}
+
+</p>
 
 
-setReplyContent={setReplyContent}
+<p className="text-xs text-muted-foreground">
+
+{formatDate(reply.created_at)}
+
+</p>
+
+</div>
 
 
-submitComment={submitComment}
+</div>
 
 
-loading={loading}
+
+<p
+
+className="
+mt-3
+text-sm
+leading-6
+text-muted-foreground
+"
+
+>
+
+{reply.content}
+
+</p>
 
 
-formatDate={formatDate}
-
-
-expandedReplies={expandedReplies}
-
-
-toggleReplies={toggleReplies}
-
-
-/>
-
+</div>
 
 
 ))
 
-
 }
 
 
-
 </div>
-
 
 
 )
 
-
-
 }
 
 
 
 
+</div>
+
 
 
 
@@ -2350,7 +2393,6 @@ toggleReplies={toggleReplies}
 </div>
 
 
-</div>
 
 
 </article>
@@ -2362,3 +2404,14 @@ toggleReplies={toggleReplies}
 
 
 }
+
+
+
+
+
+
+
+// =====================================================
+// END OF PART 4
+// END OF FILE
+// =====================================================

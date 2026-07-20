@@ -14,6 +14,50 @@ import {
 } from '@/lib/comments'
 
 
+import {
+  createClient,
+} from '@/lib/supabase-server'
+
+
+import {
+  getRememberedVisitor,
+  rememberVisitor,
+} from '@/lib/comment-visitors'
+
+
+
+
+
+
+
+
+// =====================================================
+// GET CLIENT IP
+// =====================================================
+
+function getClientIp(request:Request){
+
+
+  return (
+
+    request.headers.get('x-forwarded-for')
+
+    ??
+
+    request.headers.get('x-real-ip')
+
+    ??
+
+    null
+
+  )
+
+
+}
+
+
+
+
 
 
 
@@ -35,15 +79,9 @@ export async function POST(
 
 
 
-    // =====================================================
-    // READ REQUEST BODY
-    // =====================================================
 
 
-    const body =
-
-      await request.json()
-
+    const body = await request.json()
 
 
 
@@ -76,62 +114,32 @@ export async function POST(
 
 
 
-    console.log(
-
-      'COMMENT REQUEST:',
-
-      {
-
-        postId,
-
-        parentId,
-
-        name,
-
-        email,
-
-        content,
-
-      }
-
-    )
 
 
-
-
-
-
-
-
-
-    // =====================================================
-    // VALIDATION
-    // =====================================================
 
 
     if(
 
       !postId ||
 
-      !name?.trim() ||
-
       !content?.trim()
 
     ){
 
 
-
       return NextResponse.json(
 
         {
 
+
           success:false,
 
-          error:
 
-          'Name and comment are required.'
+          error:'Comment content is required.'
+
 
         },
+
 
         {
 
@@ -139,44 +147,6 @@ export async function POST(
 
         }
 
-      )
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    if(
-
-      content.trim().length < 3
-
-    ){
-
-
-      return NextResponse.json(
-
-        {
-
-          success:false,
-
-          error:
-
-          'Comment is too short.'
-
-        },
-
-        {
-
-          status:400
-
-        }
 
       )
 
@@ -191,32 +161,218 @@ export async function POST(
 
 
 
-    if(
-
-      content.trim().length > 5000
-
-    ){
+    // =====================================================
+    // AUTHENTICATED USER CHECK
+    // =====================================================
 
 
-      return NextResponse.json(
+    const supabase = await createClient()
 
-        {
 
-          success:false,
 
-          error:
 
-          'Comment is too long.'
 
-        },
+    const {
 
-        {
+      data:{
 
-          status:400
+        user
 
-        }
+      }
 
-      )
+    } = await supabase.auth.getUser()
+
+
+
+
+
+
+
+    let finalName = ''
+
+    let userId:string | null = null
+
+    let finalEmail:string | null = null
+
+
+
+
+
+
+
+    // =====================================================
+    // LOGGED-IN USER
+    // =====================================================
+
+
+    if(user){
+
+
+
+      userId = user.id
+
+
+      finalEmail = user.email ?? null
+
+
+
+
+
+
+      const {
+
+        data:profile
+
+      } = await supabase
+
+
+        .from('admin_users')
+
+
+        .select(`
+
+          name
+
+        `)
+
+
+        .eq(
+
+          'user_id',
+
+          user.id
+
+        )
+
+
+        .maybeSingle()
+
+
+
+
+
+
+
+      finalName =
+
+
+        profile?.name
+
+
+        ??
+
+        user.email
+
+        ??
+
+        'User'
+
+
+
+    }
+
+
+
+
+
+
+
+    // =====================================================
+    // ANONYMOUS VISITOR
+    // =====================================================
+
+
+    else {
+
+
+
+      const visitor =
+
+        await getRememberedVisitor()
+
+
+
+
+
+
+
+
+      finalName =
+
+
+        name?.trim()
+
+
+        ??
+
+        visitor?.name
+
+
+        ??
+
+        ''
+
+
+
+
+
+
+
+
+
+      if(!finalName){
+
+
+
+        return NextResponse.json(
+
+
+          {
+
+
+            success:false,
+
+
+            error:
+
+            'Please provide your name.'
+
+
+
+          },
+
+
+          {
+
+
+            status:400
+
+
+          }
+
+
+        )
+
+
+      }
+
+
+
+
+
+
+
+      await rememberVisitor({
+
+
+        name:finalName,
+
+
+        hashedIp:getClientIp(request)
+
+
+
+      })
 
 
     }
@@ -238,6 +394,7 @@ export async function POST(
 
       await createComment({
 
+
         postId,
 
 
@@ -246,10 +403,15 @@ export async function POST(
           parentId || null,
 
 
-        name,
+        userId,
 
 
-        email,
+        name:finalName,
+
+
+        email:
+
+          finalEmail,
 
 
         content,
@@ -265,13 +427,6 @@ export async function POST(
 
 
 
-
-
-    // =====================================================
-    // RESPONSE
-    // =====================================================
-
-
     return NextResponse.json(
 
       {
@@ -283,22 +438,15 @@ export async function POST(
         comment,
 
 
-
         message:
-
 
           parentId
 
           ?
 
-
           'Reply submitted successfully.'
 
-
-
           :
-
-
 
           'Comment submitted and waiting for approval.'
 
@@ -309,10 +457,11 @@ export async function POST(
 
       {
 
+
         status:201
 
-      }
 
+      }
 
 
     )
@@ -321,12 +470,8 @@ export async function POST(
 
 
 
-
-
-
-
-
   }
+
 
   catch(error){
 
@@ -347,8 +492,6 @@ export async function POST(
 
 
 
-
-
     return NextResponse.json(
 
       {
@@ -359,19 +502,13 @@ export async function POST(
 
         error:
 
-
           error instanceof Error
 
           ?
 
-
           error.message
 
-
-
           :
-
-
 
           'Unable to submit comment.'
 
@@ -389,9 +526,7 @@ export async function POST(
       }
 
 
-
     )
-
 
 
 
