@@ -4,25 +4,31 @@
 // =========================================================
 
 
-import Link from 'next/link'
+import {
+  redirect,
+} from 'next/navigation'
 
-import { redirect } from 'next/navigation'
 
 import {
   MessageCircle,
   CheckCircle,
   Clock,
-  ExternalLink,
 } from 'lucide-react'
 
 
-import { createClient } from '@/lib/supabase-server'
+import {
+  createClient,
+} from '@/lib/supabase-server'
 
-import { getUserRole } from '@/lib/get-user-role'
 
-import CommentActions from '@/components/admin/comment-actions'
+import {
+  getUserRole,
+} from '@/lib/get-user-role'
 
-import CommentReply from '@/components/admin/comment-reply'
+
+import CommentManager from '@/components/admin/comments/CommentManager'
+
+
 
 
 
@@ -46,7 +52,8 @@ type BlogPost = {
 
 
 
-type Comment = {
+
+export type Comment = {
 
   id:string
 
@@ -82,6 +89,8 @@ type Comment = {
 
 
 
+
+
 // =========================================================
 // PAGE
 // =========================================================
@@ -91,12 +100,9 @@ export default async function AdminCommentsPage(){
 
 
 
-  // =====================================================
-  // CHECK USER ROLE
-  // =====================================================
-
-
   const userRole = await getUserRole()
+
+
 
 
 
@@ -111,14 +117,17 @@ export default async function AdminCommentsPage(){
 
 
 
+
+
   const supabase = await createClient()
 
-    // =====================================================
-  // FETCH COMMENTS
-  // =====================================================
 
 
-  const commentSelect = `
+
+
+
+
+  const select = `
 
     id,
 
@@ -151,19 +160,27 @@ export default async function AdminCommentsPage(){
 
 
 
+
+
+
   let comments:Comment[] = []
 
 
 
 
 
+
+
+
   // =====================================================
-  // ADMIN
-  // SEE ALL COMMENTS
+  // FETCH COMMENTS
   // =====================================================
+
 
 
   if(userRole.role === 'admin'){
+
+
 
 
 
@@ -173,13 +190,14 @@ export default async function AdminCommentsPage(){
 
       error
 
+
     } = await supabase
 
 
       .from('comments')
 
 
-      .select(commentSelect)
+      .select(select)
 
 
       .order(
@@ -198,19 +216,21 @@ export default async function AdminCommentsPage(){
 
 
 
-    if(error){
 
+    if(error){
 
       console.error(
 
-        'ADMIN COMMENTS ERROR:',
+        'COMMENTS FETCH ERROR',
 
         error
 
       )
 
-
     }
+
+
+
 
 
 
@@ -226,25 +246,15 @@ export default async function AdminCommentsPage(){
 
 
 
-
-
-
-
-  // =====================================================
-  // EDITOR / USER
-  // ONLY COMMENTS ON THEIR POSTS
-  // =====================================================
-
-
   else {
 
 
 
     const {
 
-      data:articles,
+      data:posts,
 
-      error:articleError
+      error
 
 
     } = await supabase
@@ -269,115 +279,114 @@ export default async function AdminCommentsPage(){
 
 
 
-    if(articleError){
 
-
+    if(error){
 
       console.error(
 
-        'ARTICLE LOOKUP ERROR:',
+        'POST LOOKUP ERROR',
 
-        articleError
+        error
 
       )
 
-
-
     }
 
-    else {
-
-
-
-      const articleIds =
-
-        articles?.map(
-
-          article => article.id
-
-        ) ?? []
 
 
 
 
 
 
+    const postIds =
 
-      if(articleIds.length){
+      posts?.map(
+
+        post=>post.id
+
+      ) ?? []
 
 
 
-        const {
 
-          data,
+
+
+
+    if(postIds.length){
+
+
+
+
+
+      const {
+
+        data,
+
+        error
+
+
+      } = await supabase
+
+
+        .from('comments')
+
+
+        .select(select)
+
+
+        .in(
+
+          'post_id',
+
+          postIds
+
+        )
+
+
+        .order(
+
+          'created_at',
+
+          {
+
+            ascending:false
+
+          }
+
+        )
+
+
+
+
+
+
+
+
+      if(error){
+
+        console.error(
+
+          'COMMENT FETCH ERROR',
 
           error
 
-
-        } = await supabase
-
-
-          .from('comments')
-
-
-          .select(commentSelect)
-
-
-          .in(
-
-            'post_id',
-
-            articleIds
-
-          )
-
-
-          .order(
-
-            'created_at',
-
-            {
-
-              ascending:false
-
-            }
-
-          )
-
-
-
-
-
-
-        if(error){
-
-
-          console.error(
-
-            'EDITOR COMMENTS ERROR:',
-
-            error
-
-          )
-
-
-        }
-
-
-
-
-
-        comments =
-
-          (data ?? []) as unknown as Comment[]
-
-
+        )
 
       }
 
 
 
+
+
+
+      comments =
+
+        (data ?? []) as unknown as Comment[]
+
+
+
     }
+
 
 
 
@@ -392,39 +401,8 @@ export default async function AdminCommentsPage(){
 
 
   // =====================================================
-  // BUILD COMMENT TREE
+  // BUILD FLAT REPLY STRUCTURE
   // =====================================================
-
-
-  const commentMap =
-
-    new Map<string,Comment>()
-
-
-
-
-  comments.forEach(comment=>{
-
-
-    commentMap.set(
-
-      comment.id,
-
-      {
-
-        ...comment,
-
-        replies:[]
-
-      }
-
-    )
-
-
-  })
-
-
-
 
 
 
@@ -434,30 +412,56 @@ export default async function AdminCommentsPage(){
 
 
 
+  const replyMap =
+
+    new Map<string,Comment[]>()
+
+
+
+
+
 
   comments.forEach(comment=>{
 
 
 
-    const current =
+    if(!comment.parent_id){
 
-      commentMap.get(
 
-        comment.id
+
+      rootComments.push({
+
+        ...comment,
+
+        replies:[]
+
+      })
+
+
+
+      replyMap.set(
+
+        comment.id,
+
+        []
 
       )
 
 
-
-
-
-    if(!current){
-
-      return
-
     }
 
 
+
+  })
+
+
+
+
+
+
+
+
+  comments.forEach(comment=>{
 
 
 
@@ -465,9 +469,9 @@ export default async function AdminCommentsPage(){
 
 
 
-      const parent =
+      const replies =
 
-        commentMap.get(
+        replyMap.get(
 
           comment.parent_id
 
@@ -477,15 +481,19 @@ export default async function AdminCommentsPage(){
 
 
 
-      if(parent){
+
+      if(replies){
 
 
 
-        parent.replies!.push(
+        replies.push({
 
-          current
+          ...comment,
 
-        )
+          replies:[]
+
+        })
+
 
 
       }
@@ -495,47 +503,73 @@ export default async function AdminCommentsPage(){
     }
 
 
-    else {
+
+  })
 
 
 
-      rootComments.push(
-
-        current
-
-      )
 
 
 
-    }
 
+
+  rootComments.forEach(comment=>{
+
+
+
+    comment.replies =
+
+      replyMap.get(
+
+        comment.id
+
+      ) ?? []
 
 
 
   })
 
-    // =====================================================
+
+
+
+
+
+
+
+
+  // =====================================================
   // STATS
   // =====================================================
 
 
-  const pendingComments = comments.filter(
 
-    comment =>
+  const pending =
 
-    comment.status === 'pending'
+    comments.filter(
 
-  )
+      comment =>
+
+      comment.status === 'pending'
+
+    ).length
 
 
 
-  const approvedComments = comments.filter(
 
-    comment =>
 
-    comment.status === 'approved'
 
-  )
+  const approved =
+
+    comments.filter(
+
+      comment =>
+
+      comment.status === 'approved'
+
+    ).length
+
+
+
 
 
 
@@ -544,6 +578,8 @@ export default async function AdminCommentsPage(){
 
 
   return (
+
+
 
     <div
 
@@ -557,10 +593,6 @@ export default async function AdminCommentsPage(){
 
 
 
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
-
 
       <div
 
@@ -569,6 +601,7 @@ export default async function AdminCommentsPage(){
         "
 
       >
+
 
 
         <h1
@@ -582,7 +615,9 @@ export default async function AdminCommentsPage(){
 
           Comments
 
+
         </h1>
+
 
 
 
@@ -596,22 +631,12 @@ export default async function AdminCommentsPage(){
 
         >
 
-          {
-
-          userRole.role === 'admin'
-
-          ?
-
-          'Review and manage all blog comments.'
-
-          :
-
-          'Review comments on your articles.'
-
-          }
+          Manage blog comments and replies.
 
 
         </p>
+
+
 
 
       </div>
@@ -622,11 +647,6 @@ export default async function AdminCommentsPage(){
 
 
 
-
-
-      {/* =====================================================
-          STATS
-      ===================================================== */}
 
 
       <div
@@ -643,697 +663,188 @@ export default async function AdminCommentsPage(){
 
 
 
-        <div
 
-          className="
-            rounded-3xl
-            border
-            border-surface-border
-            bg-card
-            p-6
-          "
+        <StatCard
 
-        >
+          icon={<Clock size={22}/>}
 
-          <Clock size={24}/>
+          title="Pending"
 
+          value={pending}
 
-          <p
+        />
 
-            className="
-              mt-4
-              text-sm
-              text-muted-foreground
-            "
 
-          >
 
-            Pending
 
-          </p>
 
+        <StatCard
 
-          <h2
+          icon={<CheckCircle size={22}/>}
 
-            className="
-              text-3xl
-              font-black
-            "
+          title="Approved"
 
-          >
+          value={approved}
 
-            {pendingComments.length}
+        />
 
-          </h2>
 
 
-        </div>
 
 
+        <StatCard
 
+          icon={<MessageCircle size={22}/>}
 
+          title="Total"
 
+          value={comments.length}
 
-
-        <div
-
-          className="
-            rounded-3xl
-            border
-            border-surface-border
-            bg-card
-            p-6
-          "
-
-        >
-
-          <CheckCircle size={24}/>
-
-
-          <p
-
-            className="
-              mt-4
-              text-sm
-              text-muted-foreground
-            "
-
-          >
-
-            Approved
-
-          </p>
-
-
-          <h2
-
-            className="
-              text-3xl
-              font-black
-            "
-
-          >
-
-            {approvedComments.length}
-
-          </h2>
-
-
-        </div>
-
-
-
-
-
-
-
-        <div
-
-          className="
-            rounded-3xl
-            border
-            border-surface-border
-            bg-card
-            p-6
-          "
-
-        >
-
-          <MessageCircle size={24}/>
-
-
-          <p
-
-            className="
-              mt-4
-              text-sm
-              text-muted-foreground
-            "
-
-          >
-
-            Total
-
-          </p>
-
-
-          <h2
-
-            className="
-              text-3xl
-              font-black
-            "
-
-          >
-
-            {comments.length}
-
-          </h2>
-
-
-        </div>
+        />
 
 
 
 
       </div>
 
-            {/* =====================================================
-          COMMENTS LIST
-      ===================================================== */}
 
 
 
-      <div
 
-        className="
-          space-y-6
-        "
 
-      >
 
 
 
-      {
+      <CommentManager
 
-        rootComments.length === 0 ? (
 
+        comments={rootComments}
 
 
-          <div
+        role={
 
-            className="
-              rounded-3xl
-              border
-              border-surface-border
-              bg-card
-              p-10
-              text-center
-            "
+          userRole.role as
 
-          >
+          'admin'
 
+          |
 
-            <MessageCircle
+          'editor'
 
-              className="
-                mx-auto
-                mb-3
-              "
+          |
 
-            />
+          'user'
 
+        }
 
-            <p>
 
-              No comments found.
+      />
 
-            </p>
 
 
-
-          </div>
-
-
-
-        )
-
-        :
-
-
-
-        rootComments.map(comment => (
-
-
-
-          <article
-
-            key={comment.id}
-
-            className="
-              rounded-3xl
-              border
-              border-surface-border
-              bg-card
-              p-6
-            "
-
-          >
-
-
-
-
-
-            {/* USER */}
-
-
-            <div
-
-              className="
-                flex
-                items-start
-                justify-between
-                gap-5
-              "
-
-            >
-
-
-              <div>
-
-
-                <h3
-
-                  className="
-                    font-bold
-                  "
-
-                >
-
-                  {comment.name}
-
-                </h3>
-
-
-
-
-                {
-
-                comment.email && (
-
-
-                  <p
-
-                    className="
-                      text-sm
-                      text-muted-foreground
-                    "
-
-                  >
-
-                    {comment.email}
-
-                  </p>
-
-
-                )
-
-                }
-
-
-              </div>
-
-
-
-
-              <span
-
-                className="
-                  rounded-full
-                  bg-surface
-                  px-4
-                  py-1
-                  text-xs
-                  font-semibold
-                  uppercase
-                "
-
-              >
-
-                {comment.status}
-
-
-              </span>
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-            {/* ARTICLE */}
-
-
-
-            {
-
-            comment.blog_posts && (
-
-
-
-              <div
-
-                className="
-                  mt-5
-                  rounded-2xl
-                  bg-surface
-                  p-4
-                "
-
-              >
-
-
-                <p
-
-                  className="
-                    text-xs
-                    uppercase
-                    text-muted-foreground
-                  "
-
-                >
-
-                  Article
-
-                </p>
-
-
-
-
-                <div
-
-                  className="
-                    mt-2
-                    flex
-                    items-center
-                    justify-between
-                    gap-3
-                  "
-
-                >
-
-
-                  <p
-
-                    className="
-                      font-semibold
-                    "
-
-                  >
-
-                    {comment.blog_posts.title}
-
-                  </p>
-
-
-
-
-                  <Link
-
-                    href={`/blog/${comment.blog_posts.slug}`}
-
-                    target="_blank"
-
-                    className="
-                      inline-flex
-                      items-center
-                      gap-1
-                      text-sm
-                      text-primary
-                    "
-
-                  >
-
-                    View
-
-                    <ExternalLink size={14}/>
-
-
-                  </Link>
-
-
-                </div>
-
-
-              </div>
-
-
-            )
-
-            }
-
-
-
-
-
-
-
-
-
-            {/* COMMENT */}
-
-
-            <p
-
-              className="
-                mt-5
-                leading-7
-                text-muted-foreground
-              "
-
-            >
-
-              {comment.content}
-
-            </p>
-
-
-
-
-
-
-
-
-            {/* DATE */}
-
-
-            <p
-
-              className="
-                mt-4
-                text-xs
-                text-muted-foreground
-              "
-
-            >
-
-              {
-
-              new Intl.DateTimeFormat(
-
-                'en-US',
-
-                {
-
-                  day:'numeric',
-
-                  month:'long',
-
-                  year:'numeric',
-
-                  timeZone:'UTC'
-
-                }
-
-              ).format(
-
-                new Date(comment.created_at)
-
-              )
-
-              }
-
-
-            </p>
-
-
-
-
-
-
-
-
-            {/* ADMIN ACTIONS */}
-
-
-            <CommentActions
-
-              commentId={comment.id}
-
-              role={
-
-                userRole.role as
-
-                'admin' |
-
-                'editor' |
-
-                'user'
-
-              }
-
-            />
-
-
-
-
-
-
-
-            {/* REPLY BOX */}
-
-
-
-            <CommentReply
-
-              commentId={comment.id}
-
-              postId={comment.post_id}
-
-            />
-
-
-
-
-
-
-
-
-
-            {/* CHILD REPLIES */}
-
-
-
-            {
-
-            comment.replies &&
-
-            comment.replies.length > 0 && (
-
-
-
-              <div
-
-                className="
-                  mt-6
-                  ml-6
-                  space-y-4
-                  border-l
-                  pl-5
-                "
-
-              >
-
-
-
-              {
-
-              comment.replies.map(reply => (
-
-
-
-                <div
-
-                  key={reply.id}
-
-                  className="
-                    rounded-2xl
-                    bg-surface
-                    p-5
-                  "
-
-                >
-
-
-                  <h4
-
-                    className="
-                      font-bold
-                    "
-
-                  >
-
-                    {reply.name}
-
-                  </h4>
-
-
-
-                  <p
-
-                    className="
-                      mt-2
-                      text-muted-foreground
-                    "
-
-                  >
-
-                    {reply.content}
-
-                  </p>
-
-
-
-                  <p
-
-                    className="
-                      mt-3
-                      text-xs
-                      text-muted-foreground
-                    "
-
-                  >
-
-                    Reply
-
-
-                  </p>
-
-
-                </div>
-
-
-
-              ))
-
-              }
-
-
-              </div>
-
-
-
-            )
-
-            }
-
-
-
-
-
-          </article>
-
-
-
-        ))
-
-
-      }
-
-
-
-      </div>
 
 
 
     </div>
 
+
+
   )
+
+
+}
+
+
+
+
+
+
+
+
+
+// =========================================================
+// STAT CARD
+// =========================================================
+
+
+function StatCard({
+
+  icon,
+
+  title,
+
+  value,
+
+}:{
+
+  icon:React.ReactNode
+
+  title:string
+
+  value:number
+
+}){
+
+
+  return (
+
+
+    <div
+
+      className="
+        rounded-3xl
+        border
+        border-surface-border
+        bg-card
+        p-6
+      "
+
+    >
+
+
+
+      {icon}
+
+
+
+      <p
+
+        className="
+          mt-4
+          text-sm
+          text-muted-foreground
+        "
+
+      >
+
+        {title}
+
+
+      </p>
+
+
+
+
+      <h2
+
+        className="
+          text-3xl
+          font-black
+        "
+
+      >
+
+        {value}
+
+
+      </h2>
+
+
+
+    </div>
+
+
+  )
+
 
 }

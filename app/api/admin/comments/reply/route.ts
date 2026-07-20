@@ -26,6 +26,7 @@ export async function POST(
 ){
 
 
+
   try {
 
 
@@ -43,6 +44,7 @@ export async function POST(
 
 
 
+
     if(
 
       !commentId ||
@@ -50,6 +52,7 @@ export async function POST(
       !content?.trim()
 
     ){
+
 
       return NextResponse.json(
 
@@ -69,7 +72,9 @@ export async function POST(
 
       )
 
+
     }
+
 
 
 
@@ -95,10 +100,13 @@ export async function POST(
     // =====================================================
 
 
+
     const {
 
       data:{
+
         user
+
       }
 
     } = await supabase.auth.getUser()
@@ -139,8 +147,9 @@ export async function POST(
 
 
     // =====================================================
-    // GET PROFILE
+    // GET USER ROLE
     // =====================================================
+
 
 
     const {
@@ -179,7 +188,6 @@ export async function POST(
 
 
 
-
     if(
 
       profileError ||
@@ -189,11 +197,14 @@ export async function POST(
     ){
 
 
+
       return NextResponse.json(
 
         {
 
-          error:'Profile not found'
+          error:
+
+          'Permission denied.'
 
         },
 
@@ -216,28 +227,23 @@ export async function POST(
 
 
 
-
-    // =====================================================
-    // VERIFY ROLE
-    // =====================================================
-
-
     if(
 
-      !['admin','editor'].includes(
+      !['admin','editor']
 
-        profile.role
-
-      )
+        .includes(profile.role)
 
     ){
+
 
 
       return NextResponse.json(
 
         {
 
-          error:'Forbidden'
+          error:
+
+          'You cannot reply to comments.'
 
         },
 
@@ -265,11 +271,12 @@ export async function POST(
     // =====================================================
 
 
+
     const {
 
       data:parentComment,
 
-      error:parentError
+      error:commentError
 
 
     } = await supabase
@@ -307,20 +314,25 @@ export async function POST(
 
 
 
+
+
     if(
 
-      parentError ||
+      commentError ||
 
       !parentComment
 
     ){
 
 
+
       return NextResponse.json(
 
         {
 
-          error:'Original comment not found'
+          error:
+
+          'Original comment not found.'
 
         },
 
@@ -343,10 +355,100 @@ export async function POST(
 
 
 
+    // =====================================================
+    // EDITOR OWNERSHIP CHECK
+    // =====================================================
+
+
+
+    if(profile.role === 'editor'){
+
+
+
+
+
+      const {
+
+        data:post,
+
+        error:postError
+
+
+      } = await supabase
+
+
+        .from('blog_posts')
+
+
+        .select('user_id')
+
+
+        .eq(
+
+          'id',
+
+          parentComment.post_id
+
+        )
+
+
+        .single()
+
+
+
+
+
+
+
+
+      if(
+
+        postError ||
+
+        !post ||
+
+        post.user_id !== user.id
+
+      ){
+
+
+
+        return NextResponse.json(
+
+          {
+
+            error:
+
+            'You cannot reply to this post.'
+
+          },
+
+          {
+
+            status:403
+
+          }
+
+        )
+
+
+      }
+
+
+    }
+
+
+
+
+
+
+
+
 
     // =====================================================
-    // INSERT REPLY
+    // CREATE REPLY
     // =====================================================
+
 
 
     const {
@@ -365,9 +467,11 @@ export async function POST(
       .insert({
 
 
+
         post_id:
 
         parentComment.post_id,
+
 
 
         parent_id:
@@ -375,9 +479,11 @@ export async function POST(
         parentComment.id,
 
 
+
         name:
 
         profile.name,
+
 
 
         email:
@@ -385,14 +491,17 @@ export async function POST(
         null,
 
 
+
         content:
 
         content.trim(),
 
 
+
         status:
 
         'approved'
+
 
 
       })
@@ -402,6 +511,7 @@ export async function POST(
 
 
       .single()
+
 
 
 
@@ -439,15 +549,11 @@ export async function POST(
 
       {
 
-
         success:true,
-
 
         reply
 
-
       }
-
 
     )
 
@@ -458,7 +564,9 @@ export async function POST(
   }
 
 
+
   catch(error){
+
 
 
     console.error(
@@ -471,13 +579,15 @@ export async function POST(
 
 
 
+
+
     return NextResponse.json(
 
       {
 
         error:
 
-        'Failed to create reply'
+        'Failed to create reply.'
 
       },
 
@@ -488,6 +598,7 @@ export async function POST(
       }
 
     )
+
 
 
   }

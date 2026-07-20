@@ -31,14 +31,18 @@ import {
 
 
 
+
+
 // =====================================================
 // GET CLIENT IP
 // =====================================================
+
 
 function getClientIp(request:Request){
 
 
   return (
+
 
     request.headers.get('x-forwarded-for')
 
@@ -48,12 +52,15 @@ function getClientIp(request:Request){
 
     ??
 
-    null
+    'unknown'
+
 
   )
 
 
 }
+
+
 
 
 
@@ -82,6 +89,8 @@ export async function POST(
 
 
     const body = await request.json()
+
+
 
 
 
@@ -118,16 +127,22 @@ export async function POST(
 
 
 
+
     if(
+
 
       !postId ||
 
+
       !content?.trim()
+
 
     ){
 
 
+
       return NextResponse.json(
+
 
         {
 
@@ -138,12 +153,15 @@ export async function POST(
           error:'Comment content is required.'
 
 
+
         },
 
 
         {
 
+
           status:400
+
 
         }
 
@@ -162,7 +180,7 @@ export async function POST(
 
 
     // =====================================================
-    // AUTHENTICATED USER CHECK
+    // SUPABASE SERVER CLIENT
     // =====================================================
 
 
@@ -172,13 +190,22 @@ export async function POST(
 
 
 
+
+
+
+
+
+    // =====================================================
+    // GET CURRENT USER
+    // =====================================================
+
+
     const {
 
-      data:{
 
-        user
+      data:{user}
 
-      }
+
 
     } = await supabase.auth.getUser()
 
@@ -188,11 +215,32 @@ export async function POST(
 
 
 
+
+
+
     let finalName = ''
+
+
+    let finalEmail:string | null = null
+
 
     let userId:string | null = null
 
-    let finalEmail:string | null = null
+
+
+
+
+
+
+
+
+
+
+    const ipAddress =
+
+      getClientIp(request)
+
+
 
 
 
@@ -201,7 +249,7 @@ export async function POST(
 
 
     // =====================================================
-    // LOGGED-IN USER
+    // LOGGED IN USER
     // =====================================================
 
 
@@ -212,7 +260,11 @@ export async function POST(
       userId = user.id
 
 
-      finalEmail = user.email ?? null
+
+      finalEmail =
+
+        user.email ?? null
+
 
 
 
@@ -221,7 +273,10 @@ export async function POST(
 
       const {
 
+
         data:profile
+
+
 
       } = await supabase
 
@@ -253,6 +308,9 @@ export async function POST(
 
 
 
+
+
+
       finalName =
 
 
@@ -263,13 +321,20 @@ export async function POST(
 
         user.email
 
+
         ??
 
         'User'
 
 
 
+
+
+
+
     }
+
+
 
 
 
@@ -289,7 +354,6 @@ export async function POST(
       const visitor =
 
         await getRememberedVisitor()
-
 
 
 
@@ -320,6 +384,26 @@ export async function POST(
 
 
 
+
+      finalEmail =
+
+
+        email?.trim()
+
+
+        ??
+
+        null
+
+
+
+
+
+
+
+
+
+
       if(!finalName){
 
 
@@ -333,9 +417,7 @@ export async function POST(
             success:false,
 
 
-            error:
-
-            'Please provide your name.'
+            error:'Please provide your name.'
 
 
 
@@ -348,10 +430,12 @@ export async function POST(
             status:400
 
 
+
           }
 
 
         )
+
 
 
       }
@@ -362,20 +446,74 @@ export async function POST(
 
 
 
+
+
+
+
       await rememberVisitor({
+
 
 
         name:finalName,
 
 
-        hashedIp:getClientIp(request)
+
+        hashedIp:ipAddress
 
 
 
       })
 
 
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    console.log(
+
+      'API COMMENT DATA:',
+
+      {
+
+
+        postId,
+
+
+        parentId,
+
+
+        userId,
+
+
+        ipAddress,
+
+
+        finalName,
+
+
+        finalEmail
+
+
+
+      }
+
+
+    )
+
+
+
 
 
 
@@ -392,32 +530,54 @@ export async function POST(
 
     const comment =
 
-      await createComment({
+
+      await createComment(
 
 
-        postId,
+        supabase,
 
 
-        parentId:
-
-          parentId || null,
+        {
 
 
-        userId,
+          postId,
 
 
-        name:finalName,
+
+          parentId:
+
+            parentId || null,
 
 
-        email:
 
-          finalEmail,
-
-
-        content,
+          userId,
 
 
-      })
+
+          ipAddress,
+
+
+
+          name:finalName,
+
+
+
+          email:finalEmail,
+
+
+
+          content,
+
+
+
+        }
+
+
+      )
+
+
+
+
 
 
 
@@ -429,6 +589,8 @@ export async function POST(
 
     return NextResponse.json(
 
+
+
       {
 
 
@@ -438,21 +600,33 @@ export async function POST(
         comment,
 
 
+
         message:
+
+
 
           parentId
 
+
+
           ?
+
+
 
           'Reply submitted successfully.'
 
+
+
           :
+
+
 
           'Comment submitted and waiting for approval.'
 
 
 
       },
+
 
 
       {
@@ -464,7 +638,12 @@ export async function POST(
       }
 
 
+
     )
+
+
+
+
 
 
 
@@ -472,8 +651,8 @@ export async function POST(
 
   }
 
-
   catch(error){
+
 
 
 
@@ -492,7 +671,12 @@ export async function POST(
 
 
 
+
+
+
     return NextResponse.json(
+
+
 
       {
 
@@ -500,21 +684,33 @@ export async function POST(
         success:false,
 
 
+
         error:
+
+
 
           error instanceof Error
 
+
+
           ?
+
+
 
           error.message
 
+
+
           :
+
+
 
           'Unable to submit comment.'
 
 
 
       },
+
 
 
       {
@@ -524,6 +720,7 @@ export async function POST(
 
 
       }
+
 
 
     )

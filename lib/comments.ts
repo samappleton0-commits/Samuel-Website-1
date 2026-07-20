@@ -4,9 +4,16 @@
 // =====================================================
 
 
+import type {
+  SupabaseClient,
+} from '@supabase/supabase-js'
+
+
 import {
   createPublicClient,
 } from '@/lib/supabase-public'
+
+
 
 
 
@@ -44,6 +51,9 @@ export type Comment = {
   user_id:string | null
 
 
+  ip_address:string | null
+
+
   name:string
 
 
@@ -70,6 +80,8 @@ export type Comment = {
 
 
 
+
+
 // =====================================================
 // DATABASE SELECT FIELDS
 // =====================================================
@@ -84,6 +96,8 @@ const COMMENT_FIELDS = `
   parent_id,
 
   user_id,
+
+  ip_address,
 
   name,
 
@@ -106,9 +120,10 @@ const COMMENT_FIELDS = `
 
 
 
+
 // =====================================================
 // GET APPROVED COMMENTS
-// ONLY ONE LEVEL REPLY DISPLAY
+// PUBLIC BLOG DISPLAY
 // =====================================================
 
 
@@ -119,7 +134,9 @@ export async function getApprovedComments(
 ):Promise<Comment[]> {
 
 
+
   const supabase = createPublicClient()
+
 
 
 
@@ -188,7 +205,7 @@ export async function getApprovedComments(
 
       'GET COMMENTS ERROR:',
 
-      error.message
+      error
 
     )
 
@@ -206,7 +223,7 @@ export async function getApprovedComments(
 
   const comments =
 
-    (data ?? []) as Comment
+    (data ?? []) as Comment[]
 
 
 
@@ -214,34 +231,29 @@ export async function getApprovedComments(
 
 
 
-  // =====================================================
-  // ONLY MAIN COMMENTS
-  // =====================================================
+  const mainComments =
 
+    comments.filter(
 
-  const mainComments = comments.filter(
-
-    comment =>
+      comment =>
 
       comment.parent_id === null
 
-  )
+    )
 
 
 
 
 
 
-
-  // =====================================================
-  // ATTACH DIRECT REPLIES ONLY
-  // =====================================================
 
 
   return mainComments.map(comment => ({
 
 
+
     ...comment,
+
 
 
     replies:
@@ -253,9 +265,8 @@ export async function getApprovedComments(
       )
 
 
+
   }))
-
-
 
 
 
@@ -266,61 +277,84 @@ export async function getApprovedComments(
 
 
 
+
+
+
+
+
+
+
 // =====================================================
 // CREATE COMMENT OR REPLY
+// USED BY API ROUTE
 // =====================================================
 
 
-export async function createComment({
-
-
-  postId,
-
-
-  parentId = null,
-
-
-  userId = null,
-
-
-  name,
-
-
-  email,
-
-
-  content,
+export async function createComment(
 
 
 
-}:{
+  supabase:SupabaseClient,
 
 
-  postId:string
+
+  {
 
 
-  parentId?:string | null
+    postId,
 
 
-  userId?:string | null
+    parentId = null,
 
 
-  name:string
+    userId = null,
 
 
-  email?:string | null
+    ipAddress = null,
 
 
-  content:string
+    name,
 
 
-}):Promise<Comment>{
+    email = null,
+
+
+    content,
+
+
+
+  }:{
 
 
 
 
+    postId:string
 
-  const supabase = createPublicClient()
+
+    parentId?:string | null
+
+
+    userId?:string | null
+
+
+    ipAddress?:string | null
+
+
+    name:string
+
+
+    email?:string | null
+
+
+    content:string
+
+
+
+  }
+
+
+
+):Promise<Comment>{
 
 
 
@@ -330,11 +364,12 @@ export async function createComment({
 
   const cleanName =
 
+
     name
 
-      .trim()
+    .trim()
 
-      .slice(0,100)
+    .slice(0,100)
 
 
 
@@ -344,13 +379,15 @@ export async function createComment({
 
   const cleanEmail =
 
+
     email
 
-      ?.trim()
+    ?.trim()
 
-      .toLowerCase()
+    .toLowerCase()
 
-      || null
+
+    || null
 
 
 
@@ -360,11 +397,12 @@ export async function createComment({
 
   const cleanContent =
 
+
     content
 
-      .trim()
+    .trim()
 
-      .slice(0,5000)
+    .slice(0,5000)
 
 
 
@@ -405,9 +443,11 @@ export async function createComment({
 
 
 
+
+
+
   // =====================================================
   // CHECK REPLY TARGET
-  // ONLY MAIN COMMENTS ACCEPT REPLIES
   // =====================================================
 
 
@@ -457,7 +497,9 @@ export async function createComment({
 
 
 
+
     if(error || !parentComment){
+
 
 
       throw new Error(
@@ -476,12 +518,8 @@ export async function createComment({
 
 
 
-    // =====================================================
-    // BLOCK REPLY TO REPLY
-    // =====================================================
-
-
     if(parentComment.parent_id){
+
 
 
       throw new Error(
@@ -495,8 +533,10 @@ export async function createComment({
 
 
 
-
   }
+
+
+
 
 
 
@@ -509,19 +549,28 @@ export async function createComment({
   const status:CommentStatus =
 
 
+
     parentId
+
 
 
     ?
 
 
+
     'approved'
+
 
 
     :
 
 
+
     'pending'
+
+
+
+
 
 
 
@@ -535,21 +584,35 @@ export async function createComment({
 
     {
 
+
       postId,
+
 
       parentId,
 
+
+      userId,
+
+
+      ipAddress,
+
+
       cleanName,
+
 
       cleanEmail,
 
-      cleanContent,
 
       status
 
+
     }
 
+
   )
+
+
+
 
 
 
@@ -583,19 +646,29 @@ export async function createComment({
       post_id:postId,
 
 
+
       parent_id:parentId,
+
 
 
       user_id:userId,
 
 
+
+      ip_address:ipAddress,
+
+
+
       name:cleanName,
+
 
 
       email:cleanEmail,
 
 
+
       content:cleanContent,
+
 
 
       status,
@@ -630,9 +703,28 @@ export async function createComment({
 
     console.error(
 
-      'CREATE COMMENT ERROR',
+      '=========================='
+
+    )
+
+
+    console.error(
+
+      'SUPABASE INSERT ERROR'
+
+    )
+
+
+    console.error(
 
       error
+
+    )
+
+
+    console.error(
+
+      '=========================='
 
     )
 
@@ -645,8 +737,10 @@ export async function createComment({
     )
 
 
-
   }
+
+
+
 
 
 
@@ -659,8 +753,10 @@ export async function createComment({
 
 
 
-
 }
+
+
+
 
 
 
