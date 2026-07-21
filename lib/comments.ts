@@ -19,6 +19,8 @@ import {
 
 
 
+
+
 // =====================================================
 // TYPES
 // =====================================================
@@ -119,7 +121,6 @@ const COMMENT_FIELDS = `
 
 
 
-
 // =====================================================
 // BUILD COMMENT TREE
 // =====================================================
@@ -169,10 +170,11 @@ function buildCommentTree(
   comments.forEach(comment=>{
 
 
-    const current =
+    const current = map.get(
 
-      map.get(comment.id)
+      comment.id
 
+    )
 
 
 
@@ -187,19 +189,14 @@ function buildCommentTree(
 
 
 
-
     if(comment.parent_id){
 
 
-      const parent =
+      const parent = map.get(
 
-        map.get(
+        comment.parent_id
 
-          comment.parent_id
-
-        )
-
-
+      )
 
 
 
@@ -211,7 +208,6 @@ function buildCommentTree(
           current
 
         )
-
 
       }
 
@@ -237,12 +233,11 @@ function buildCommentTree(
 
 
 
+
   return roots
 
 
 }
-
-
 
 
 
@@ -265,8 +260,8 @@ export async function getApprovedComments(
 ):Promise<Comment[]> {
 
 
-
   const supabase = createPublicClient()
+
 
 
 
@@ -328,8 +323,6 @@ export async function getApprovedComments(
 
 
 
-
-
   if(error){
 
 
@@ -352,79 +345,69 @@ export async function getApprovedComments(
 
 
 
-
   return buildCommentTree(
 
     (data ?? []) as Comment[]
 
   )
 
+
 }
+
+
+
+
+
+
+
 
 
 // =====================================================
 // CREATE COMMENT OR REPLY
-// USED BY API ROUTE
 // =====================================================
 
+
 export async function createComment(
+
   supabase:SupabaseClient,
 
 
   {
 
-
     postId,
-
 
     parentId = null,
 
-
     userId = null,
-
 
     ipAddress = null,
 
-
     name,
-
 
     email = null,
 
-
-    content,
-
+    content
 
 
   }:{
 
 
-
-
     postId:string
-
 
     parentId?:string | null
 
-
     userId?:string | null
-
 
     ipAddress?:string | null
 
-
     name:string
 
-
     email?:string | null
-
 
     content:string
 
 
-
   }
-
 
 
 ):Promise<Comment>{
@@ -436,7 +419,6 @@ export async function createComment(
 
 
   const cleanName =
-
 
     name
 
@@ -452,15 +434,15 @@ export async function createComment(
 
   const cleanEmail =
 
-
     email
 
       ?.trim()
 
       .toLowerCase()
 
-      || null
+      ||
 
+      null
 
 
 
@@ -469,7 +451,6 @@ export async function createComment(
 
 
   const cleanContent =
-
 
     content
 
@@ -487,15 +468,11 @@ export async function createComment(
 
   if(
 
-
     !postId ||
-
 
     !cleanName ||
 
-
     !cleanContent
-
 
   ){
 
@@ -519,23 +496,17 @@ export async function createComment(
 
   // =====================================================
   // CHECK REPLY TARGET
-  // ALLOWS REPLY TO REPLY
   // =====================================================
 
 
   if(parentId){
 
 
-
     const {
-
 
       data:parentComment,
 
-
       error
-
-
 
     } = await supabase
 
@@ -567,8 +538,6 @@ export async function createComment(
 
 
 
-
-
     if(error || !parentComment){
 
 
@@ -577,7 +546,6 @@ export async function createComment(
         'Original comment not found.'
 
       )
-
 
     }
 
@@ -592,12 +560,7 @@ export async function createComment(
 
 
 
-
-
-
-
   const status:CommentStatus =
-
 
 
     parentId
@@ -624,38 +587,65 @@ export async function createComment(
 
 
 
+  const insertData = {
+
+
+    post_id:postId,
+
+
+    parent_id:parentId,
+
+
+    ip_address:ipAddress,
+
+
+    name:cleanName,
+
+
+    email:cleanEmail,
+
+
+    content:cleanContent,
+
+
+    status,
+
+
+    ...(
+
+      userId
+
+      ?
+
+      {
+
+        user_id:userId
+
+      }
+
+      :
+
+      {}
+
+    )
+
+
+  }
+
+
+
+
+
+
+
+
+
 
   console.log(
 
+    'FINAL INSERT DATA:',
 
-    'INSERTING COMMENT:',
-
-    {
-
-
-      postId,
-
-
-      parentId,
-
-
-      userId,
-
-
-      ipAddress,
-
-
-      cleanName,
-
-
-      cleanEmail,
-
-
-      status
-
-
-    }
-
+    insertData
 
   )
 
@@ -667,55 +657,21 @@ export async function createComment(
 
 
 
+  const {
+
+    error
+
+  } = await supabase
 
 
-
-const insertData = {
-
-  post_id: postId,
-
-  parent_id: parentId,
-
-  ip_address: ipAddress,
-
-  name: cleanName,
-
-  email: cleanEmail,
-
-  content: cleanContent,
-
-  status,
-
-  ...(userId
-    ? {
-        user_id:userId
-      }
-    : {})
-
-}
+    .from('comments')
 
 
-console.log(
-  'FINAL INSERT DATA:',
-  insertData
-)
+    .insert(
 
+      insertData
 
-
-const {
-  data,
-  error
-} = await supabase
-
-  .from('comments')
-
-  .insert(insertData)
-
-  .select(
-    COMMENT_FIELDS
-  )
-
-  .single()
+    )
 
 
 
@@ -724,41 +680,104 @@ const {
 
 
 
-if(error){
 
-  console.error(
-    '=========================='
-  )
-
-  console.error(
-    'SUPABASE INSERT ERROR'
-  )
-
-  console.error({
-    message:error.message,
-    details:error.details,
-    hint:error.hint,
-    code:error.code
-  })
-
-  console.error(
-    '=========================='
-  )
+  if(error){
 
 
-  throw new Error(
-    error.message
-  )
+    console.error(
 
-}
+      '=========================='
 
-
+    )
 
 
+    console.error(
+
+      'SUPABASE INSERT ERROR'
+
+    )
+
+
+    console.error({
+
+      message:error.message,
+
+      details:error.details,
+
+      hint:error.hint,
+
+      code:error.code
+
+    })
+
+
+    console.error(
+
+      '=========================='
+
+    )
 
 
 
-  return data as Comment
+    throw new Error(
+
+      error.message
+
+    )
+
+
+  }
+
+
+
+
+
+
+
+
+
+  // =====================================================
+  // RETURN LOCAL COMMENT OBJECT
+  // NO SELECT REQUIRED
+  // =====================================================
+
+
+  return {
+
+
+    id:'',
+
+
+    post_id:postId,
+
+
+    parent_id:parentId,
+
+
+    user_id:userId,
+
+
+    ip_address:ipAddress,
+
+
+    name:cleanName,
+
+
+    email:cleanEmail,
+
+
+    content:cleanContent,
+
+
+    status,
+
+
+    created_at:new Date()
+
+      .toISOString()
+
+
+  }
 
 
 
