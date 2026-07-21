@@ -4,11 +4,21 @@
 // =====================================================
 
 
-import { cookies } from 'next/headers'
+import {
+  cookies,
+} from 'next/headers'
 
-import { randomUUID } from 'crypto'
 
-import { supabaseAdmin } from '@/lib/supabase-admin'
+import {
+  randomUUID,
+} from 'crypto'
+
+
+import {
+  getSupabaseAdmin,
+} from '@/lib/supabase-admin'
+
+
 
 
 
@@ -19,22 +29,30 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 // =====================================================
 
 
-const COOKIE_NAME = 'comment_visitor_token'
+const COOKIE_NAME =
+  'comment_visitor_token'
+
+
+
 
 
 const COOKIE_OPTIONS = {
 
   httpOnly:true,
 
-  secure:process.env.NODE_ENV === 'production',
+  secure:
+    process.env.NODE_ENV === 'production',
 
-  sameSite:'lax' as const,
+  sameSite:
+    'lax' as const,
 
-  maxAge:60 * 60 * 24 * 365,
+  maxAge:
+    60 * 60 * 24 * 365,
 
   path:'/'
 
 }
+
 
 
 
@@ -51,7 +69,8 @@ const COOKIE_OPTIONS = {
 export async function getVisitorToken(){
 
 
-  const cookieStore = await cookies()
+  const cookieStore =
+    await cookies()
 
 
 
@@ -88,7 +107,8 @@ export async function getVisitorToken(){
 export async function getRememberedVisitor(){
 
 
-  const token = await getVisitorToken()
+  const token =
+    await getVisitorToken()
 
 
 
@@ -96,14 +116,16 @@ export async function getRememberedVisitor(){
 
   if(!token){
 
-
     return null
-
 
   }
 
 
 
+
+
+  const supabaseAdmin =
+    getSupabaseAdmin()
 
 
 
@@ -151,10 +173,6 @@ export async function getRememberedVisitor(){
 
 
 
-
-
-
-
   if(error){
 
 
@@ -176,14 +194,12 @@ export async function getRememberedVisitor(){
 
 
 
-
-
-
   return data ?? null
 
 
-
 }
+
+
 
 
 
@@ -200,7 +216,9 @@ export async function getRememberedVisitor(){
 
 export async function rememberVisitor({
 
+
   name,
+
 
   hashedIp = null,
 
@@ -230,8 +248,6 @@ export async function rememberVisitor({
 
 
 
-
-
   if(!cleanName){
 
 
@@ -250,9 +266,15 @@ export async function rememberVisitor({
 
 
 
-  const cookieStore = await cookies()
+  const supabaseAdmin =
+    getSupabaseAdmin()
 
 
+
+
+
+  const cookieStore =
+    await cookies()
 
 
 
@@ -276,8 +298,8 @@ export async function rememberVisitor({
 
 
 
-    token = randomUUID()
-
+    token =
+      randomUUID()
 
 
 
@@ -294,9 +316,7 @@ export async function rememberVisitor({
     )
 
 
-
   }
-
 
 
 
@@ -365,6 +385,8 @@ export async function rememberVisitor({
 
 
 
+
+
     const {
 
       error:updateError
@@ -391,7 +413,6 @@ export async function rememberVisitor({
           .toISOString()
 
 
-
       })
 
 
@@ -402,6 +423,7 @@ export async function rememberVisitor({
         token
 
       )
+
 
 
 
@@ -424,7 +446,10 @@ export async function rememberVisitor({
 
 
 
+
+
   }
+
 
   else {
 
@@ -454,8 +479,8 @@ export async function rememberVisitor({
         hashed_ip:hashedIp
 
 
-
       })
+
 
 
 
@@ -479,7 +504,6 @@ export async function rememberVisitor({
 
 
 
-
   }
 
 
@@ -491,9 +515,12 @@ export async function rememberVisitor({
 
   return {
 
+
     token,
 
+
     name:cleanName
+
 
   }
 
