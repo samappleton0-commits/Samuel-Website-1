@@ -740,56 +740,33 @@ export async function createComment(
 
 
 
+if(error){
+
+  console.error(
+    '=========================='
+  )
+
+  console.error(
+    'SUPABASE INSERT ERROR'
+  )
+
+  console.error({
+    message:error.message,
+    details:error.details,
+    hint:error.hint,
+    code:error.code
+  })
+
+  console.error(
+    '=========================='
+  )
 
 
+  throw new Error(
+    error.message
+  )
 
-
-
-  if(error){
-
-
-
-    console.error(
-
-      '=========================='
-
-    )
-
-
-    console.error(
-
-      'SUPABASE INSERT ERROR'
-
-    )
-
-
-    console.error(
-
-      error
-
-    )
-
-
-    console.error(
-
-      '=========================='
-
-    )
-
-
-
-
-    throw new Error(
-
-      error.message
-
-    )
-
-
-
-  }
-
-
+}
 
 
 
