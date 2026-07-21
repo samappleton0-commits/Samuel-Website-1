@@ -367,10 +367,7 @@ export async function getApprovedComments(
 // USED BY API ROUTE
 // =====================================================
 
-
 export async function createComment(
-
-
   supabase:SupabaseClient,
 
 
@@ -673,65 +670,52 @@ export async function createComment(
 
 
 
+const insertData = {
 
-  const {
+  post_id: postId,
 
+  parent_id: parentId,
 
-    data,
+  ip_address: ipAddress,
 
+  name: cleanName,
 
-    error
+  email: cleanEmail,
 
+  content: cleanContent,
 
+  status,
 
-  } = await supabase
+  ...(userId
+    ? {
+        user_id:userId
+      }
+    : {})
 
-
-    .from('comments')
-
-
-    .insert({
-
-
-
-      post_id:postId,
-
-
-      parent_id:parentId,
+}
 
 
-      user_id:userId,
-
-
-      ip_address:ipAddress,
-
-
-      name:cleanName,
-
-
-      email:cleanEmail,
-
-
-      content:cleanContent,
-
-
-      status,
+console.log(
+  'FINAL INSERT DATA:',
+  insertData
+)
 
 
 
-    })
+const {
+  data,
+  error
+} = await supabase
 
+  .from('comments')
 
+  .insert(insertData)
 
-    .select(
+  .select(
+    COMMENT_FIELDS
+  )
 
-      COMMENT_FIELDS
-
-    )
-
-
-    .single()
-
+  .single()
 
 
 
