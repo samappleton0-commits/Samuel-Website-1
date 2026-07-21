@@ -15,8 +15,8 @@ import {
 
 
 import {
-  createClient,
-} from '@/lib/supabase-server'
+  createPublicClient,
+} from '@/lib/supabase-public'
 
 
 import {
@@ -45,7 +45,6 @@ function getClientIp(request:Request){
 
   return (
 
-
     request.headers.get('x-forwarded-for')
 
     ??
@@ -56,11 +55,10 @@ function getClientIp(request:Request){
 
     'unknown'
 
-
   )
 
-
 }
+
 
 
 
@@ -88,14 +86,7 @@ export async function POST(
   try {
 
 
-
-
-
     const body = await request.json()
-
-
-
-
 
 
 
@@ -104,22 +95,15 @@ export async function POST(
 
     const {
 
-
       postId,
-
 
       parentId,
 
-
       name,
-
 
       email,
 
-
       content
-
-
 
     } = body
 
@@ -132,49 +116,32 @@ export async function POST(
 
 
 
-
-
-
     if(
-
 
       !postId ||
 
-
       !content?.trim()
-
 
     ){
 
 
-
       return NextResponse.json(
 
-
         {
-
 
           success:false,
 
-
           error:'Comment content is required.'
-
-
 
         },
 
-
         {
-
 
           status:400
 
-
         }
 
-
       )
-
 
     }
 
@@ -187,63 +154,11 @@ export async function POST(
 
 
     // =====================================================
-    // SUPABASE SERVER CLIENT
+    // PUBLIC SUPABASE CLIENT
     // =====================================================
 
 
-    const supabase = await createClient()
-
-
-
-
-
-    // =====================================================
-    // DEBUG SESSION
-    // =====================================================
-
-
-    const {
-
-      data:{
-        session
-      }
-
-    } = await supabase.auth.getSession()
-
-
-    console.log(
-
-      "COMMENT SESSION:",
-
-      session
-
-    )
-
-
-
-
-
-
-
-
-
-
-
-
-    // =====================================================
-    // GET CURRENT USER
-    // =====================================================
-
-
-    const {
-
-
-      data:{user}
-
-
-
-    } = await supabase.auth.getUser()
-
+    const supabase = createPublicClient()
 
 
 
@@ -273,116 +188,7 @@ export async function POST(
 
 
 
-
-
-    const ipAddress =
-
-      getClientIp(request)
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // =====================================================
-    // LOGGED IN USER
-    // =====================================================
-
-
-    if(user){
-
-
-
-      userId = user.id
-
-
-
-      finalEmail =
-
-        user.email ?? null
-
-
-
-
-
-
-
-      const {
-
-
-        data:profile
-
-
-
-      } = await supabase
-
-
-        .from('admin_users')
-
-
-        .select(`
-
-          name
-
-        `)
-
-
-        .eq(
-
-          'user_id',
-
-          user.id
-
-        )
-
-
-        .maybeSingle()
-
-
-
-
-
-
-
-
-
-
-
-      finalName =
-
-
-        profile?.name
-
-
-        ??
-
-
-        user.email
-
-
-        ??
-
-
-        'User'
-
-
-
-
-
-
-
-
-
-
-    }
-
+    const ipAddress = getClientIp(request)
 
 
 
@@ -400,13 +206,12 @@ export async function POST(
     // =====================================================
 
 
-    else {
+    const visitor =
 
+      await getRememberedVisitor()
 
 
-      const visitor =
 
-        await getRememberedVisitor()
 
 
 
@@ -414,125 +219,89 @@ export async function POST(
 
 
 
-      finalName =
+    finalName =
 
 
-        name?.trim()
+      name?.trim()
 
+      ??
 
-        ??
+      visitor?.name
 
+      ??
 
-        visitor?.name
+      ''
 
 
-        ??
 
 
-        ''
 
 
 
 
 
 
+    finalEmail =
 
 
+      email?.trim()
 
+      ??
 
+      null
 
 
 
-      finalEmail =
 
 
-        email?.trim()
 
 
-        ??
 
 
-        null
 
+    if(!finalName){
 
 
+      return NextResponse.json(
 
+        {
 
+          success:false,
 
+          error:'Please provide your name.'
 
+        },
 
+        {
 
+          status:400
 
+        }
 
-
-
-      if(!finalName){
-
-
-
-        return NextResponse.json(
-
-
-          {
-
-
-            success:false,
-
-
-            error:'Please provide your name.'
-
-
-
-          },
-
-
-          {
-
-
-            status:400
-
-
-
-          }
-
-
-        )
-
-
-
-      }
-
-
-
-
-
-
-
-
-
-
-
-
-      await rememberVisitor({
-
-
-
-        name:finalName,
-
-
-
-        hashedIp:ipAddress
-
-
-
-      })
-
-
-
-
+      )
 
     }
 
+
+
+
+
+
+
+
+
+    // =====================================================
+    // REMEMBER VISITOR
+    // =====================================================
+
+
+    await rememberVisitor({
+
+      name:finalName,
+
+      hashedIp:ipAddress
+
+    })
 
 
 
@@ -552,28 +321,19 @@ export async function POST(
 
       {
 
-
         postId,
-
 
         parentId,
 
-
         userId,
-
 
         ipAddress,
 
-
         finalName,
-
 
         finalEmail
 
-
-
       }
-
 
     )
 
@@ -600,15 +360,11 @@ export async function POST(
 
       await createComment(
 
-
         supabase,
-
 
         {
 
-
           postId,
-
 
 
           parentId:
@@ -616,29 +372,21 @@ export async function POST(
             parentId || null,
 
 
-
           userId,
-
 
 
           ipAddress,
 
 
-
           name:finalName,
-
 
 
           email:finalEmail,
 
 
-
           content,
 
-
-
         }
-
 
       )
 
@@ -654,15 +402,9 @@ export async function POST(
 
 
 
-
-
-
     return NextResponse.json(
 
-
-
       {
-
 
         success:true,
 
@@ -670,50 +412,32 @@ export async function POST(
         comment,
 
 
-
         message:
-
 
 
           parentId
 
 
-
           ?
-
 
 
           'Reply submitted successfully.'
 
 
-
           :
-
 
 
           'Comment submitted and waiting for approval.'
 
-
-
       },
-
-
 
       {
 
-
         status:201
-
 
       }
 
-
-
     )
-
-
-
-
 
 
 
@@ -724,11 +448,6 @@ export async function POST(
   }
 
   catch(error){
-
-
-
-
-
 
 
 
@@ -745,60 +464,39 @@ export async function POST(
 
 
 
-
-
-
     return NextResponse.json(
-
-
 
       {
 
-
         success:false,
-
 
 
         error:
 
 
-
           error instanceof Error
-
 
 
           ?
 
 
-
           error.message
-
 
 
           :
 
 
-
           'Unable to submit comment.'
-
-
 
       },
 
-
-
       {
-
 
         status:500
 
-
       }
 
-
-
     )
-
 
 
   }
