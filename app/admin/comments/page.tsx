@@ -53,35 +53,219 @@ type BlogPost = {
 
 
 
+
+
 export type Comment = {
+
 
   id:string
 
+
+  user_id:string | null
+
+
   name:string
+
 
   email:string | null
 
+
   content:string
 
+
   status:
+
     | 'pending'
+
     | 'approved'
+
     | 'rejected'
 
 
   created_at:string
 
+
   post_id:string
 
+
   parent_id:string | null
+
 
 
   blog_posts?:BlogPost | null
 
 
+
   replies?:Comment[]
 
+
 }
+
+
+
+
+
+
+
+
+
+
+
+// =========================================================
+// BUILD COMMENT TREE
+// =========================================================
+
+
+function buildCommentTree(
+
+  comments:Comment[]
+
+){
+
+
+
+  const map =
+
+    new Map<string,Comment>()
+
+
+
+
+
+
+  const roots:Comment[] = []
+
+
+
+
+
+
+
+
+  comments.forEach(comment=>{
+
+
+    map.set(
+
+      comment.id,
+
+      {
+
+        ...comment,
+
+        replies:[]
+
+      }
+
+    )
+
+
+  })
+
+
+
+
+
+
+
+
+
+  comments.forEach(comment=>{
+
+
+    const current =
+
+      map.get(
+
+        comment.id
+
+      )
+
+
+
+
+
+
+
+    if(!current){
+
+      return
+
+    }
+
+
+
+
+
+
+
+
+    if(comment.parent_id){
+
+
+
+      const parent =
+
+        map.get(
+
+          comment.parent_id
+
+        )
+
+
+
+
+
+
+
+      if(parent){
+
+
+        parent.replies?.push(
+
+          current
+
+        )
+
+
+      }
+
+
+
+    }
+
+
+    else{
+
+
+      roots.push(
+
+        current
+
+      )
+
+
+    }
+
+
+
+  })
+
+
+
+
+
+
+
+
+  return roots
+
+
+
+}
+
+
+
 
 
 
@@ -100,7 +284,13 @@ export default async function AdminCommentsPage(){
 
 
 
-  const userRole = await getUserRole()
+
+
+  const userRole =
+
+    await getUserRole()
+
+
 
 
 
@@ -119,7 +309,14 @@ export default async function AdminCommentsPage(){
 
 
 
-  const supabase = await createClient()
+
+
+  const supabase =
+
+    await createClient()
+
+
+
 
 
 
@@ -130,6 +327,8 @@ export default async function AdminCommentsPage(){
   const select = `
 
     id,
+
+    user_id,
 
     name,
 
@@ -172,15 +371,17 @@ export default async function AdminCommentsPage(){
 
 
 
+
   // =====================================================
-  // FETCH COMMENTS
+  // ADMIN GET ALL COMMENTS
   // =====================================================
 
 
+  if(
 
-  if(userRole.role === 'admin'){
+    userRole.role === 'admin'
 
-
+  ){
 
 
 
@@ -217,7 +418,10 @@ export default async function AdminCommentsPage(){
 
 
 
+
+
     if(error){
+
 
       console.error(
 
@@ -227,7 +431,9 @@ export default async function AdminCommentsPage(){
 
       )
 
+
     }
+
 
 
 
@@ -246,6 +452,15 @@ export default async function AdminCommentsPage(){
 
 
 
+
+
+
+
+  // =====================================================
+  // EDITOR / USER POSTS ONLY
+  // =====================================================
+
+
   else {
 
 
@@ -254,7 +469,7 @@ export default async function AdminCommentsPage(){
 
       data:posts,
 
-      error
+      error:postError
 
 
     } = await supabase
@@ -280,15 +495,17 @@ export default async function AdminCommentsPage(){
 
 
 
-    if(error){
+    if(postError){
+
 
       console.error(
 
-        'POST LOOKUP ERROR',
+        'POST FETCH ERROR',
 
-        error
+        postError
 
       )
+
 
     }
 
@@ -312,9 +529,9 @@ export default async function AdminCommentsPage(){
 
 
 
+
+
     if(postIds.length){
-
-
 
 
 
@@ -361,8 +578,8 @@ export default async function AdminCommentsPage(){
 
 
 
-
       if(error){
+
 
         console.error(
 
@@ -372,7 +589,9 @@ export default async function AdminCommentsPage(){
 
         )
 
+
       }
+
 
 
 
@@ -388,8 +607,6 @@ export default async function AdminCommentsPage(){
     }
 
 
-
-
   }
 
 
@@ -400,134 +617,16 @@ export default async function AdminCommentsPage(){
 
 
 
-  // =====================================================
-  // BUILD FLAT REPLY STRUCTURE
-  // =====================================================
 
 
 
-  const rootComments:Comment[] = []
+  const rootComments =
 
+    buildCommentTree(
 
+      comments
 
-
-
-  const replyMap =
-
-    new Map<string,Comment[]>()
-
-
-
-
-
-
-  comments.forEach(comment=>{
-
-
-
-    if(!comment.parent_id){
-
-
-
-      rootComments.push({
-
-        ...comment,
-
-        replies:[]
-
-      })
-
-
-
-      replyMap.set(
-
-        comment.id,
-
-        []
-
-      )
-
-
-    }
-
-
-
-  })
-
-
-
-
-
-
-
-
-  comments.forEach(comment=>{
-
-
-
-    if(comment.parent_id){
-
-
-
-      const replies =
-
-        replyMap.get(
-
-          comment.parent_id
-
-        )
-
-
-
-
-
-
-      if(replies){
-
-
-
-        replies.push({
-
-          ...comment,
-
-          replies:[]
-
-        })
-
-
-
-      }
-
-
-
-    }
-
-
-
-  })
-
-
-
-
-
-
-
-
-  rootComments.forEach(comment=>{
-
-
-
-    comment.replies =
-
-      replyMap.get(
-
-        comment.id
-
-      ) ?? []
-
-
-
-  })
+    )
 
 
 
@@ -542,12 +641,11 @@ export default async function AdminCommentsPage(){
   // =====================================================
 
 
-
   const pending =
 
     comments.filter(
 
-      comment =>
+      comment=>
 
       comment.status === 'pending'
 
@@ -562,7 +660,7 @@ export default async function AdminCommentsPage(){
 
     comments.filter(
 
-      comment =>
+      comment=>
 
       comment.status === 'approved'
 
@@ -580,132 +678,114 @@ export default async function AdminCommentsPage(){
   return (
 
 
+<div
 
-    <div
+className="mx-auto max-w-6xl"
 
-      className="
-        mx-auto
-        max-w-6xl
-      "
+>
 
-    >
 
 
 
 
 
-      <div
 
-        className="
-          mb-10
-        "
 
-      >
+<div className="mb-10">
 
 
+<h1
 
-        <h1
+className="text-4xl font-black"
 
-          className="
-            text-4xl
-            font-black
-          "
+>
 
-        >
+Comments
 
-          Comments
+</h1>
 
 
-        </h1>
 
+<p
 
+className="mt-2 text-muted-foreground"
 
+>
 
+Manage blog comments and replies.
 
-        <p
+</p>
 
-          className="
-            mt-2
-            text-muted-foreground
-          "
 
-        >
 
-          Manage blog comments and replies.
+</div>
 
 
-        </p>
 
 
 
 
-      </div>
 
 
 
+<div
 
+className="mb-10 grid gap-5 md:grid-cols-3"
 
+>
 
 
 
+<StatCard
 
-      <div
+icon={<Clock size={22}/>}
 
-        className="
-          mb-10
-          grid
-          gap-5
-          md:grid-cols-3
-        "
+title="Pending"
 
-      >
+value={pending}
 
+/>
 
 
 
 
-        <StatCard
 
-          icon={<Clock size={22}/>}
 
-          title="Pending"
 
-          value={pending}
+<StatCard
 
-        />
+icon={<CheckCircle size={22}/>}
 
+title="Approved"
 
+value={approved}
 
+/>
 
 
-        <StatCard
 
-          icon={<CheckCircle size={22}/>}
 
-          title="Approved"
 
-          value={approved}
 
-        />
 
+<StatCard
 
+icon={<MessageCircle size={22}/>}
 
+title="Total"
 
+value={comments.length}
 
-        <StatCard
+/>
 
-          icon={<MessageCircle size={22}/>}
 
-          title="Total"
 
-          value={comments.length}
 
-        />
 
 
+</div>
 
 
-      </div>
 
 
 
@@ -713,39 +793,43 @@ export default async function AdminCommentsPage(){
 
 
 
+<CommentManager
 
 
-      <CommentManager
+comments={rootComments}
 
 
-        comments={rootComments}
+role={
 
+userRole.role as
 
-        role={
+'admin'
 
-          userRole.role as
+|
 
-          'admin'
+'editor'
 
-          |
+|
 
-          'editor'
+'user'
 
-          |
+}
 
-          'user'
 
-        }
+currentUserId={userRole.user_id}
 
 
-      />
+/>
 
 
 
 
 
 
-    </div>
+
+
+
+</div>
 
 
 
@@ -762,6 +846,9 @@ export default async function AdminCommentsPage(){
 
 
 
+
+
+
 // =========================================================
 // STAT CARD
 // =========================================================
@@ -769,82 +856,87 @@ export default async function AdminCommentsPage(){
 
 function StatCard({
 
-  icon,
+icon,
 
-  title,
+title,
 
-  value,
+value,
 
 }:{
 
-  icon:React.ReactNode
+icon:React.ReactNode
 
-  title:string
+title:string
 
-  value:number
+value:number
 
 }){
 
 
-  return (
+
+return (
 
 
-    <div
+<div
 
-      className="
-        rounded-3xl
-        border
-        border-surface-border
-        bg-card
-        p-6
-      "
+className="
 
-    >
+rounded-3xl
 
+border
 
+border-surface-border
 
-      {icon}
+bg-card
 
+p-6
 
+"
 
-      <p
-
-        className="
-          mt-4
-          text-sm
-          text-muted-foreground
-        "
-
-      >
-
-        {title}
+>
 
 
-      </p>
+{icon}
 
 
+<p
 
+className="
 
-      <h2
+mt-4
 
-        className="
-          text-3xl
-          font-black
-        "
+text-sm
 
-      >
+text-muted-foreground
 
-        {value}
+"
 
+>
 
-      </h2>
+{title}
+
+</p>
 
 
 
-    </div>
+<h2
+
+className="text-3xl font-black"
+
+>
+
+{value}
+
+</h2>
 
 
-  )
+
+</div>
+
+
+
+)
+
 
 
 }

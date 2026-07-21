@@ -1,172 +1,156 @@
-import { NextResponse } from 'next/server'
+// =====================================================
+// DELETE COMMENT API
+// app/api/admin/comments/delete/route.ts
+// =====================================================
 
-import { createClient } from '@/lib/supabase-server'
+
+import {
+  NextResponse,
+} from 'next/server'
+
+
+import {
+  createClient,
+} from '@/lib/supabase-server'
+
+
+
+
 
 
 
 export async function POST(
-  request: Request
-) {
 
-  try {
+request:Request
 
+){
 
-    const {
-      commentId
-    } = await request.json()
 
 
+try{
 
-    if(!commentId){
 
-      return NextResponse.json(
 
-        {
-          error:'Missing comment id'
-        },
+const supabase =
 
-        {
-          status:400
-        }
+await createClient()
 
-      )
 
-    }
 
 
 
 
-    const supabase =
-      await createClient()
+const {
 
+data:{
 
+user
 
+}
 
+}=await supabase.auth.getUser()
 
-    // =====================================
-    // CHECK AUTHENTICATED USER
-    // =====================================
 
 
-    const {
 
-      data:{
-        user
-      }
 
-    } = await supabase.auth.getUser()
 
 
 
-    if(!user){
+if(!user){
 
-      return NextResponse.json(
 
-        {
-          error:'Unauthorized'
-        },
+return NextResponse.json(
 
-        {
-          status:401
-        }
+{
 
-      )
+error:'Unauthorized'
 
-    }
+},
 
+{
 
+status:401
 
+}
 
+)
 
 
+}
 
-    // =====================================
-    // CHECK ADMIN ROLE
-    // =====================================
 
 
-    const {
 
-      data:admin
 
-    } = await supabase
 
 
-      .from('admin_users')
 
+const {
 
-      .select('role')
+data:admin
 
+}=await supabase
 
-      .eq(
 
-        'user_id',
+.from('admin_users')
 
-        user.id
 
-      )
+.select('role')
 
 
-      .single()
+.eq(
 
+'user_id',
 
+user.id
 
+)
 
 
+.maybeSingle()
 
-    if(
 
-      !admin ||
 
-      admin.role !== 'admin'
 
-    ){
 
-      return NextResponse.json(
 
-        {
-          error:'Forbidden'
-        },
 
-        {
-          status:403
-        }
+if(admin?.role !== 'admin'){
 
-      )
 
-    }
+return NextResponse.json(
 
+{
 
+error:'Permission denied'
 
+},
 
+{
 
+status:403
 
+}
 
-    // =====================================
-    // DELETE COMMENT
-    // =====================================
+)
 
 
-    const {
+}
 
-      error
 
-    } = await supabase
 
 
-      .from('comments')
 
 
-      .delete()
 
 
-      .eq(
+const {
 
-        'id',
+commentId
 
-        commentId
+}=await request.json()
 
-      )
 
 
 
@@ -174,71 +158,152 @@ export async function POST(
 
 
 
-    if(error){
+if(!commentId){
 
-      console.error(
 
-        'Delete comment error:',
+return NextResponse.json(
 
-        error
+{
 
-      )
+error:'Comment id required'
 
+},
 
-      throw error
+{
 
-    }
+status:400
 
+}
 
+)
 
 
+}
 
 
-    return NextResponse.json({
 
-      success:true
 
-    })
 
 
 
 
+// delete children first
 
-  }
+await supabase
 
 
-  catch(error){
+.from('comments')
 
 
-    console.error(
+.delete()
 
-      'Delete API Error:',
 
-      error
+.eq(
 
-    )
+'parent_id',
 
+commentId
 
+)
 
-    return NextResponse.json(
 
-      {
 
-        error:
-        'Failed to delete comment'
 
-      },
 
-      {
 
-        status:500
 
-      }
 
-    )
 
+const {
 
-  }
+error
+
+}=await supabase
+
+
+.from('comments')
+
+
+.delete()
+
+
+.eq(
+
+'id',
+
+commentId
+
+)
+
+
+
+
+
+
+
+
+
+if(error){
+
+
+throw error
+
+
+}
+
+
+
+
+
+
+
+return NextResponse.json({
+
+success:true
+
+})
+
+
+
+
+
+
+}
+
+catch(error){
+
+
+
+console.error(
+
+'DELETE ERROR',
+
+error
+
+)
+
+
+
+return NextResponse.json(
+
+{
+
+error:'Unable to delete comment'
+
+},
+
+{
+
+status:500
+
+}
+
+)
+
+
+
+}
+
 
 
 }

@@ -1,185 +1,287 @@
-import { NextResponse } from 'next/server'
+// =====================================================
+// APPROVE COMMENT API
+// app/api/admin/comments/approve/route.ts
+// =====================================================
 
-import { createClient } from '@/lib/supabase-server'
+
+import {
+  NextResponse,
+} from 'next/server'
+
+
+import {
+  createClient,
+} from '@/lib/supabase-server'
+
+
+
+
+
 
 
 export async function POST(
-  request: Request
-) {
 
-  try {
+request:Request
 
+){
 
-    const {
-      commentId
-    } = await request.json()
 
 
+try{
 
-    if(!commentId){
 
-      return NextResponse.json(
 
-        {
-          error:'Missing comment id'
-        },
+const supabase =
 
-        {
-          status:400
-        }
+await createClient()
 
-      )
 
-    }
 
 
 
-    const supabase =
-      await createClient()
 
 
+const {
 
-    // CHECK USER
+data:{
 
-    const {
-      data:{
-        user
-      }
-    } = await supabase.auth.getUser()
+user
 
+}
 
+}=await supabase.auth.getUser()
 
-    if(!user){
 
-      return NextResponse.json(
 
-        {
-          error:'Unauthorized'
-        },
 
-        {
-          status:401
-        }
 
-      )
 
-    }
 
 
+if(!user){
 
 
-    // CHECK ADMIN ROLE
+return NextResponse.json(
 
-    const {
-      data:admin
-    } = await supabase
+{
 
-      .from('admin_users')
+error:'Unauthorized'
 
-      .select('role')
+},
 
-      .eq(
-        'user_id',
-        user.id
-      )
+{
 
-      .single()
+status:401
 
+}
 
+)
 
-    if(
-      !admin ||
-      admin.role !== 'admin'
-    ){
 
-      return NextResponse.json(
+}
 
-        {
-          error:'Forbidden'
-        },
 
-        {
-          status:403
-        }
 
-      )
 
-    }
 
 
 
 
-    // UPDATE COMMENT
+const {
 
+data:admin
 
-    const {
-      error
-    } = await supabase
+}=await supabase
 
-      .from('comments')
 
-      .update({
+.from('admin_users')
 
-        status:'approved'
 
-      })
+.select('role')
 
-      .eq(
 
-        'id',
+.eq(
 
-        commentId
+'user_id',
 
-      )
+user.id
 
+)
 
 
+.maybeSingle()
 
 
-    if(error){
 
-      console.error(
-        'Approve error:',
-        error
-      )
 
-      throw error
 
-    }
 
 
+if(admin?.role !== 'admin'){
 
 
-    return NextResponse.json({
+return NextResponse.json(
 
-      success:true
+{
 
-    })
+error:'Permission denied'
 
+},
 
-  }
+{
 
-  catch(error){
+status:403
 
+}
 
-    console.error(
-      'Approve API Error:',
-      error
-    )
+)
 
 
-    return NextResponse.json(
+}
 
-      {
-        error:'Failed to approve comment'
-      },
 
-      {
-        status:500
-      }
 
-    )
 
-  }
+
+
+
+
+const {
+
+commentId
+
+}=await request.json()
+
+
+
+
+
+
+
+
+if(!commentId){
+
+
+return NextResponse.json(
+
+{
+
+error:'Comment id required'
+
+},
+
+{
+
+status:400
+
+}
+
+)
+
+
+}
+
+
+
+
+
+
+
+
+const {
+
+error
+
+}=await supabase
+
+
+.from('comments')
+
+
+.update({
+
+status:'approved'
+
+})
+
+
+.eq(
+
+'id',
+
+commentId
+
+)
+
+
+
+
+
+
+
+
+
+if(error){
+
+
+throw error
+
+
+}
+
+
+
+
+
+
+
+return NextResponse.json({
+
+success:true
+
+})
+
+
+
+
+
+
+}
+
+catch(error){
+
+
+
+console.error(
+
+'APPROVE ERROR',
+
+error
+
+)
+
+
+
+return NextResponse.json(
+
+{
+
+error:'Unable to approve comment'
+
+},
+
+{
+
+status:500
+
+}
+
+)
+
+
+
+}
+
+
 
 }

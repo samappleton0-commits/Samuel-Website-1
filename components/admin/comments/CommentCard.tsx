@@ -3,15 +3,8 @@
 // components/admin/comments/CommentCard.tsx
 // =====================================================
 
+
 'use client'
-
-
-import {
-  ChevronDown,
-  ChevronUp,
-  ExternalLink,
-  MessageCircle,
-} from 'lucide-react'
 
 
 import {
@@ -19,9 +12,20 @@ import {
 } from 'react'
 
 
+import {
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  MessageCircle,
+  Save,
+  X,
+  Pencil,
+} from 'lucide-react'
+
+
 import CommentActions from './CommentActions'
 
-import CommentReply from './CommentReply'
+import CommentReply from '@/components/admin/comments/CommentReply'
 
 import CommentReplies from './CommentReplies'
 
@@ -29,9 +33,6 @@ import CommentReplies from './CommentReplies'
 
 
 
-// =====================================================
-// TYPES
-// =====================================================
 
 
 type BlogPost = {
@@ -40,9 +41,10 @@ type BlogPost = {
 
   slug:string
 
-  user_id:string
-
 }
+
+
+
 
 
 
@@ -52,6 +54,9 @@ export type AdminComment = {
 
 
   id:string
+
+
+  user_id:string | null
 
 
   name:string
@@ -64,10 +69,12 @@ export type AdminComment = {
 
 
   status:
-    | 'pending'
-    | 'approved'
-    | 'rejected'
 
+    | 'pending'
+
+    | 'approved'
+
+    | 'rejected'
 
 
   created_at:string
@@ -77,12 +84,6 @@ export type AdminComment = {
 
 
   parent_id:string | null
-
-
-  ip_address?:string | null
-
-
-  user_id?:string | null
 
 
 
@@ -101,6 +102,8 @@ export type AdminComment = {
 
 
 
+
+
 type Props = {
 
 
@@ -108,9 +111,15 @@ type Props = {
 
 
   role:
+
     | 'admin'
+
     | 'editor'
+
     | 'user'
+
+
+  currentUserId:string | null
 
 
   expanded:boolean
@@ -119,72 +128,7 @@ type Props = {
   onToggle:()=>void
 
 
-}
-
-
-
-
-
-
-
-
-
-// =====================================================
-// HELPERS
-// =====================================================
-
-
-function getInitials(name:string){
-
-
-  return name
-
-    .split(' ')
-
-    .map(
-
-      word=>word[0]
-
-    )
-
-    .slice(0,2)
-
-    .join('')
-
-    .toUpperCase()
-
-
-}
-
-
-
-
-
-
-function formatDate(date:string){
-
-
-  return new Intl.DateTimeFormat(
-
-    'en-US',
-
-    {
-
-      day:'numeric',
-
-      month:'short',
-
-      year:'numeric',
-
-      timeZone:'UTC'
-
-    }
-
-  ).format(
-
-    new Date(date)
-
-  )
+  isReply?:boolean
 
 
 }
@@ -195,11 +139,6 @@ function formatDate(date:string){
 
 
 
-
-
-// =====================================================
-// COMPONENT
-// =====================================================
 
 
 export default function CommentCard({
@@ -208,17 +147,196 @@ export default function CommentCard({
 
   role,
 
+  currentUserId,
+
   expanded,
 
   onToggle,
+
+  isReply=false,
 
 }:Props){
 
 
 
-const [replying,setReplying] =
 
-useState(false)
+
+
+const [
+
+showReply,
+
+setShowReply
+
+]=useState(false)
+
+
+
+
+
+
+
+const [
+
+editing,
+
+setEditing
+
+]=useState(false)
+
+
+
+
+
+
+
+const [
+
+text,
+
+setText
+
+]=useState(comment.content)
+
+
+
+
+
+
+
+const canEdit =
+
+  comment.user_id &&
+
+  comment.user_id === currentUserId
+
+
+
+
+
+
+
+function initials(name:string){
+
+
+return name
+
+.split(' ')
+
+.filter(Boolean)
+
+.map(v=>v[0])
+
+.slice(0,2)
+
+.join('')
+
+.toUpperCase()
+
+
+}
+
+
+
+
+
+
+
+
+function date(value:string){
+
+
+return new Intl.DateTimeFormat(
+
+'en-US',
+
+{
+
+day:'numeric',
+
+month:'short',
+
+year:'numeric'
+
+}
+
+).format(
+
+new Date(value)
+
+)
+
+
+}
+
+
+
+
+
+
+
+
+
+
+async function updateComment(){
+
+
+
+if(!text.trim()) return
+
+
+
+
+
+await fetch(
+
+`/api/admin/comments/${comment.id}`,
+
+{
+
+
+method:'PATCH',
+
+
+headers:{
+
+
+'Content-Type':
+
+'application/json'
+
+
+},
+
+
+body:JSON.stringify({
+
+content:text.trim()
+
+})
+
+
+}
+
+)
+
+
+
+
+
+setEditing(false)
+
+window.location.reload()
+
+
+
+}
+
+
+
+
+
+
 
 
 
@@ -226,716 +344,768 @@ useState(false)
 
 return (
 
-  
-  <article
 
-    className="
-      overflow-hidden
-      rounded-3xl
-      border
-      border-surface-border
-      bg-card
-      transition
-    "
+<article
 
-  >
+className="
 
+overflow-hidden
 
+rounded-3xl
 
+border
 
+border-surface-border
 
+bg-card
 
+"
 
-    {/* =====================================
-        COLLAPSED HEADER
-    ===================================== */}
+>
 
 
 
-    <button
 
 
-      type="button"
+<div
 
+className="
 
-      onClick={onToggle}
+flex
 
+gap-4
 
-      className="
-        flex
-        w-full
-        items-start
-        gap-4
-        p-5
-        text-left
-        transition
-        hover:bg-muted/20
-      "
+p-5
 
+"
 
-    >
+>
 
 
 
 
 
-      {/* AVATAR */}
 
 
-      <div
+<div
 
-        className="
-          flex
-          h-11
-          w-11
-          shrink-0
-          items-center
-          justify-center
-          rounded-full
-          bg-primary/10
-          text-sm
-          font-bold
-          text-primary
-        "
+className="
 
-      >
+flex
 
-        {getInitials(comment.name)}
+h-10
 
-      </div>
+w-10
 
+shrink-0
 
+items-center
 
+justify-center
 
+rounded-full
 
+bg-primary/10
 
+font-bold
 
-      {/* SUMMARY */}
+text-primary
 
+"
 
-      <div
+>
 
-        className="
-          min-w-0
-          flex-1
-        "
+{initials(comment.name)}
 
-      >
 
+</div>
 
 
-        <div
 
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-2
-          "
 
-        >
 
 
 
-          <h3
 
-            className="
-              font-bold
-            "
+<div
 
-          >
+className="
 
-            {comment.name}
+min-w-0
 
-          </h3>
+flex-1
 
+"
 
+>
 
 
 
 
-          <span
 
-            className="
-              rounded-full
-              bg-surface
-              px-3
-              py-1
-              text-xs
-              font-semibold
-              uppercase
-            "
 
-          >
 
-            {comment.status}
+<div
 
-          </span>
+className="
 
+flex
 
+flex-wrap
 
+items-center
 
+gap-2
 
-          <span
+"
 
-            className="
-              text-xs
-              text-muted-foreground
-            "
+>
 
-          >
+<h3
 
-            {formatDate(comment.created_at)}
+className="font-bold"
 
-          </span>
+>
 
+{comment.name}
 
+</h3>
 
-        </div>
 
 
 
 
 
 
+{
 
-        <p
+!isReply && (
 
-          className="
-            mt-2
-            line-clamp-2
-            text-sm
-            text-muted-foreground
-          "
+<span
 
-        >
+className="
 
-          {comment.content}
+rounded-full
 
-        </p>
+bg-surface
 
+px-3
 
+py-1
 
-      </div>
+text-xs
 
+uppercase
 
+"
 
+>
 
+{comment.status}
 
+</span>
 
+)
 
+}
 
 
-      {/* EXPAND ICON */}
 
+</div>
 
-      <div
 
-        className="
-          shrink-0
-          pt-2
-        "
 
-      >
 
-        {
 
-        expanded
 
-        ?
 
-        <ChevronUp size={20}/>
+<p
 
-        :
+className="
 
-        <ChevronDown size={20}/>
+mt-1
 
-        }
+text-xs
 
+text-muted-foreground
 
-      </div>
+"
 
+>
 
+{date(comment.created_at)}
 
+</p>
 
 
 
-    </button>
 
 
 
 
 
 
+{
 
+editing ? (
 
 
 
+<div className="mt-4 space-y-3">
 
 
-    {/* =====================================
-        EXPANDED AREA
-    ===================================== */}
+<textarea
 
+value={text}
 
+onChange={e=>setText(e.target.value)}
 
-    {
+className="
 
-    expanded && (
+w-full
 
+rounded-xl
 
+border
 
-      <div
+border-surface-border
 
-        className="
-          border-t
-          border-surface-border
-          p-5
-        "
+bg-background
 
-      >
+p-3
 
+"
 
+/>
 
 
 
+<div className="flex gap-3">
 
 
-        {/* EMAIL */}
 
+<button
 
+onClick={updateComment}
 
-        {
+className="
 
-        comment.email && (
+inline-flex
 
+items-center
 
-          <p
+gap-2
 
-            className="
-              text-sm
-              text-muted-foreground
-            "
+rounded-full
 
-          >
+bg-green-600
 
-            {comment.email}
+px-4
 
-          </p>
+py-2
 
+text-white
 
-        )
+"
 
-        }
+>
 
+<Save size={15}/>
 
+Save
 
+</button>
 
 
 
 
 
+<button
 
+onClick={()=>{
 
+setEditing(false)
 
+setText(comment.content)
 
-        {/* ARTICLE INFO */}
+}}
 
+className="
 
+rounded-full
 
-        {
+bg-surface
 
-        comment.blog_posts && (
+px-4
 
+py-2
 
+"
 
-          <div
+>
 
-            className="
-              mt-5
-              rounded-2xl
-              bg-surface
-              p-4
-            "
+<X size={15}/>
 
-          >
+Cancel
 
+</button>
 
 
-            <p
 
-              className="
-                text-xs
-                uppercase
-                text-muted-foreground
-              "
+</div>
 
-            >
 
-              Article
+</div>
 
-            </p>
 
 
+)
 
+:
 
+(
 
 
-            <div
 
-              className="
-                mt-2
-                flex
-                items-center
-                justify-between
-                gap-3
-              "
+<p
 
-            >
+className="
 
+mt-3
 
+whitespace-pre-line
 
-              <p
+break-words
 
-                className="
-                  font-semibold
-                "
+text-sm
 
-              >
+leading-7
 
-                {comment.blog_posts.title}
+text-muted-foreground
 
-              </p>
+"
 
+>
 
+{comment.content}
 
+</p>
 
 
 
+)
 
-              <a
 
-                href={`/blog/${comment.blog_posts.slug}`}
 
-                target="_blank"
+}
 
-                className="
-                  inline-flex
-                  items-center
-                  gap-1
-                  text-sm
-                  font-semibold
-                  text-primary
-                "
 
-              >
 
-                View
 
-                <ExternalLink size={14}/>
 
-              </a>
 
 
 
-            </div>
 
+<div
 
+className="
 
+mt-5
 
-          </div>
+flex
 
+flex-wrap
 
+gap-4
 
-        )
+"
 
-        }
+>
 
 
 
 
 
+<button
 
+onClick={()=>setShowReply(!showReply)}
 
+className="
 
+inline-flex
 
-        {/* FULL COMMENT */}
+items-center
 
+gap-2
 
+text-sm
 
-        <div
+font-semibold
 
-          className="
-            mt-5
-          "
+text-primary
 
-        >
+"
 
+>
 
+<MessageCircle size={16}/>
 
-          <p
+{
 
-            className="
-              whitespace-pre-line
-              leading-7
-            "
+showReply
 
-          >
+?
 
-            {comment.content}
+'Cancel'
 
-          </p>
+:
 
+'Reply'
 
+}
 
+</button>
 
 
-          <p
 
-            className="
-              mt-3
-              text-xs
-              text-muted-foreground
-            "
 
-          >
 
-            {formatDate(comment.created_at)}
 
-          </p>
 
+{
 
+canEdit && (
 
 
-        </div>
+<button
 
-        
+onClick={()=>setEditing(true)}
 
+className="
 
+inline-flex
 
+items-center
 
+gap-2
 
-        {/* =====================================
-            REPLIES
-        ===================================== */}
+text-sm
 
+font-semibold
 
+text-blue-600
 
-        {
+"
 
-        comment.replies &&
+>
 
-        comment.replies.length > 0 && (
+<Pencil size={15}/>
 
+Edit
 
+</button>
 
-          <CommentReplies
 
-            replies={comment.replies}
+)
 
-            role={role}
+}
 
-          />
 
 
-        )
 
-        }
 
 
 
 
 
+<CommentActions
 
+commentId={comment.id}
 
+role={role}
 
+status={comment.status}
 
+isReply={isReply}
 
+/>
 
 
-        {/* =====================================
-            REPLY BUTTON
-        ===================================== */}
 
 
 
-        <button
 
 
-          type="button"
 
 
-          onClick={()=>setReplying(!replying)}
+{
 
+!isReply && (
 
-          className="
-            mt-5
-            inline-flex
-            items-center
-            gap-2
-            text-sm
-            font-semibold
-            text-primary
-          "
 
+<button
 
-        >
+onClick={onToggle}
 
+className="
 
-          <MessageCircle size={16}/>
+inline-flex
 
+items-center
 
-          {
+gap-2
 
-          replying
+text-sm
 
-          ?
+font-semibold
 
-          'Cancel Reply'
+text-muted-foreground
 
-          :
+"
 
-          'Reply'
+>
 
-          }
 
+{
 
-        </button>
+expanded
 
+?
 
+<>
 
+Hide
 
+<ChevronUp size={16}/>
 
+</>
 
+:
 
+<>
 
+Details
 
+<ChevronDown size={16}/>
 
+</>
 
+}
 
 
-        {/* =====================================
-            REPLY BOX
-        ===================================== */}
+</button>
 
 
 
-        {
+)
 
-        replying && (
+}
 
 
 
-          <div
+</div>
 
-            className="
-              mt-4
-              rounded-2xl
-              border
-              border-surface-border
-              bg-surface/50
-              p-4
-            "
 
-          >
 
 
 
-            <CommentReply
 
 
-              commentId={comment.id}
 
+</div>
 
-              postId={comment.post_id}
 
 
-              onSuccess={()=>{
+</div>
 
 
-                setReplying(false)
 
 
-              }}
 
 
-            />
 
 
-          </div>
 
+{
 
+showReply && (
 
-        )
 
-        }
+<div className="px-5 pb-5">
 
 
+<CommentReply
 
+commentId={comment.id}
 
+postId={comment.post_id}
 
+onSuccess={()=>setShowReply(false)}
 
+/>
 
 
 
+</div>
 
 
+)
 
-        {/* =====================================
-            ADMIN ACTIONS
-        ===================================== */}
+}
 
 
 
-        <div
 
-          className="
-            mt-6
-            border-t
-            border-surface-border
-            pt-5
-          "
 
-        >
 
 
 
-          <CommentActions
 
+{
 
-            commentId={comment.id}
+expanded && !isReply && (
 
 
-            role={role}
+<div
 
+className="
 
-            status={comment.status}
+border-t
 
+border-surface-border
 
-          />
+p-5
 
+"
 
+>
 
-        </div>
 
 
 
 
+{
 
+comment.blog_posts && (
 
-      </div>
 
+<div
 
+className="
 
-    )
+rounded-2xl
 
-    }
+bg-surface
 
+p-4
 
+"
 
+>
 
 
-  </article>
+<p className="text-xs uppercase">
+
+Article
+
+</p>
+
+
+
+<div
+
+className="
+
+mt-2
+
+flex
+
+justify-between
+
+gap-3
+
+"
+
+>
+
+
+<span className="font-semibold">
+
+{comment.blog_posts.title}
+
+</span>
+
+
+
+<a
+
+href={`/blog/${comment.blog_posts.slug}`}
+
+target="_blank"
+
+className="text-primary"
+
+>
+
+View
+
+<ExternalLink size={14}/>
+
+</a>
+
+
+
+</div>
+
+
+</div>
+
+
+
+)
+
+}
+
+
+
+
+
+
+{
+
+comment.replies && comment.replies.length > 0 && (
+
+
+<CommentReplies
+
+replies={comment.replies}
+
+role={role}
+
+currentUserId={currentUserId}
+
+/>
+
+
+)
+
+}
+
+
+
+</div>
+
+
+
+)
+
+}
+
+
+
+</article>
+
 
 
 )

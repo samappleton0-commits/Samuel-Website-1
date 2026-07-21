@@ -3,12 +3,8 @@
 // components/admin/comments/CommentReplies.tsx
 // =====================================================
 
+
 'use client'
-
-
-import {
-  useState,
-} from 'react'
 
 
 import CommentCard from './CommentCard'
@@ -30,6 +26,9 @@ type AdminComment = {
   id:string
 
 
+  user_id:string | null
+
+
   name:string
 
 
@@ -42,9 +41,10 @@ type AdminComment = {
   status:
 
     | 'pending'
-    | 'approved'
-    | 'rejected'
 
+    | 'approved'
+
+    | 'rejected'
 
 
   created_at:string
@@ -56,11 +56,12 @@ type AdminComment = {
   parent_id:string | null
 
 
-
   replies?:AdminComment[]
 
 
 }
+
+
 
 
 
@@ -77,8 +78,13 @@ type Props = {
   role:
 
     | 'admin'
+
     | 'editor'
+
     | 'user'
+
+
+  currentUserId:string | null
 
 
   depth?:number
@@ -101,53 +107,15 @@ type Props = {
 
 export default function CommentReplies({
 
-
   replies,
-
 
   role,
 
+  currentUserId,
 
   depth = 1,
 
-
 }:Props){
-
-
-
-
-
-  const [expandedReplies,setExpandedReplies] =
-
-    useState<Record<string,boolean>>({})
-
-
-
-
-
-
-
-  function toggleReply(id:string){
-
-
-    setExpandedReplies(prev => ({
-
-
-      ...prev,
-
-
-      [id]:
-
-        !prev[id]
-
-
-    }))
-
-
-  }
-
-
-
 
 
 
@@ -172,86 +140,77 @@ export default function CommentReplies({
   return (
 
 
+<div
 
-    <div
 
+className={`
 
-    className={`
-  mt-5
-  max-w-full
-  space-y-4
-  overflow-hidden
-  border-l
-  border-surface-border
-  ${
-    depth === 1
-      ? 'pl-3 md:pl-5'
-      : 'pl-2 md:pl-3'
-  }
+mt-5
+
+space-y-4
+
+border-l
+
+border-surface-border
+
+${
+
+depth === 1
+
+?
+
+'ml-2 pl-4 md:ml-6 md:pl-6'
+
+:
+
+'ml-2 pl-3 md:ml-4 md:pl-5'
+
+}
+
 `}
 
 
-    >
+>
 
 
 
+{
 
 
-      {
-
-      replies.map(reply => (
-
-
-
-        <div
-
-
-          key={reply.id}
-
-
-          className="
-            max-w-full
-            overflow-hidden
-          "
-
-
-        >
+replies.map(reply=>(
 
 
 
+<div
+
+key={reply.id}
+
+>
 
 
 
-          <CommentCard
+<CommentCard
 
 
-            comment={reply}
+comment={reply}
 
 
-            role={role}
+role={role}
 
 
-            expanded={
-
-              expandedReplies[reply.id]
-
-              ??
-
-              false
-
-            }
+currentUserId={currentUserId}
 
 
-            onToggle={()=>
+expanded={false}
 
 
-              toggleReply(reply.id)
+onToggle={()=>{}}
 
 
-            }
+isReply={true}
 
 
-          />
+/>
 
 
 
@@ -260,55 +219,52 @@ export default function CommentReplies({
 
 
 
-          {/* 
-             Only allow second level display.
-             Prevents endless width expansion.
-          */}
 
+{
 
-
-         {
 reply.replies &&
 
 reply.replies.length > 0 && (
 
 
-  <CommentReplies
+<CommentReplies
 
-    replies={reply.replies}
 
-    role={role}
+replies={reply.replies}
 
-    depth={depth + 1}
 
-  />
+role={role}
+
+
+currentUserId={currentUserId}
+
+
+depth={depth + 1}
+
+
+/>
 
 
 )
+
+}
+
+
+
+</div>
+
+
+
+))
+
+
 }
 
 
 
 
+</div>
 
-
-
-        </div>
-
-
-
-      ))
-
-
-      }
-
-
-
-
-
-
-
-    </div>
 
 
   )

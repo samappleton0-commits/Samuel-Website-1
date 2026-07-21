@@ -1,5 +1,5 @@
 // =====================================================
-// ADMIN COMMENT ACTIONS
+// COMMENT ACTIONS
 // components/admin/comments/CommentActions.tsx
 // =====================================================
 
@@ -28,20 +28,36 @@ import {
 
 
 
+
 type Props = {
+
 
   commentId:string
 
+
   role:
+
     | 'admin'
+
     | 'editor'
+
     | 'user'
 
 
+
   status:
+
     | 'pending'
+
     | 'approved'
+
     | 'rejected'
+
+
+
+  isReply?:boolean
+
+
 
 }
 
@@ -61,26 +77,28 @@ export default function CommentActions({
 
   status,
 
+  isReply=false,
+
 }:Props){
 
 
 
 
 
-  const router = useRouter()
+const router = useRouter()
 
 
 
 
 
-  const [
 
-    loading,
+const [
 
-    setLoading
+loading,
 
-  ] = useState(false)
+setLoading
 
+]=useState(false)
 
 
 
@@ -89,295 +107,294 @@ export default function CommentActions({
 
 
 
-  async function action(
 
-    type:
-      | 'approve'
-      | 'reject'
-      | 'delete'
+async function runAction(
 
-  ){
+type:
 
+'approve'
 
+|
 
+'reject'
 
+|
 
+'delete'
 
-    if(type === 'delete'){
+){
 
 
 
-      const confirmed =
 
-        window.confirm(
 
-          'Are you sure you want to delete this comment?'
+if(type === 'delete'){
 
-        )
 
 
+const confirmDelete =
 
+window.confirm(
 
+'Delete this comment and all replies?'
 
-      if(!confirmed){
+)
 
-        return
 
-      }
 
+if(!confirmDelete){
 
+return
 
-    }
+}
 
 
+}
 
 
 
 
 
-    try{
 
 
 
-      setLoading(true)
 
+try{
 
 
+setLoading(true)
 
 
 
-      const response = await fetch(
 
-        `/api/admin/comments/${type}`,
 
-        {
 
-          method:'POST',
 
-          headers:{
+const response = await fetch(
 
-            'Content-Type':
+`/api/admin/comments/${type}`,
 
-            'application/json'
+{
 
-          },
+method:'POST',
 
+headers:{
 
-          body:JSON.stringify({
 
-            commentId
+'Content-Type':
 
-          })
+'application/json'
 
-        }
 
-      )
+},
 
 
+body:JSON.stringify({
 
+commentId
 
+})
 
+}
 
+)
 
-      const result =
 
-        await response.json()
 
 
 
 
 
+const data =
 
-      if(!response.ok){
+await response.json()
 
 
-        throw new Error(
 
-          result.error ||
 
-          'Action failed'
 
-        )
 
 
-      }
+if(!response.ok){
 
 
+throw new Error(
 
+data.error ||
 
+'Action failed'
 
+)
 
-      router.refresh()
 
+}
 
 
 
-    }
 
 
-    catch(error){
 
 
+router.refresh()
 
-      console.error(
 
-        error
 
-      )
 
 
 
-    }
 
+}
 
-    finally{
+catch(error){
 
 
-      setLoading(false)
 
+console.error(
 
-    }
+'COMMENT ACTION ERROR',
 
+error
 
+)
 
 
-  }
 
+}
 
+finally{
 
 
+setLoading(false)
 
 
+}
 
 
 
-  if(role !== 'admin'){
+}
 
 
-    return null
 
 
-  }
 
 
 
 
 
+// ONLY ADMIN
 
 
+if(role !== 'admin'){
 
 
-  return (
+return null
 
 
+}
 
-    <div
 
-      className="
-        mt-6
-        flex
-        flex-wrap
-        gap-3
-      "
 
-    >
 
 
 
 
 
 
+return (
 
 
-      {/* APPROVE */}
 
+<div
 
+className="
 
-      <button
+flex
 
+flex-wrap
 
-        type="button"
+items-center
 
+gap-3
 
-        disabled={
+"
 
-          loading ||
+>
 
-          status === 'approved'
 
-        }
 
+{
 
-        onClick={()=>action('approve')}
+!isReply && (
 
 
-        className={
 
-          `
+<>
 
-          inline-flex
 
-          items-center
 
-          gap-2
+<button
 
-          rounded-full
+type="button"
 
-          px-4
+disabled={
 
-          py-2
+loading ||
 
-          text-sm
+status === 'approved'
 
-          font-semibold
+}
 
-          text-white
+onClick={()=>runAction('approve')}
 
+className="
 
-          ${
+inline-flex
 
-          status === 'approved'
+items-center
 
-          ?
+gap-2
 
-          'bg-green-400 opacity-50 cursor-not-allowed'
+rounded-full
 
-          :
+bg-green-600
 
-          'bg-green-600'
+px-4
 
-          }
+py-2
 
+text-sm
 
-          `
+font-semibold
 
-        }
+text-white
 
+disabled:opacity-50
 
-      >
+"
 
+>
 
 
-        <Check size={16}/>
+<Check size={15}/>
 
 
-        {
+{
 
-        status === 'approved'
+status === 'approved'
 
-        ?
+?
 
-        'Approved'
+'Approved'
 
-        :
+:
 
-        'Approve'
+'Approve'
 
-        }
+}
 
 
+</button>
 
-      </button>
 
 
 
@@ -386,162 +403,147 @@ export default function CommentActions({
 
 
 
+<button
 
-      {/* REJECT */}
+type="button"
 
+disabled={
 
+loading ||
 
-      <button
+status === 'rejected'
 
+}
 
-        type="button"
+onClick={()=>runAction('reject')}
 
+className="
 
-        disabled={
+inline-flex
 
-          loading ||
+items-center
 
-          status === 'rejected'
+gap-2
 
-        }
+rounded-full
 
+bg-yellow-500
 
-        onClick={()=>action('reject')}
+px-4
 
+py-2
 
+text-sm
 
-        className={
+font-semibold
 
-          `
+text-white
 
-          inline-flex
+disabled:opacity-50
 
-          items-center
+"
 
-          gap-2
+>
 
-          rounded-full
 
-          px-4
+<X size={15}/>
 
-          py-2
 
-          text-sm
+{
 
-          font-semibold
+status === 'rejected'
 
-          text-white
+?
 
+'Rejected'
 
-          ${
+:
 
-          status === 'rejected'
+'Reject'
 
-          ?
+}
 
-          'bg-yellow-300 opacity-50 cursor-not-allowed'
 
-          :
+</button>
 
-          'bg-yellow-500'
 
-          }
 
 
-          `
 
-        }
+</>
 
 
-      >
 
+)
 
+}
 
-        <X size={16}/>
 
 
-        {
 
-        status === 'rejected'
 
-        ?
 
-        'Rejected'
 
-        :
 
-        'Reject'
 
-        }
+<button
 
+type="button"
 
+disabled={loading}
 
-      </button>
+onClick={()=>runAction('delete')}
 
+className="
 
+inline-flex
 
+items-center
 
+gap-2
 
+rounded-full
 
+bg-red-600
 
+px-4
 
+py-2
 
-      {/* DELETE */}
+text-sm
 
+font-semibold
 
+text-white
 
-      <button
+disabled:opacity-50
 
+"
 
-        type="button"
+>
 
 
-        disabled={loading}
+<Trash2 size={15}/>
 
 
-        onClick={()=>action('delete')}
+Delete
 
 
+</button>
 
-        className="
-          inline-flex
-          items-center
-          gap-2
-          rounded-full
-          bg-red-600
-          px-4
-          py-2
-          text-sm
-          font-semibold
-          text-white
-          disabled:opacity-50
-        "
 
 
-      >
 
 
 
-        <Trash2 size={16}/>
 
 
-        Delete
+</div>
 
 
 
-      </button>
+)
 
-
-
-
-
-
-
-    </div>
-
-
-
-  )
 
 
 }

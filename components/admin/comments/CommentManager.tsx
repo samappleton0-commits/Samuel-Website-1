@@ -27,13 +27,20 @@ import CommentCard from './CommentCard'
 
 type BlogPost = {
 
+
   title:string
+
 
   slug:string
 
+
   user_id:string
 
+
 }
+
+
+
 
 
 
@@ -42,33 +49,55 @@ type BlogPost = {
 
 export type AdminComment = {
 
+
   id:string
+
+
+  user_id:string | null
+
 
   name:string
 
+
   email:string | null
+
 
   content:string
 
+
   status:
+
     | 'pending'
+
     | 'approved'
+
     | 'rejected'
+
 
 
   created_at:string
 
+
   post_id:string
 
+
   parent_id:string | null
+
 
 
   blog_posts?:BlogPost | null
 
 
+
   replies?:AdminComment[]
 
+
+
 }
+
+
+
+
 
 
 
@@ -78,14 +107,28 @@ export type AdminComment = {
 
 type Props = {
 
+
   comments:AdminComment[]
 
+
   role:
+
     | 'admin'
+
     | 'editor'
+
     | 'user'
 
+
+  currentUserId:string | null
+
+
+
 }
+
+
+
+
 
 
 
@@ -104,8 +147,10 @@ export default function CommentManager({
 
   role,
 
-}:Props){
+  currentUserId,
 
+
+}:Props){
 
 
 
@@ -141,12 +186,14 @@ export default function CommentManager({
 
     setExpandedComments(
 
-      previous => {
+      previous=>{
 
 
         const updated =
 
           new Set(previous)
+
+
 
 
 
@@ -158,13 +205,16 @@ export default function CommentManager({
 
         }
 
-        else {
+        else{
 
 
           updated.add(id)
 
 
         }
+
+
+
 
 
 
@@ -186,11 +236,7 @@ export default function CommentManager({
 
 
 
-  if(
-
-    comments.length === 0
-
-  ){
+  if(!comments.length){
 
 
     return (
@@ -199,15 +245,23 @@ export default function CommentManager({
       <div
 
         className="
+
           rounded-3xl
+
           border
+
           border-surface-border
+
           bg-card
+
           p-10
+
           text-center
+
         "
 
       >
+
 
         No comments found.
 
@@ -228,72 +282,91 @@ export default function CommentManager({
 
 
 
+
+
+
   return (
 
 
-    <div
 
-      className="
-        space-y-5
-      "
+<div
 
-    >
+className="space-y-5"
 
-
-
-      {
-
-
-      comments.map(comment=>(
+>
 
 
 
-        <CommentCard
+{
 
-
-          key={comment.id}
-
-
-          comment={comment}
-
-
-          role={role}
-
-
-          expanded={
-
-            expandedComments.has(
-
-              comment.id
-
-            )
-
-          }
-
-
-          onToggle={
-
-            ()=>toggleComment(
-
-              comment.id
-
-            )
-
-          }
-
-
-        />
-
-
-      ))
-
-
-      }
+comments.map(comment=>(
 
 
 
+<CommentCard
 
-    </div>
+
+
+key={comment.id}
+
+
+
+comment={comment}
+
+
+
+role={role}
+
+
+
+currentUserId={currentUserId}
+
+
+
+expanded={
+
+expandedComments.has(
+
+comment.id
+
+)
+
+}
+
+
+
+onToggle={
+
+()=>toggleComment(
+
+comment.id
+
+)
+
+}
+
+
+
+isReply={false}
+
+
+
+/>
+
+
+
+))
+
+}
+
+
+
+
+
+
+
+</div>
+
 
 
   )
