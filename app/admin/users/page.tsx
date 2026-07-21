@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/require-role'
 import AddUserForm from '@/components/admin/users/add-user-form'
 import UserManager from '@/components/admin/users/user-manager'
 
-
+export const dynamic = 'force-dynamic'
 
 export default async function AdminUsersPage(){
 

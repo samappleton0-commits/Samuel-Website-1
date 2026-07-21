@@ -33,7 +33,7 @@ import CommentManager from '@/components/admin/comments/CommentManager'
 
 
 
-
+export const dynamic = 'force-dynamic'
 // =========================================================
 // TYPES
 // =========================================================

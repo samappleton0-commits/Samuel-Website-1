@@ -3,7 +3,7 @@ import { getUserRole } from '@/lib/get-user-role'
 import ProfileSettingsForm from '@/components/admin/settings/profile-settings-form'
 
 
-
+export const dynamic = 'force-dynamic'
 export default async function SettingsPage(){
 
 

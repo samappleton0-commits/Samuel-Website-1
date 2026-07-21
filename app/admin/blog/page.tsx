@@ -8,7 +8,7 @@ import { getUserRole } from '@/lib/get-user-role'
 import BlogManager from '@/components/admin/blog/blog-manager'
 import { requireEditor } from '@/lib/require-role'
 
-
+export const dynamic = 'force-dynamic'
 
 export default async function AdminBlogPage(){
 

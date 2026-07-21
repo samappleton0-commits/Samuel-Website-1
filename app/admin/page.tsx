@@ -3,7 +3,7 @@ import { getUserRole } from '@/lib/get-user-role'
 import AdminDashboard from '@/components/admin/dashboard/admin-dashboard'
 import EditorDashboard from '@/components/admin/dashboard/editor-dashboard'
 
-
+export const dynamic = 'force-dynamic'
 export default async function AdminPage() {
 
 

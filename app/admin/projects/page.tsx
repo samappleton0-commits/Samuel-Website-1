@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase-server'
 import ProjectManager from '@/components/admin/project-manager'
 
 
-
+export const dynamic = 'force-dynamic'
 
 
 
