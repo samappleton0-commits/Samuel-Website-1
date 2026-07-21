@@ -1,23 +1,54 @@
-import { createClient } from '@supabase/supabase-js'
+// =====================================================
+// PUBLIC SUPABASE CLIENT
+// lib/supabase-public.ts
+// =====================================================
+
+import {
+  createClient,
+} from '@supabase/supabase-js'
+
 
 
 export function createPublicClient(){
 
 
-  const client = createClient(
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL
 
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
 
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+
+
+
+  if(!supabaseUrl){
+
+    throw new Error(
+      'Missing NEXT_PUBLIC_SUPABASE_URL'
+    )
+
+  }
+
+
+
+  if(!supabaseKey){
+
+    throw new Error(
+      'Missing NEXT_PUBLIC_SUPABASE_ANON_KEY'
+    )
+
+  }
+
+
+
+
+  return createClient(
+
+    supabaseUrl,
+
+    supabaseKey
 
   )
-
-
-  console.log(
-    'SUPABASE PUBLIC CLIENT CREATED'
-  )
-
-
-  return client
 
 }
