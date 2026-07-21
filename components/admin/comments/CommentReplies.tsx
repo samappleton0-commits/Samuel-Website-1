@@ -3,16 +3,17 @@
 // components/admin/comments/CommentReplies.tsx
 // =====================================================
 
-
 'use client'
 
 
-
 import {
+  useState,
+} from 'react'
 
-  MessageCircle,
 
-} from 'lucide-react'
+import CommentCard from './CommentCard'
+
+
 
 
 
@@ -23,22 +24,40 @@ import {
 // =====================================================
 
 
-type Reply = {
+type AdminComment = {
+
 
   id:string
 
+
   name:string
+
 
   email:string | null
 
+
   content:string
 
-  created_at:string
 
   status:
+
     | 'pending'
     | 'approved'
     | 'rejected'
+
+
+
+  created_at:string
+
+
+  post_id:string
+
+
+  parent_id:string | null
+
+
+
+  replies?:AdminComment[]
 
 
 }
@@ -51,7 +70,19 @@ type Reply = {
 
 type Props = {
 
-  replies:Reply[]
+
+  replies:AdminComment[]
+
+
+  role:
+
+    | 'admin'
+    | 'editor'
+    | 'user'
+
+
+  depth?:number
+
 
 }
 
@@ -70,9 +101,52 @@ type Props = {
 
 export default function CommentReplies({
 
+
   replies,
 
+
+  role,
+
+
+  depth = 1,
+
+
 }:Props){
+
+
+
+
+
+  const [expandedReplies,setExpandedReplies] =
+
+    useState<Record<string,boolean>>({})
+
+
+
+
+
+
+
+  function toggleReply(id:string){
+
+
+    setExpandedReplies(prev => ({
+
+
+      ...prev,
+
+
+      [id]:
+
+        !prev[id]
+
+
+    }))
+
+
+  }
+
+
 
 
 
@@ -93,16 +167,29 @@ export default function CommentReplies({
 
 
 
+
+
   return (
 
 
 
     <div
 
-      className="
-        mt-6
-        space-y-4
-      "
+
+    className={`
+  mt-5
+  max-w-full
+  space-y-4
+  overflow-hidden
+  border-l
+  border-surface-border
+  ${
+    depth === 1
+      ? 'pl-3 md:pl-5'
+      : 'pl-2 md:pl-3'
+  }
+`}
+
 
     >
 
@@ -110,43 +197,9 @@ export default function CommentReplies({
 
 
 
-
-      <div
-
-        className="
-          flex
-          items-center
-          gap-2
-          text-sm
-          font-semibold
-          text-muted-foreground
-        "
-
-      >
-
-
-
-        <MessageCircle size={16}/>
-
-
-
-        Replies ({replies.length})
-
-
-
-      </div>
-
-
-
-
-
-
-
-
-
       {
 
-      replies.map(reply=>(
+      replies.map(reply => (
 
 
 
@@ -157,11 +210,8 @@ export default function CommentReplies({
 
 
           className="
-            rounded-2xl
-            border
-            border-surface-border
-            bg-muted/20
-            p-4
+            max-w-full
+            overflow-hidden
           "
 
 
@@ -172,199 +222,70 @@ export default function CommentReplies({
 
 
 
+          <CommentCard
 
 
-          {/* HEADER */}
+            comment={reply}
 
 
+            role={role}
 
-          <div
 
-            className="
-              flex
-              flex-wrap
-              items-center
-              justify-between
-              gap-3
-            "
+            expanded={
 
-          >
+              expandedReplies[reply.id]
 
+              ??
 
-
-
-
-            <div>
-
-
-
-              <h4
-
-                className="
-                  font-bold
-                "
-
-              >
-
-                {reply.name}
-
-
-              </h4>
-
-
-
-
-
-              {
-
-              reply.email && (
-
-
-                <p
-
-                  className="
-                    text-xs
-                    text-muted-foreground
-                  "
-
-                >
-
-                  {reply.email}
-
-
-                </p>
-
-
-              )
-
-              }
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-            <span
-
-              className="
-                rounded-full
-                bg-surface
-                px-3
-                py-1
-                text-xs
-                font-semibold
-                uppercase
-              "
-
-            >
-
-              {reply.status}
-
-
-            </span>
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-          {/* CONTENT */}
-
-
-
-
-          <p
-
-            className="
-              mt-4
-              leading-7
-              text-sm
-            "
-
-          >
-
-            {reply.content}
-
-
-          </p>
-
-
-
-
-
-
-
-
-
-
-
-
-          {/* DATE */}
-
-
-
-          <p
-
-            className="
-              mt-3
-              text-xs
-              text-muted-foreground
-            "
-
-          >
-
-
-
-            {
-
-            new Intl.DateTimeFormat(
-
-              'en-US',
-
-              {
-
-                day:'numeric',
-
-                month:'long',
-
-                year:'numeric',
-
-                timeZone:'UTC'
-
-              }
-
-            ).format(
-
-              new Date(reply.created_at)
-
-            )
+              false
 
             }
 
 
+            onToggle={()=>
 
-          </p>
 
+              toggleReply(reply.id)
+
+
+            }
+
+
+          />
+
+
+
+
+
+
+
+
+          {/* 
+             Only allow second level display.
+             Prevents endless width expansion.
+          */}
+
+
+
+         {
+reply.replies &&
+
+reply.replies.length > 0 && (
+
+
+  <CommentReplies
+
+    replies={reply.replies}
+
+    role={role}
+
+    depth={depth + 1}
+
+  />
+
+
+)
+}
 
 
 
@@ -378,7 +299,9 @@ export default function CommentReplies({
 
       ))
 
+
       }
+
 
 
 
@@ -388,9 +311,7 @@ export default function CommentReplies({
     </div>
 
 
-
   )
-
 
 
 }

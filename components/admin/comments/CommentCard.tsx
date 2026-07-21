@@ -3,21 +3,20 @@
 // components/admin/comments/CommentCard.tsx
 // =====================================================
 
-
 'use client'
 
 
-
 import {
-
   ChevronDown,
-
   ChevronUp,
-
   ExternalLink,
-
+  MessageCircle,
 } from 'lucide-react'
 
+
+import {
+  useState,
+} from 'react'
 
 
 import CommentActions from './CommentActions'
@@ -25,8 +24,6 @@ import CommentActions from './CommentActions'
 import CommentReply from './CommentReply'
 
 import CommentReplies from './CommentReplies'
-
-
 
 
 
@@ -51,8 +48,6 @@ type BlogPost = {
 
 
 
-
-
 export type AdminComment = {
 
 
@@ -69,11 +64,8 @@ export type AdminComment = {
 
 
   status:
-
     | 'pending'
-
     | 'approved'
-
     | 'rejected'
 
 
@@ -85,6 +77,12 @@ export type AdminComment = {
 
 
   parent_id:string | null
+
+
+  ip_address?:string | null
+
+
+  user_id?:string | null
 
 
 
@@ -103,8 +101,6 @@ export type AdminComment = {
 
 
 
-
-
 type Props = {
 
 
@@ -112,13 +108,9 @@ type Props = {
 
 
   role:
-
     | 'admin'
-
     | 'editor'
-
     | 'user'
-
 
 
   expanded:boolean
@@ -138,44 +130,148 @@ type Props = {
 
 
 // =====================================================
+// HELPERS
+// =====================================================
+
+
+function getInitials(name:string){
+
+
+  return name
+
+    .split(' ')
+
+    .map(
+
+      word=>word[0]
+
+    )
+
+    .slice(0,2)
+
+    .join('')
+
+    .toUpperCase()
+
+
+}
+
+
+
+
+
+
+function formatDate(date:string){
+
+
+  return new Intl.DateTimeFormat(
+
+    'en-US',
+
+    {
+
+      day:'numeric',
+
+      month:'short',
+
+      year:'numeric',
+
+      timeZone:'UTC'
+
+    }
+
+  ).format(
+
+    new Date(date)
+
+  )
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================================
 // COMPONENT
 // =====================================================
 
 
 export default function CommentCard({
 
-
   comment,
-
 
   role,
 
-
   expanded,
 
-
   onToggle,
-
 
 }:Props){
 
 
 
+const [replying,setReplying] =
+
+useState(false)
 
 
-  return (
 
 
 
-    <article
+return (
+
+  
+  <article
+
+    className="
+      overflow-hidden
+      rounded-3xl
+      border
+      border-surface-border
+      bg-card
+      transition
+    "
+
+  >
+
+
+
+
+
+
+
+    {/* =====================================
+        COLLAPSED HEADER
+    ===================================== */}
+
+
+
+    <button
+
+
+      type="button"
+
+
+      onClick={onToggle}
+
 
       className="
-        overflow-hidden
-        rounded-3xl
-        border
-        border-surface-border
-        bg-card
+        flex
+        w-full
+        items-start
+        gap-4
+        p-5
+        text-left
+        transition
+        hover:bg-muted/20
       "
+
 
     >
 
@@ -183,129 +279,115 @@ export default function CommentCard({
 
 
 
+      {/* AVATAR */}
 
 
-
-      {/* COLLAPSED HEADER */}
-
-
-
-      <button
-
-
-        type="button"
-
-
-        onClick={onToggle}
-
-
+      <div
 
         className="
           flex
-          w-full
-          items-start
-          justify-between
-          gap-4
-          p-5
-          text-left
-          hover:bg-muted/20
+          h-11
+          w-11
+          shrink-0
+          items-center
+          justify-center
+          rounded-full
+          bg-primary/10
+          text-sm
+          font-bold
+          text-primary
         "
-
 
       >
 
+        {getInitials(comment.name)}
 
+      </div>
+
+
+
+
+
+
+
+      {/* SUMMARY */}
+
+
+      <div
+
+        className="
+          min-w-0
+          flex-1
+        "
+
+      >
 
 
 
         <div
 
           className="
-            min-w-0
-            flex-1
+            flex
+            flex-wrap
+            items-center
+            gap-2
           "
 
         >
 
 
 
-
-          <div
+          <h3
 
             className="
-              flex
-              flex-wrap
-              items-center
-              gap-3
+              font-bold
             "
 
           >
 
+            {comment.name}
 
-
-            <h3
-
-              className="
-                font-bold
-              "
-
-            >
-
-              {comment.name}
-
-
-            </h3>
-
-
-
-
-
-            <span
-
-              className="
-                rounded-full
-                bg-surface
-                px-3
-                py-1
-                text-xs
-                font-semibold
-                uppercase
-              "
-
-            >
-
-              {comment.status}
-
-
-            </span>
-
-
-
-
-          </div>
+          </h3>
 
 
 
 
 
 
-          <p
+          <span
 
             className="
-              mt-2
-              line-clamp-2
-              text-sm
+              rounded-full
+              bg-surface
+              px-3
+              py-1
+              text-xs
+              font-semibold
+              uppercase
+            "
+
+          >
+
+            {comment.status}
+
+          </span>
+
+
+
+
+
+          <span
+
+            className="
+              text-xs
               text-muted-foreground
             "
 
           >
 
-            {comment.content}
+            {formatDate(comment.created_at)}
 
-
-          </p>
-
-
+          </span>
 
 
 
@@ -317,6 +399,44 @@ export default function CommentCard({
 
 
 
+        <p
+
+          className="
+            mt-2
+            line-clamp-2
+            text-sm
+            text-muted-foreground
+          "
+
+        >
+
+          {comment.content}
+
+        </p>
+
+
+
+      </div>
+
+
+
+
+
+
+
+
+
+      {/* EXPAND ICON */}
+
+
+      <div
+
+        className="
+          shrink-0
+          pt-2
+        "
+
+      >
 
         {
 
@@ -333,13 +453,14 @@ export default function CommentCard({
         }
 
 
+      </div>
 
-      </button>
 
 
 
 
 
+    </button>
 
 
 
@@ -348,175 +469,83 @@ export default function CommentCard({
 
 
 
-      {/* EXPANDED AREA */}
 
 
 
-      {
 
-      expanded && (
+    {/* =====================================
+        EXPANDED AREA
+    ===================================== */}
 
 
 
-        <div
+    {
 
-          className="
-            border-t
-            border-surface-border
-            p-5
-          "
+    expanded && (
 
-        >
 
 
+      <div
 
+        className="
+          border-t
+          border-surface-border
+          p-5
+        "
 
+      >
 
 
 
-          {
 
-          comment.email && (
 
 
-            <p
 
-              className="
-                text-sm
-                text-muted-foreground
-              "
+        {/* EMAIL */}
 
-            >
 
-              {comment.email}
 
+        {
 
-            </p>
+        comment.email && (
 
 
-          )
+          <p
 
-          }
+            className="
+              text-sm
+              text-muted-foreground
+            "
 
+          >
 
+            {comment.email}
 
+          </p>
 
 
+        )
 
+        }
 
 
 
-          {
 
-          comment.blog_posts && (
 
 
 
-            <div
 
-              className="
-                mt-5
-                rounded-2xl
-                bg-surface
-                p-4
-              "
 
-            >
 
 
 
-              <p
+        {/* ARTICLE INFO */}
 
-                className="
-                  text-xs
-                  uppercase
-                  text-muted-foreground
-                "
 
-              >
 
-                Article
+        {
 
-
-              </p>
-
-
-
-
-
-              <div
-
-                className="
-                  mt-2
-                  flex
-                  items-center
-                  justify-between
-                  gap-3
-                "
-
-              >
-
-
-
-                <p
-
-                  className="
-                    font-semibold
-                  "
-
-                >
-
-                  {comment.blog_posts.title}
-
-
-                </p>
-
-
-
-
-
-
-                <a
-
-                  href={`/blog/${comment.blog_posts.slug}`}
-
-                  target="_blank"
-
-                  className="
-                    inline-flex
-                    items-center
-                    gap-1
-                    text-sm
-                    text-primary
-                  "
-
-                >
-
-                  View
-
-                  <ExternalLink size={14}/>
-
-
-                </a>
-
-
-
-              </div>
-
-
-
-            </div>
-
-
-          )
-
-          }
-
-
-
-
-
-
+        comment.blog_posts && (
 
 
 
@@ -524,6 +553,9 @@ export default function CommentCard({
 
             className="
               mt-5
+              rounded-2xl
+              bg-surface
+              p-4
             "
 
           >
@@ -533,60 +565,80 @@ export default function CommentCard({
             <p
 
               className="
-                leading-7
-              "
-
-            >
-
-              {comment.content}
-
-
-            </p>
-
-
-
-
-
-            <p
-
-              className="
-                mt-3
                 text-xs
+                uppercase
                 text-muted-foreground
               "
 
             >
 
-
-              {
-
-              new Intl.DateTimeFormat(
-
-                'en-US',
-
-                {
-
-                  day:'numeric',
-
-                  month:'long',
-
-                  year:'numeric',
-
-                  timeZone:'UTC'
-
-                }
-
-              ).format(
-
-                new Date(comment.created_at)
-
-              )
-
-              }
-
-
+              Article
 
             </p>
+
+
+
+
+
+
+            <div
+
+              className="
+                mt-2
+                flex
+                items-center
+                justify-between
+                gap-3
+              "
+
+            >
+
+
+
+              <p
+
+                className="
+                  font-semibold
+                "
+
+              >
+
+                {comment.blog_posts.title}
+
+              </p>
+
+
+
+
+
+
+
+              <a
+
+                href={`/blog/${comment.blog_posts.slug}`}
+
+                target="_blank"
+
+                className="
+                  inline-flex
+                  items-center
+                  gap-1
+                  text-sm
+                  font-semibold
+                  text-primary
+                "
+
+              >
+
+                View
+
+                <ExternalLink size={14}/>
+
+              </a>
+
+
+
+            </div>
 
 
 
@@ -595,34 +647,9 @@ export default function CommentCard({
 
 
 
+        )
 
-
-
-
-
-
-          {/* REPLIES */}
-
-
-
-          {
-
-          comment.replies &&
-
-          comment.replies.length > 0 && (
-
-
-
-            <CommentReplies
-
-              replies={comment.replies}
-
-            />
-
-
-          )
-
-          }
+        }
 
 
 
@@ -632,17 +659,88 @@ export default function CommentCard({
 
 
 
-          {/* REPLY BOX */}
+        {/* FULL COMMENT */}
 
 
 
-          <CommentReply
+        <div
 
-            commentId={comment.id}
+          className="
+            mt-5
+          "
+
+        >
+
+
+
+          <p
+
+            className="
+              whitespace-pre-line
+              leading-7
+            "
+
+          >
+
+            {comment.content}
+
+          </p>
+
+
+
+
+
+          <p
+
+            className="
+              mt-3
+              text-xs
+              text-muted-foreground
+            "
+
+          >
+
+            {formatDate(comment.created_at)}
+
+          </p>
+
+
+
+
+        </div>
+
+        
+
+
+
+
+
+        {/* =====================================
+            REPLIES
+        ===================================== */}
+
+
+
+        {
+
+        comment.replies &&
+
+        comment.replies.length > 0 && (
+
+
+
+          <CommentReplies
+
+            replies={comment.replies}
+
+            role={role}
 
           />
 
 
+        )
+
+        }
 
 
 
@@ -650,22 +748,171 @@ export default function CommentCard({
 
 
 
-          {/* ACTIONS */}
+
+
+
+
+
+        {/* =====================================
+            REPLY BUTTON
+        ===================================== */}
+
+
+
+        <button
+
+
+          type="button"
+
+
+          onClick={()=>setReplying(!replying)}
+
+
+          className="
+            mt-5
+            inline-flex
+            items-center
+            gap-2
+            text-sm
+            font-semibold
+            text-primary
+          "
+
+
+        >
+
+
+          <MessageCircle size={16}/>
+
+
+          {
+
+          replying
+
+          ?
+
+          'Cancel Reply'
+
+          :
+
+          'Reply'
+
+          }
+
+
+        </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+        {/* =====================================
+            REPLY BOX
+        ===================================== */}
+
+
+
+        {
+
+        replying && (
+
+
+
+          <div
+
+            className="
+              mt-4
+              rounded-2xl
+              border
+              border-surface-border
+              bg-surface/50
+              p-4
+            "
+
+          >
+
+
+
+            <CommentReply
+
+
+              commentId={comment.id}
+
+
+              postId={comment.post_id}
+
+
+              onSuccess={()=>{
+
+
+                setReplying(false)
+
+
+              }}
+
+
+            />
+
+
+          </div>
+
+
+
+        )
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        {/* =====================================
+            ADMIN ACTIONS
+        ===================================== */}
+
+
+
+        <div
+
+          className="
+            mt-6
+            border-t
+            border-surface-border
+            pt-5
+          "
+
+        >
 
 
 
           <CommentActions
 
+
             commentId={comment.id}
+
 
             role={role}
 
+
             status={comment.status}
 
+
           />
-
-
-
 
 
 
@@ -673,22 +920,25 @@ export default function CommentCard({
 
 
 
-      )
-
-      }
 
 
 
+      </div>
+
+
+
+    )
+
+    }
 
 
 
 
-    </article>
+
+  </article>
 
 
-
-  )
-
+)
 
 
 }

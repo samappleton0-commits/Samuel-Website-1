@@ -1,8 +1,7 @@
 // =====================================================
-// ADMIN COMMENT REPLY
-// components/admin/comments/CommentReply.tsx
+// COMMENT REPLY FORM
+// components/comments/CommentReply.tsx
 // =====================================================
-
 
 'use client'
 
@@ -12,29 +11,16 @@ import {
 } from 'react'
 
 
-import {
-  Send,
-} from 'lucide-react'
-
-
-import {
-  useRouter,
-} from 'next/navigation'
-
-
-
-
-
 
 type Props = {
 
   commentId:string
 
+  postId:string
+
+  onSuccess?:()=>void
+
 }
-
-
-
-
 
 
 
@@ -44,53 +30,35 @@ export default function CommentReply({
 
   commentId,
 
+  postId,
+
+  onSuccess,
+
 }:Props){
 
 
 
-  const router = useRouter()
+  const [content,setContent] =
+
+    useState('')
 
 
 
+  const [loading,setLoading] =
 
-
-  const [
-
-    reply,
-
-    setReply
-
-  ] = useState('')
+    useState(false)
 
 
 
+  const [error,setError] =
+
+    useState('')
 
 
 
-  const [
+  const [success,setSuccess] =
 
-    loading,
-
-    setLoading
-
-  ] = useState(false)
-
-
-
-
-
-
-  const [
-
-    message,
-
-    setMessage
-
-  ] = useState('')
-
-
-
-
+    useState(false)
 
 
 
@@ -100,24 +68,27 @@ export default function CommentReply({
 
 
 
+    setError('')
+
+    setSuccess(false)
 
 
-    if(!reply.trim()){
 
 
-      setMessage(
 
-        'Please write a reply.'
+    if(!content.trim()){
+
+
+      setError(
+
+        'Please enter a reply.'
 
       )
 
 
       return
 
-
     }
-
-
 
 
 
@@ -126,13 +97,7 @@ export default function CommentReply({
     try {
 
 
-
       setLoading(true)
-
-
-      setMessage('')
-
-
 
 
 
@@ -140,29 +105,36 @@ export default function CommentReply({
 
       const response = await fetch(
 
-        '/api/admin/comments/reply',
+        '/api/comment',
 
         {
+
 
           method:'POST',
 
 
           headers:{
 
+
             'Content-Type':
 
-            'application/json'
+              'application/json'
+
 
           },
 
 
           body:JSON.stringify({
 
-            commentId,
 
-            content:
+            postId,
 
-            reply.trim()
+
+            parentId:commentId,
+
+
+            content:content.trim()
+
 
           })
 
@@ -177,9 +149,7 @@ export default function CommentReply({
 
 
 
-      const result =
-
-        await response.json()
+      const data = await response.json()
 
 
 
@@ -192,9 +162,9 @@ export default function CommentReply({
 
         throw new Error(
 
-          result.error ||
+          data.error ||
 
-          'Reply failed'
+          'Unable to submit reply.'
 
         )
 
@@ -207,21 +177,14 @@ export default function CommentReply({
 
 
 
-
-      setReply('')
-
+      setContent('')
 
 
-      setMessage(
-
-        'Reply sent.'
-
-      )
+      setSuccess(true)
 
 
 
-
-      router.refresh()
+      onSuccess?.()
 
 
 
@@ -234,22 +197,17 @@ export default function CommentReply({
 
 
 
-      setMessage(
+      setError(
 
 
         error instanceof Error
 
-        ?
+        ? error.message
 
-        error.message
-
-        :
-
-        'Something went wrong.'
+        : 'Something went wrong.'
 
 
       )
-
 
 
     }
@@ -264,9 +222,7 @@ export default function CommentReply({
     }
 
 
-
   }
-
 
 
 
@@ -278,7 +234,6 @@ export default function CommentReply({
   return (
 
 
-
     <div
 
       className="
@@ -286,7 +241,7 @@ export default function CommentReply({
         rounded-2xl
         border
         border-surface-border
-        bg-muted/20
+        bg-surface
         p-4
       "
 
@@ -295,32 +250,41 @@ export default function CommentReply({
 
 
 
+      <p
+
+        className="
+          mb-3
+          text-sm
+          font-semibold
+        "
+
+      >
+
+        Replying to this comment
+
+      </p>
+
+
+
+
 
       <textarea
 
 
-        value={reply}
+        value={content}
 
 
-        onChange={(event)=>
+        onChange={e=>
 
-          setReply(
-
-            event.target.value
-
-          )
+          setContent(e.target.value)
 
         }
 
 
+        placeholder="Write your reply..."
+
 
         rows={4}
-
-
-        placeholder="Write a reply..."
-
-
-        disabled={loading}
 
 
         className="
@@ -329,13 +293,12 @@ export default function CommentReply({
           border
           border-surface-border
           bg-background
-          px-4
-          py-3
+          p-3
           text-sm
           outline-none
           focus:ring-2
+          focus:ring-primary
         "
-
 
       />
 
@@ -344,91 +307,22 @@ export default function CommentReply({
 
 
 
-
-
-
-      <button
-
-
-        type="button"
-
-
-        onClick={submitReply}
-
-
-        disabled={loading}
-
-
-        className="
-          mt-3
-          inline-flex
-          items-center
-          gap-2
-          rounded-full
-          bg-primary
-          px-5
-          py-2
-          text-sm
-          font-semibold
-          text-white
-          disabled:opacity-50
-        "
-
-
-      >
-
-
-
-        <Send size={15}/>
-
-
-
-
-
-        {
-
-        loading
-
-        ?
-
-        'Sending...'
-
-        :
-
-        'Reply'
-
-        }
-
-
-
-      </button>
-
-
-
-
-
-
-
-
-
       {
 
-      message && (
-
+      error && (
 
 
         <p
 
           className="
-            mt-3
+            mt-2
             text-sm
-            text-muted-foreground
+            text-red-500
           "
 
         >
 
-          {message}
-
+          {error}
 
         </p>
 
@@ -441,8 +335,108 @@ export default function CommentReply({
 
 
 
-    </div>
 
+      {
+
+      success && (
+
+
+        <p
+
+          className="
+            mt-2
+            text-sm
+            text-green-600
+          "
+
+        >
+
+          Reply submitted successfully.
+
+        </p>
+
+
+      )
+
+      }
+
+
+
+
+
+
+
+
+
+      <div
+
+        className="
+          mt-4
+          flex
+          justify-end
+        "
+
+      >
+
+
+
+        <button
+
+
+          type="button"
+
+
+          disabled={loading}
+
+
+          onClick={submitReply}
+
+
+          className="
+            rounded-xl
+            bg-primary
+            px-5
+            py-2
+            text-sm
+            font-semibold
+            text-white
+            disabled:opacity-50
+          "
+
+        >
+
+
+          {
+
+          loading
+
+          ?
+
+
+          'Sending...'
+
+
+          :
+
+
+          'Post Reply'
+
+
+          }
+
+
+        </button>
+
+
+
+      </div>
+
+
+
+
+
+
+    </div>
 
 
   )

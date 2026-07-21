@@ -120,6 +120,137 @@ const COMMENT_FIELDS = `
 
 
 
+// =====================================================
+// BUILD COMMENT TREE
+// =====================================================
+
+
+function buildCommentTree(
+
+  comments:Comment[]
+
+):Comment[]{
+
+
+  const map = new Map<string,Comment>()
+
+
+
+  comments.forEach(comment=>{
+
+
+    map.set(
+
+      comment.id,
+
+      {
+
+        ...comment,
+
+        replies:[]
+
+      }
+
+    )
+
+
+  })
+
+
+
+
+
+  const roots:Comment[] = []
+
+
+
+
+
+  comments.forEach(comment=>{
+
+
+    const current =
+
+      map.get(comment.id)
+
+
+
+
+
+    if(!current){
+
+      return
+
+    }
+
+
+
+
+
+
+    if(comment.parent_id){
+
+
+      const parent =
+
+        map.get(
+
+          comment.parent_id
+
+        )
+
+
+
+
+
+      if(parent){
+
+
+        parent.replies?.push(
+
+          current
+
+        )
+
+
+      }
+
+
+    }
+
+    else {
+
+
+      roots.push(
+
+        current
+
+      )
+
+
+    }
+
+
+
+  })
+
+
+
+
+  return roots
+
+
+}
+
+
+
+
+
+
+
+
+
+
 
 // =====================================================
 // GET APPROVED COMMENTS
@@ -141,13 +272,12 @@ export async function getApprovedComments(
 
 
 
-
-
   const {
 
     data,
 
     error
+
 
   } = await supabase
 
@@ -198,6 +328,8 @@ export async function getApprovedComments(
 
 
 
+
+
   if(error){
 
 
@@ -212,7 +344,6 @@ export async function getApprovedComments(
 
     return []
 
-
   }
 
 
@@ -221,67 +352,14 @@ export async function getApprovedComments(
 
 
 
-  const comments =
+
+  return buildCommentTree(
 
     (data ?? []) as Comment[]
 
-
-
-
-
-
-
-  const mainComments =
-
-    comments.filter(
-
-      comment =>
-
-      comment.parent_id === null
-
-    )
-
-
-
-
-
-
-
-
-  return mainComments.map(comment => ({
-
-
-
-    ...comment,
-
-
-
-    replies:
-
-      comments.filter(reply =>
-
-        reply.parent_id === comment.id
-
-      )
-
-
-
-  }))
-
-
+  )
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 // =====================================================
@@ -293,9 +371,7 @@ export async function getApprovedComments(
 export async function createComment(
 
 
-
   supabase:SupabaseClient,
-
 
 
   {
@@ -367,9 +443,9 @@ export async function createComment(
 
     name
 
-    .trim()
+      .trim()
 
-    .slice(0,100)
+      .slice(0,100)
 
 
 
@@ -382,12 +458,12 @@ export async function createComment(
 
     email
 
-    ?.trim()
+      ?.trim()
 
-    .toLowerCase()
+      .toLowerCase()
 
+      || null
 
-    || null
 
 
 
@@ -400,9 +476,9 @@ export async function createComment(
 
     content
 
-    .trim()
+      .trim()
 
-    .slice(0,5000)
+      .slice(0,5000)
 
 
 
@@ -444,10 +520,9 @@ export async function createComment(
 
 
 
-
-
   // =====================================================
   // CHECK REPLY TARGET
+  // ALLOWS REPLY TO REPLY
   // =====================================================
 
 
@@ -497,9 +572,7 @@ export async function createComment(
 
 
 
-
     if(error || !parentComment){
-
 
 
       throw new Error(
@@ -512,28 +585,8 @@ export async function createComment(
     }
 
 
-
-
-
-
-
-
-    if(parentComment.parent_id){
-
-
-
-      throw new Error(
-
-        'Replies can only be made to main comments.'
-
-      )
-
-
-    }
-
-
-
   }
+
 
 
 
@@ -553,17 +606,13 @@ export async function createComment(
     parentId
 
 
-
     ?
-
 
 
     'approved'
 
 
-
     :
-
 
 
     'pending'
@@ -578,7 +627,9 @@ export async function createComment(
 
 
 
+
   console.log(
+
 
     'INSERTING COMMENT:',
 
@@ -646,29 +697,22 @@ export async function createComment(
       post_id:postId,
 
 
-
       parent_id:parentId,
-
 
 
       user_id:userId,
 
 
-
       ip_address:ipAddress,
-
 
 
       name:cleanName,
 
 
-
       email:cleanEmail,
 
 
-
       content:cleanContent,
-
 
 
       status,
@@ -676,6 +720,7 @@ export async function createComment(
 
 
     })
+
 
 
     .select(
@@ -686,6 +731,9 @@ export async function createComment(
 
 
     .single()
+
+
+
 
 
 
@@ -730,6 +778,7 @@ export async function createComment(
 
 
 
+
     throw new Error(
 
       error.message
@@ -737,9 +786,8 @@ export async function createComment(
     )
 
 
+
   }
-
-
 
 
 
@@ -754,15 +802,3 @@ export async function createComment(
 
 
 }
-
-
-
-
-
-
-
-
-
-// =====================================================
-// END OF COMMENTS SERVICE
-// =====================================================
