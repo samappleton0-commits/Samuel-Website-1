@@ -33,6 +33,8 @@ import {
 
 
 
+
+
 // =====================================================
 // GET CLIENT IP
 // =====================================================
@@ -59,6 +61,7 @@ function getClientIp(request:Request){
 
 
 }
+
 
 
 
@@ -97,6 +100,8 @@ export async function POST(
 
 
 
+
+
     const {
 
 
@@ -117,6 +122,8 @@ export async function POST(
 
 
     } = body
+
+
 
 
 
@@ -190,6 +197,34 @@ export async function POST(
 
 
 
+    // =====================================================
+    // DEBUG SESSION
+    // =====================================================
+
+
+    const {
+
+      data:{
+        session
+      }
+
+    } = await supabase.auth.getSession()
+
+
+    console.log(
+
+      "COMMENT SESSION:",
+
+      session
+
+    )
+
+
+
+
+
+
+
 
 
 
@@ -218,6 +253,8 @@ export async function POST(
 
 
 
+
+
     let finalName = ''
 
 
@@ -236,9 +273,15 @@ export async function POST(
 
 
 
+
+
     const ipAddress =
 
       getClientIp(request)
+
+
+
+
 
 
 
@@ -311,6 +354,7 @@ export async function POST(
 
 
 
+
       finalName =
 
 
@@ -319,10 +363,12 @@ export async function POST(
 
         ??
 
+
         user.email
 
 
         ??
+
 
         'User'
 
@@ -332,7 +378,14 @@ export async function POST(
 
 
 
+
+
+
     }
+
+
+
+
 
 
 
@@ -369,12 +422,17 @@ export async function POST(
 
         ??
 
+
         visitor?.name
 
 
         ??
 
+
         ''
+
+
+
 
 
 
@@ -393,7 +451,11 @@ export async function POST(
 
         ??
 
+
         null
+
+
+
 
 
 
@@ -450,6 +512,7 @@ export async function POST(
 
 
 
+
       await rememberVisitor({
 
 
@@ -469,6 +532,8 @@ export async function POST(
 
 
     }
+
+
 
 
 
@@ -511,6 +576,8 @@ export async function POST(
 
 
     )
+
+
 
 
 
@@ -587,6 +654,9 @@ export async function POST(
 
 
 
+
+
+
     return NextResponse.json(
 
 
@@ -649,9 +719,13 @@ export async function POST(
 
 
 
+
+
   }
 
   catch(error){
+
+
 
 
 
