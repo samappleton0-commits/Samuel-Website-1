@@ -3,17 +3,21 @@
 // lib/supabase-admin.ts
 // =====================================================
 
+
 import {
   createClient,
 } from '@supabase/supabase-js'
 
 
 
-export function getSupabaseAdmin(){
+
+
+function createSupabaseAdmin(){
 
 
   const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL
+
 
 
   const serviceRoleKey =
@@ -47,6 +51,8 @@ export function getSupabaseAdmin(){
 
 
 
+
+
   return createClient(
 
     supabaseUrl,
@@ -69,3 +75,34 @@ export function getSupabaseAdmin(){
 
 
 }
+
+
+
+
+
+
+
+
+
+// New safe function
+export function getSupabaseAdmin(){
+
+
+  return createSupabaseAdmin()
+
+
+}
+
+
+
+
+
+
+
+// Backward compatibility
+// Allows existing files to keep:
+// import { supabaseAdmin } from '@/lib/supabase-admin'
+
+
+export const supabaseAdmin =
+  createSupabaseAdmin()
