@@ -107,26 +107,26 @@ console.log(
 
 
     // Send notification email
-    const emailResult = await resend.emails.send({
-      from: 'onboarding@resend.dev',
-      to: 'samappleton0@gmail.com',
-      subject: `New Contact Form: ${subject}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
+const emailResult = await resend.emails.send({
+  from: 'Sam Creative Hub <hello@samcreativehub.com>',
+  to: 'samappleton0@gmail.com',
+  subject: `New Contact Form: ${subject}`,
+  html: `
+    <h2>New Contact Form Submission</h2>
 
-        <p><strong>Name:</strong> ${name}</p>
+    <p><strong>Name:</strong> ${name}</p>
 
-        <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Email:</strong> ${email}</p>
 
-        <p><strong>Subject:</strong> ${subject}</p>
+    <p><strong>Subject:</strong> ${subject}</p>
 
-        <p><strong>IP Address:</strong> ${ipAddress}</p>
+    <p><strong>IP Address:</strong> ${ipAddress}</p>
 
-        <p><strong>Message:</strong></p>
+    <p><strong>Message:</strong></p>
 
-        <p>${message}</p>
-      `,
-    })
+    <p>${message}</p>
+  `,
+})
 
 
     if (emailResult.error) {
