@@ -24,40 +24,38 @@ import WelcomeToast from '@/components/WelcomeToast'
 ===================================================== */
 
 const poppins = Poppins({
-  variable:
-    '--font-poppins',
+  variable: '--font-poppins',
 
-  subsets:
-    ['latin'],
+  subsets: [
+    'latin',
+  ],
 
-  weight:
-    [
-      '400',
-      '500',
-      '600',
-      '700',
-      '800',
-    ],
+  weight: [
+    '400',
+    '500',
+    '600',
+    '700',
+    '800',
+  ],
 })
 
 
 const inter = Inter({
-  variable:
-    '--font-inter',
+  variable: '--font-inter',
 
-  subsets:
-    ['latin'],
+  subsets: [
+    'latin',
+  ],
 })
 
 
 const geistMono = Geist_Mono({
-  variable:
-    '--font-geist-mono',
+  variable: '--font-geist-mono',
 
-  subsets:
-    ['latin'],
+  subsets: [
+    'latin',
+  ],
 })
-
 
 
 /* =====================================================
@@ -75,7 +73,7 @@ export const metadata: Metadata = {
   title: {
 
     default:
-      'Samuel R. Appleton | Accountant | Web Developer | Graphic Designer & ICT Specialist',
+      'Samuel R. Appleton | Web Developer & ICT Specialist',
 
     template:
       '%s | Samuel R. Appleton',
@@ -84,13 +82,13 @@ export const metadata: Metadata = {
 
 
   description:
-    'Samuel R. Appleton is a Accountant, Web Developer, ICT Specialist, and digital solutions builder creating modern websites, scalable applications, and technology-driven solutions.',
+    'Samuel R. Appleton is a Web Developer and ICT Specialist creating modern websites, digital solutions, and scalable technology experiences. Explore his projects, services, and creative work.',
 
 
 
   keywords: [
 
-    'Samuel R. Appleton Jarwee',
+    'Samuel R. Appleton',
 
     'Samuel Appleton',
 
@@ -100,19 +98,21 @@ export const metadata: Metadata = {
 
     'Full Stack Developer',
 
+    'Next.js Developer',
+
+    'React Developer',
+
+    'TypeScript Developer',
+
     'ICT Specialist',
 
     'ICT Trainer',
 
     'Graphic Designer',
 
-    'Accountant',
-
     'Website Development',
 
     'Digital Solutions',
-
-    'Software Developer',
 
     'Liberia Developer',
 
@@ -123,13 +123,11 @@ export const metadata: Metadata = {
   authors: [
 
     {
-
       name:
         'Samuel R. Appleton',
 
       url:
         'https://samcreativehub.com',
-
     },
 
   ],
@@ -168,11 +166,11 @@ export const metadata: Metadata = {
   openGraph: {
 
     title:
-      'Samuel R. Appleton | Web Developer & ICT Solutions Specialist',
+      'Samuel R. Appleton | Web Developer & ICT Specialist',
 
 
     description:
-      'Portfolio showcasing web development, ICT solutions, creative projects, and modern digital experiences created by Samuel R. Appleton.',
+      'Portfolio showcasing web development, ICT solutions, creative projects, and digital experiences created by Samuel R. Appleton.',
 
 
     url:
@@ -222,7 +220,7 @@ export const metadata: Metadata = {
 
 
     title:
-      'Samuel R. Appleton | Web Developer',
+      'Samuel R. Appleton | Web Developer & ICT Specialist',
 
 
     description:
@@ -237,7 +235,8 @@ export const metadata: Metadata = {
   },
 
 
-robots: {
+
+  robots: {
   index: true,
   follow: true,
 
@@ -265,6 +264,87 @@ robots: {
 
   },
 
+}
+
+
+
+/* =====================================================
+   GOOGLE STRUCTURED DATA
+===================================================== */
+
+const jsonLd = {
+
+  "@context":
+    "https://schema.org",
+
+
+  "@type":
+    "Person",
+
+
+  name:
+    "Samuel R. Appleton",
+
+
+  url:
+    "https://samcreativehub.com",
+
+
+  image:
+    "https://samcreativehub.com/og-image.png",
+
+
+  jobTitle:
+    "Web Developer and ICT Specialist",
+
+
+  description:
+    "Samuel R. Appleton is a Web Developer and ICT Specialist creating modern websites, digital solutions, and technology experiences.",
+
+
+  knowsAbout: [
+
+    "Web Development",
+
+    "Next.js",
+
+    "React",
+
+    "TypeScript",
+
+    "ICT Solutions",
+
+    "Website Development",
+
+    "Graphic Design",
+
+    "Software Development",
+
+  ],
+
+
+
+  worksFor: {
+
+    "@type":
+      "Organization",
+
+
+    name:
+      "Sam Creative Hub",
+
+
+    url:
+      "https://samcreativehub.com",
+
+  },
+
+
+  sameAs: [
+
+    // Add GitHub, LinkedIn, etc later
+
+  ],
 
 }
 
@@ -279,14 +359,18 @@ export const viewport: Viewport = {
   colorScheme:
     'dark',
 
+
   themeColor:
     '#0f172a',
+
 
   width:
     'device-width',
 
+
   initialScale:
     1,
+
 
   userScalable:
     true,
@@ -346,7 +430,7 @@ export default function RootLayout({
 
 
 
-        {/* Main Website Content */}
+        {/* Website Content */}
 
         <main>
 
@@ -356,7 +440,7 @@ export default function RootLayout({
 
 
 
-        {/* Global Toast System */}
+        {/* Toast Notifications */}
 
         <Toaster
 
@@ -372,7 +456,7 @@ export default function RootLayout({
 
 
 
-        {/* Production Analytics */}
+        {/* Analytics */}
 
         {
           process.env.NODE_ENV === 'production'
@@ -387,6 +471,23 @@ export default function RootLayout({
             </>
           )
         }
+
+
+
+        {/* Google Structured Data */}
+
+        <script
+
+          type="application/ld+json"
+
+          dangerouslySetInnerHTML={{
+
+            __html:
+              JSON.stringify(jsonLd),
+
+          }}
+
+        />
 
 
       </body>
