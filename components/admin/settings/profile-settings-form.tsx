@@ -44,7 +44,13 @@ const [loading,setLoading] = useState(false)
 
 
 
-
+const initials = name
+  .split(' ')
+  .filter(Boolean)
+  .slice(0, 2)
+  .map(word => word[0])
+  .join('')
+  .toUpperCase()
 
 
 async function uploadAvatar(){
@@ -321,32 +327,45 @@ Profile Image
 
 <div className="mt-3 flex items-center gap-5">
 
+{
+  avatar ? (
 
-<Image
+    <Image
+      src={avatar}
+      alt={name}
+      width={80}
+      height={80}
+      className="
+        h-20
+        w-20
+        rounded-full
+        border
+        object-cover
+      "
+    />
 
-src={
+  ) : (
 
-avatar ||
+    <div
+      className="
+        flex
+        h-20
+        w-20
+        items-center
+        justify-center
+        rounded-full
+        border
+        bg-primary
+        text-xl
+        font-bold
+        text-primary-foreground
+      "
+    >
+      {initials}
+    </div>
 
-'/profileme.png'
-
+  )
 }
-
-alt="Profile"
-
-width={80}
-
-height={80}
-
-className="
-rounded-full
-object-cover
-border
-"
-
-/>
-
-
 
 
 

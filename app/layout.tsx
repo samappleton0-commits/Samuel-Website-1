@@ -74,7 +74,7 @@ export default function RootLayout({
     <body className="bg-background font-sans antialiased">
 
   {/* Welcome Notification */}
-  <WelcomeToast />
+ <WelcomeToast /> 
 
 
   {/* Global Website Header */}

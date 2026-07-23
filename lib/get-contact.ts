@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server'
 
 export async function getContactData() {
 
+
   const supabase = await createClient()
 
 
@@ -10,13 +11,16 @@ export async function getContactData() {
     data,
     error,
   } = await supabase
+
     .from('contact')
+
     .select('*')
-    .single()
+
+    .limit(1)
 
 
 
-  if (error) {
+  if(error){
 
     console.error(
       'Contact loading error:',
@@ -28,6 +32,8 @@ export async function getContactData() {
   }
 
 
-  return data
+
+  return data?.[0] ?? null
+
 
 }

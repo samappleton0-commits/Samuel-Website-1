@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase-server'
 import { resend } from '@/lib/resend'
 
 export async function POST(request: NextRequest) {
   try {
+
+    const supabase = await createClient()
     const { name, email, subject, message } = await request.json()
 
     // Basic validation
@@ -33,14 +35,22 @@ export async function POST(request: NextRequest) {
     today.setUTCHours(0, 0, 0, 0)
 
 
-    // Check daily message limit by IP address
-    const { data: todayMessages, error: countError } = await supabase
-      .from('contacts')
-      .select('id')
-      .eq('ip_address', ipAddress)
-      .gte('created_at', today.toISOString())
+   // Check daily message limit by IP or email
+const { data: todayMessages, error: countError } = await supabase
+  .from('contacts')
+  .select('id')
+  .gte(
+    'created_at',
+    today.toISOString()
+  )
+  .or(
+    `ip_address.eq.${ipAddress},email.eq.${email}`
+  )
 
-
+console.log(
+  'Messages today:',
+  todayMessages?.length
+)
     if (countError) {
       return NextResponse.json(
         {

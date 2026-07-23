@@ -288,7 +288,7 @@ export function SiteHeader() {
   return (
 
 
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header className="fixed left-0 right-0 top-0 z-50">
 
 
 
@@ -319,31 +319,15 @@ export function SiteHeader() {
 
 
 
+<div
+  className={cn(
 
-      <div
+    'transition-all duration-300',
 
+    'bg-background/40 backdrop-blur-md backdrop-saturate-125'
 
-        className={cn(
-
-
-          'transition-all duration-300',
-
-
-          scrolled
-
-          ?
-
-          'glass shadow-lg shadow-black/20'
-
-          :
-
-          'bg-transparent'
-
-
-        )}
-
-
-      >
+  )}
+>
 
 
 
@@ -491,35 +475,21 @@ export function SiteHeader() {
 
 
 
-
-
-            <Button
-
-
-              render={
-
-                <a href="/#contact"/>
-
-              }
-
-
-              className="
-                hidden
-                rounded-full
-                bg-primary
-                text-primary-foreground
-                hover:bg-primary/90
-                sm:inline-flex
-              "
-
-
-            >
-
-
-              Contact Me
-
-
-            </Button>
+<Button
+  asChild
+  className="
+    hidden
+    rounded-full
+    bg-primary
+    text-primary-foreground
+    hover:bg-primary/90
+    sm:inline-flex
+  "
+>
+  <a href="/#contact">
+    Contact Me
+  </a>
+</Button>
 
 
 

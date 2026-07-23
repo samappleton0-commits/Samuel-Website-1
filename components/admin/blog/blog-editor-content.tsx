@@ -1,20 +1,25 @@
 // =====================================================
 // BLOG EDITOR CONTENT
-// PROFESSIONAL TIPTAP EDITOR
+// PROFESSIONAL TIPTAP BLOG EDITOR
 // =====================================================
 
 'use client'
 
+
 // =====================================================
 // IMPORTS
 // =====================================================
-import { supabase } from '@/lib/supabase'
 
-import TiptapImage from '@tiptap/extension-image'
+import { useState } from 'react'
 
-import { useEditor, EditorContent } from '@tiptap/react'
+import {
+  EditorContent,
+  useEditor,
+} from '@tiptap/react'
+
 
 import StarterKit from '@tiptap/starter-kit'
+
 
 import Underline from '@tiptap/extension-underline'
 
@@ -28,69 +33,62 @@ import TextAlign from '@tiptap/extension-text-align'
 
 import HorizontalRule from '@tiptap/extension-horizontal-rule'
 
-import { Table } from '@tiptap/extension-table'
+import Image from '@tiptap/extension-image'
 
-import { TableRow } from '@tiptap/extension-table-row'
+import { Youtube } from '@tiptap/extension-youtube'
 
-import { TableCell } from '@tiptap/extension-table-cell'
+import { TextStyle } from '@tiptap/extension-text-style'
 
-import { TableHeader } from '@tiptap/extension-table-header'
+import { Color } from '@tiptap/extension-color'
+
 
 import {
-
-Undo2,
-
-Redo2,
-
-Bold,
-
-Italic,
-
-UnderlineIcon,
-
-Strikethrough,
-
-Highlighter,
-
-Heading1,
-
-Heading2,
-
-Heading3,
-
-List,
-
-ListOrdered,
-
-Quote,
-
-Minus,
-
-AlignLeft,
-
-AlignCenter,
-
-AlignRight,
-
-LinkIcon,
-
-Table2,
-
-ImageIcon,
-
+  Undo2,
+  Redo2,
+  Bold,
+  Italic,
+  UnderlineIcon,
+  Strikethrough,
+  Highlighter,
+  Heading1,
+  Heading2,
+  Heading3,
+  List,
+  ListOrdered,
+  Quote,
+  Minus,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  LinkIcon,
+  ImageIcon,
+  Smile,
 } from 'lucide-react'
+
+import {
+  PlayCircle,
+} from 'lucide-react'
+
+import EmojiPicker from 'emoji-picker-react'
+
+
+import { supabase } from '@/lib/supabase'
+
+
 
 // =====================================================
 // TYPES
 // =====================================================
 
-type Props={
+type Props = {
 
-value:string
+  value:string
 
-onChange:(value:string)=>void
+  onChange:(value:string)=>void
 
 }
+
+
 
 // =====================================================
 // COMPONENT
@@ -103,24 +101,50 @@ value,
 onChange,
 
 }:Props){
-const uploadImage = async (
-file: File
-) => {
-
-try {
-
-const fileExt = file.name.split('.').pop()
-
-const fileName = `${Date.now()}.${fileExt}`
 
 
-const { error } = await supabase
+
+const [showEmoji,setShowEmoji] = useState(false)
+
+
+
+
+
+// =====================================================
+// IMAGE UPLOAD
+// =====================================================
+
+
+const uploadImage = async(file:File)=>{
+
+
+try{
+
+
+const extension =
+file.name.split('.').pop()
+
+
+const fileName =
+`${Date.now()}.${extension}`
+
+
+
+const {
+
+error
+
+}=await supabase
+
 .storage
+
 .from('blog-images')
+
 .upload(
 fileName,
 file
 )
+
 
 
 if(error){
@@ -130,39 +154,33 @@ throw error
 }
 
 
-const { data } =
-supabase
+
+const {
+
+data
+
+}=supabase
+
 .storage
+
 .from('blog-images')
+
 .getPublicUrl(
 fileName
 )
 
-if(editor){
-
-console.log(
-  "IMAGE URL:",
-  data.publicUrl
-)
 
 
 editor
-.chain()
+?.chain()
 .focus()
-.insertContent({
+.setImage({
 
-type:'image',
-
-attrs:{
-
-src:data.publicUrl,
-
-},
+src:data.publicUrl
 
 })
 .run()
 
-}
 
 
 }
@@ -170,15 +188,20 @@ src:data.publicUrl,
 catch(error){
 
 console.log(
-'Image upload error:',
+"IMAGE UPLOAD ERROR",
 error
 )
 
 }
 
+
 }
 
-const handleImageUpload = () => {
+
+
+
+const handleImageUpload = ()=>{
+
 
 const input =
 document.createElement('input')
@@ -189,7 +212,9 @@ input.type='file'
 input.accept='image/*'
 
 
-input.onchange = async () => {
+
+input.onchange=async()=>{
+
 
 const file =
 input.files?.[0]
@@ -201,43 +226,119 @@ await uploadImage(file)
 
 }
 
+
 }
+
 
 
 input.click()
 
+
 }
+
+
+
+
+
+// =====================================================
+// YOUTUBE EMBED
+// =====================================================
+
+
+const addYoutube = ()=>{
+
+
+const url =
+window.prompt(
+"Paste YouTube URL"
+)
+
+
+if(!url){
+
+return
+
+}
+
+
+
+editor
+?.chain()
+.focus()
+.setYoutubeVideo({
+
+src:url
+
+})
+.run()
+
+
+}
+
+
+
+
+
+
 // =====================================================
 // EDITOR
 // =====================================================
 
-const editor=useEditor({
+
+const editor = useEditor({
 
 extensions:[
+
 
 StarterKit.configure({
 
 heading:{
 
-levels:[1,2,3],
+levels:[1,2,3]
 
-},
+}
 
 }),
+
+
 
 Underline,
 
+
+
 Highlight,
 
-TiptapImage.configure({
 
-inline:false,
 
-allowBase64:false,
+TextStyle,
+
+
+
+Color,
+
+
+
+Image.configure({
+
+allowBase64:false
 
 }),
 
-HorizontalRule,
+
+
+
+Youtube.configure({
+
+width:640,
+
+height:360,
+
+controls:true,
+
+}),
+
+
+
 
 Link.configure({
 
@@ -245,13 +346,19 @@ openOnClick:false,
 
 }),
 
+
+
+
 Placeholder.configure({
 
 placeholder:
 
-'Start writing your article...',
+"Start writing your article..."
 
 }),
+
+
+
 
 TextAlign.configure({
 
@@ -259,31 +366,33 @@ types:[
 
 'heading',
 
-'paragraph',
+'paragraph'
 
-],
-
-}),
-
-Table.configure({
-
-resizable:true,
+]
 
 }),
 
-TableRow,
 
-TableHeader,
 
-TableCell,
+
+HorizontalRule,
+
+
 
 ],
+
+
 
 content:value,
 
+
+
 immediatelyRender:false,
 
+
+
 onUpdate({editor}){
+
 
 onChange(
 
@@ -291,19 +400,20 @@ editor.getHTML()
 
 )
 
-},
+
+}
+
 
 })
+
+
+
 
 if(!editor){
 
 return null
 
 }
-
-// =====================================================
-// RETURN
-// =====================================================
 
 return(
 
@@ -313,15 +423,17 @@ space-y-4
 "
 >
 
+
 {/* =====================================================
     TOOLBAR
 ===================================================== */}
 
+
 <div
+
 className="
 flex
 flex-wrap
-items-center
 gap-2
 rounded-2xl
 border
@@ -329,42 +441,57 @@ bg-card
 p-3
 shadow-sm
 "
+
 >
 
-{/* ---------------------------------- */}
-{/* Undo / Redo */}
-{/* ---------------------------------- */}
+
+
+{/* Undo */}
 
 <button
+
 type="button"
+
 onClick={()=>
 editor.chain().focus().undo().run()
 }
+
 className="
 rounded-lg
 border
 p-2
 hover:bg-muted
 "
+
 title="Undo"
+
 >
 
 <Undo2 className="h-4 w-4"/>
 
 </button>
 
+
+
+{/* Redo */}
+
 <button
+
 type="button"
+
 onClick={()=>
 editor.chain().focus().redo().run()
 }
+
 className="
 rounded-lg
 border
 p-2
 hover:bg-muted
 "
+
 title="Redo"
+
 >
 
 <Redo2 className="h-4 w-4"/>
@@ -372,33 +499,37 @@ title="Redo"
 </button>
 
 
+
+
+
 <div className="mx-1 h-6 w-px bg-border"/>
 
 
-{/* ---------------------------------- */}
-{/* Headings */}
-{/* ---------------------------------- */}
+
+
+
+{/* Heading 1 */}
 
 <button
+
 type="button"
-onClick={()=>{
-console.log('H1 clicked')
 
-editor.chain().focus().toggleHeading({level:1}).run()
+onClick={()=>
+editor.chain()
+.focus()
+.toggleHeading({
+level:1
+})
+.run()
+}
 
-}}
-className={`
+className="
 rounded-lg
 border
-px-3
-py-2
+p-2
 hover:bg-muted
-${
-editor.isActive('heading',{level:1})
-? 'bg-primary text-white'
-: ''
-}
-`}
+"
+
 >
 
 <Heading1 className="h-4 w-4"/>
@@ -406,23 +537,30 @@ editor.isActive('heading',{level:1})
 </button>
 
 
+
+
+{/* Heading 2 */}
+
 <button
+
 type="button"
+
 onClick={()=>
-editor.chain().focus().toggleHeading({level:2}).run()
+editor.chain()
+.focus()
+.toggleHeading({
+level:2
+})
+.run()
 }
-className={`
+
+className="
 rounded-lg
 border
-px-3
-py-2
+p-2
 hover:bg-muted
-${
-editor.isActive('heading',{level:2})
-? 'bg-primary text-white'
-: ''
-}
-`}
+"
+
 >
 
 <Heading2 className="h-4 w-4"/>
@@ -430,23 +568,30 @@ editor.isActive('heading',{level:2})
 </button>
 
 
+
+
+{/* Heading 3 */}
+
 <button
+
 type="button"
+
 onClick={()=>
-editor.chain().focus().toggleHeading({level:3}).run()
+editor.chain()
+.focus()
+.toggleHeading({
+level:3
+})
+.run()
 }
-className={`
+
+className="
 rounded-lg
 border
-px-3
-py-2
+p-2
 hover:bg-muted
-${
-editor.isActive('heading',{level:3})
-? 'bg-primary text-white'
-: ''
-}
-`}
+"
+
 >
 
 <Heading3 className="h-4 w-4"/>
@@ -454,29 +599,34 @@ editor.isActive('heading',{level:3})
 </button>
 
 
+
+
 <div className="mx-1 h-6 w-px bg-border"/>
 
 
-{/* ---------------------------------- */}
+
+
+
 {/* Bold */}
-{/* ---------------------------------- */}
 
 <button
+
 type="button"
+
 onClick={()=>
-editor.chain().focus().toggleBold().run()
+editor.chain()
+.focus()
+.toggleBold()
+.run()
 }
-className={`
+
+className="
 rounded-lg
 border
 p-2
 hover:bg-muted
-${
-editor.isActive('bold')
-? 'bg-primary text-white'
-: ''
-}
-`}
+"
+
 >
 
 <Bold className="h-4 w-4"/>
@@ -484,26 +634,29 @@ editor.isActive('bold')
 </button>
 
 
-{/* ---------------------------------- */}
+
+
+
 {/* Italic */}
-{/* ---------------------------------- */}
 
 <button
+
 type="button"
+
 onClick={()=>
-editor.chain().focus().toggleItalic().run()
+editor.chain()
+.focus()
+.toggleItalic()
+.run()
 }
-className={`
+
+className="
 rounded-lg
 border
 p-2
 hover:bg-muted
-${
-editor.isActive('italic')
-? 'bg-primary text-white'
-: ''
-}
-`}
+"
+
 >
 
 <Italic className="h-4 w-4"/>
@@ -511,26 +664,29 @@ editor.isActive('italic')
 </button>
 
 
-{/* ---------------------------------- */}
+
+
+
 {/* Underline */}
-{/* ---------------------------------- */}
 
 <button
+
 type="button"
+
 onClick={()=>
-editor.chain().focus().toggleUnderline().run()
+editor.chain()
+.focus()
+.toggleUnderline()
+.run()
 }
-className={`
+
+className="
 rounded-lg
 border
 p-2
 hover:bg-muted
-${
-editor.isActive('underline')
-? 'bg-primary text-white'
-: ''
-}
-`}
+"
+
 >
 
 <UnderlineIcon className="h-4 w-4"/>
@@ -538,26 +694,29 @@ editor.isActive('underline')
 </button>
 
 
-{/* ---------------------------------- */}
+
+
+
 {/* Strike */}
-{/* ---------------------------------- */}
 
 <button
+
 type="button"
+
 onClick={()=>
-editor.chain().focus().toggleStrike().run()
+editor.chain()
+.focus()
+.toggleStrike()
+.run()
 }
-className={`
+
+className="
 rounded-lg
 border
 p-2
 hover:bg-muted
-${
-editor.isActive('strike')
-? 'bg-primary text-white'
-: ''
-}
-`}
+"
+
 >
 
 <Strikethrough className="h-4 w-4"/>
@@ -565,50 +724,60 @@ editor.isActive('strike')
 </button>
 
 
-{/* ---------------------------------- */}
+
+
+
+
 {/* Highlight */}
-{/* ---------------------------------- */}
 
 <button
+
 type="button"
+
 onClick={()=>
-editor.chain().focus().toggleHighlight().run()
+editor.chain()
+.focus()
+.toggleHighlight()
+.run()
 }
-className={`
+
+className="
 rounded-lg
 border
 p-2
 hover:bg-muted
-${
-editor.isActive('highlight')
-? 'bg-yellow-400 text-black'
-: ''
-}
-`}
+"
+
 >
 
 <Highlighter className="h-4 w-4"/>
 
 </button>
 
+
+
+
+
 {/* Bullet List */}
 
 <button
+
 type="button"
-onClick={() =>
-editor.chain().focus().toggleBulletList().run()
+
+onClick={()=>
+editor.chain()
+.focus()
+.toggleBulletList()
+.run()
 }
-className={`
+
+className="
 rounded-lg
 border
 p-2
 hover:bg-muted
-${
-editor.isActive('bulletList')
-? 'bg-primary text-white'
-: ''
-}
-`}
+"
+
 >
 
 <List className="h-4 w-4"/>
@@ -617,14 +786,20 @@ editor.isActive('bulletList')
 
 
 
-{/* Numbered List */}
+
+
+
+{/* Ordered List */}
 
 <button
 
 type="button"
 
-onClick={() =>
-  editor?.chain().focus().toggleOrderedList().run()
+onClick={()=>
+editor.chain()
+.focus()
+.toggleOrderedList()
+.run()
 }
 
 className="
@@ -633,8 +808,6 @@ border
 p-2
 hover:bg-muted
 "
-
-title="Numbered List"
 
 >
 
@@ -644,14 +817,21 @@ title="Numbered List"
 
 
 
+
+
+
+
 {/* Quote */}
 
 <button
 
 type="button"
 
-onClick={() =>
-  editor?.chain().focus().toggleBlockquote().run()
+onClick={()=>
+editor.chain()
+.focus()
+.toggleBlockquote()
+.run()
 }
 
 className="
@@ -660,8 +840,6 @@ border
 p-2
 hover:bg-muted
 "
-
-title="Quote"
 
 >
 
@@ -671,23 +849,29 @@ title="Quote"
 
 
 
-{/* Horizontal Divider */}
+
+
+
+
+{/* Divider */}
 
 <button
 
 type="button"
 
-onClick={() =>
-  editor?.chain().focus().setHorizontalRule().run()
+onClick={()=>
+editor.chain()
+.focus()
+.setHorizontalRule()
+.run()
 }
+
 className="
 rounded-lg
 border
 p-2
 hover:bg-muted
 "
-
-title="Divider"
 
 >
 
@@ -697,14 +881,21 @@ title="Divider"
 
 
 
-{/* Left Align */}
+
+
+
+
+{/* Align Left */}
 
 <button
 
 type="button"
 
-onClick={() =>
-  editor?.chain().focus().setTextAlign('left').run()
+onClick={()=>
+editor.chain()
+.focus()
+.setTextAlign('left')
+.run()
 }
 
 className="
@@ -713,8 +904,6 @@ border
 p-2
 hover:bg-muted
 "
-
-title="Align Left"
 
 >
 
@@ -724,14 +913,21 @@ title="Align Left"
 
 
 
-{/* Center Align */}
+
+
+
+
+{/* Align Center */}
 
 <button
 
 type="button"
 
-onClick={() =>
-  editor?.chain().focus().setTextAlign('center').run()
+onClick={()=>
+editor.chain()
+.focus()
+.setTextAlign('center')
+.run()
 }
 
 className="
@@ -740,8 +936,6 @@ border
 p-2
 hover:bg-muted
 "
-
-title="Align Center"
 
 >
 
@@ -751,14 +945,20 @@ title="Align Center"
 
 
 
-{/* Right Align */}
+
+
+
+{/* Align Right */}
 
 <button
 
 type="button"
 
-onClick={() =>
-  editor?.chain().focus().setTextAlign('right').run()
+onClick={()=>
+editor.chain()
+.focus()
+.setTextAlign('right')
+.run()
 }
 
 className="
@@ -768,13 +968,70 @@ p-2
 hover:bg-muted
 "
 
-title="Align Right"
-
 >
 
 <AlignRight className="h-4 w-4"/>
 
 </button>
+
+
+
+
+
+
+{/* Link */}
+
+<button
+
+type="button"
+
+onClick={()=>{
+
+
+const url =
+window.prompt(
+"Enter URL"
+)
+
+
+
+if(url){
+
+editor
+.chain()
+.focus()
+.setLink({
+
+href:url
+
+})
+.run()
+
+}
+
+
+}}
+
+className="
+rounded-lg
+border
+p-2
+hover:bg-muted
+"
+
+>
+
+<LinkIcon className="h-4 w-4"/>
+
+</button>
+
+
+
+
+
+
+
+{/* Image */}
 
 <button
 
@@ -789,60 +1046,199 @@ p-2
 hover:bg-muted
 "
 
-title="Upload Image"
-
 >
 
 <ImageIcon className="h-4 w-4"/>
 
 </button>
+
+
+
+
+
+
+
+{/* YouTube */}
+
+<button
+
+type="button"
+
+onClick={addYoutube}
+
+className="
+rounded-lg
+border
+p-2
+hover:bg-muted
+"
+
+title="Insert YouTube Video"
+
+>
+
+<PlayCircle className="h-4 w-4"/>
+
+</button>
+
+
+
+
+{/* Emoji */}
+
+<button
+
+type="button"
+
+onClick={()=>
+setShowEmoji(!showEmoji)
+}
+
+className="
+rounded-lg
+border
+p-2
+hover:bg-muted
+"
+
+>
+
+<Smile className="h-4 w-4"/>
+
+</button>
+
+
+
+
+
 </div>
+
+
 {/* =====================================================
-    EDITOR AREA
+    EMOJI PICKER
 ===================================================== */}
+
+
+{
+showEmoji && (
 
 <div
 className="
-rounded-2xl
+rounded-xl
 border
-bg-background
-shadow-sm
-overflow-hidden
+bg-card
+p-2
+shadow-md
+w-fit
 "
 >
 
-<EditorContent
+<EmojiPicker
 
-editor={editor}
+onEmojiClick={(emoji)=>{
 
-className="
-max-w-none
-min-h-[400px]
-p-5
-outline-none
 
-prose-headings:font-bold
+editor
+.chain()
+.focus()
+.insertContent(
+emoji.emoji
+)
+.run()
 
-prose-h1:text-3xl
 
-prose-h2:text-2xl
 
-prose-h3:text-xl
-
-prose-blockquote:border-l-4
-
-prose-blockquote:pl-4
-
-prose-blockquote:italic
-
-prose-img:rounded-xl
-
-"
+}}
 
 />
 
 </div>
+
+)
+
+}
+
+
+
+
+
+
+{/* =====================================================
+    EDITOR AREA
+===================================================== */}
+
+
+
+<div
+
+className="
+rounded-2xl
+border
+bg-zinc-900
+shadow-sm
+overflow-hidden
+"
+
+>
+
+
+<EditorContent
+
+
+editor={editor}
+
+
+className="
+min-h-[450px]
+
+p-6
+
+outline-none
+
+prose
+
+prose-invert
+
+max-w-none
+
+
+prose-headings:text-white
+
+prose-p:text-white
+
+prose-strong:text-white
+
+
+prose-a:text-blue-400
+
+prose-a:underline
+
+
+prose-blockquote:border-l-4
+
+prose-blockquote:border-gray-500
+
+prose-blockquote:text-gray-300
+
+
+prose-img:
+
+rounded-xl
+
+
+"
+
+
+/>
+
+
 </div>
+
+
+
+
+</div>
+
 
 )
 

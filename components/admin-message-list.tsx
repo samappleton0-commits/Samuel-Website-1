@@ -59,9 +59,15 @@ export default function AdminMessageList({
 
 
 
-      const matchesStatus =
-        statusFilter === 'All' ||
-        message.status === statusFilter
+     const matchesStatus =
+  statusFilter === 'All' ||
+
+  (
+    statusFilter === 'unread' &&
+    !message.read
+  ) ||
+
+  message.status === statusFilter
 
 
 
@@ -83,13 +89,14 @@ export default function AdminMessageList({
     },
 
 
-    {
-      name: 'New',
-      count:
-        messages.filter(
-          (message) => !message.read
-        ).length,
-    },
+   {
+  name: 'unread',
+  label: 'New',
+  count:
+    messages.filter(
+      (message) => !message.read
+    ).length,
+},
 
 
     {
@@ -198,7 +205,7 @@ export default function AdminMessageList({
 
           >
 
-            {filter.name}
+           {filter.label ?? filter.name}
 
             <span className="ml-2">
 

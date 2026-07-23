@@ -994,40 +994,21 @@ sending ? 'animate-spin' : ''
 
 
 
-
 <Button
-
-render={
-
-<a
-
-href={`mailto:${data.email}?subject=Schedule a meeting`}
-
-/>
-
-}
-
-size="lg"
-
-variant="outline"
-
-disabled={sending}
-
-className="
-glass
-rounded-full
-border-surface-border
-"
-
+  asChild
+  size="lg"
+  variant="outline"
+  disabled={sending}
+  className="
+    glass
+    rounded-full
+    border-surface-border
+  "
 >
-
-
-<CalendarClock className="size-4"/>
-
-
-Schedule a Meeting
-
-
+  <a href={`mailto:${data.email}?subject=Schedule a meeting`}>
+    <CalendarClock className="size-4" />
+    Schedule a Meeting
+  </a>
 </Button>
 
 
